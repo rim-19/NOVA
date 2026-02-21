@@ -5,7 +5,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { supabase } from "@/lib/supabase";
 import type { Order } from "@/lib/supabase";
 
-const WHATSAPP_NUMBER = "212771907639"; // +212 771-907639
+const WHATSAPP_NUMBER = "212781563070"; // +212 781-563070
 
 function formatWhatsAppMessage(
     name: string,

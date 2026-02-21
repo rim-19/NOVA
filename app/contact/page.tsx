@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
-const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "212771907639";
+const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "212781563070";
 
 export default function ContactPage() {
     const [form, setForm] = useState({
