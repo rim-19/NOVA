@@ -62,10 +62,10 @@ export default function AdminDashboard() {
     };
 
     return (
-        <div className="space-y-12">
+        <div className="space-y-8 md:space-y-12">
             <header>
                 <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.5em] mb-4 uppercase">Directives Overview</p>
-                <h1 className="font-cormorant italic text-5xl md:text-6xl text-cream tracking-tight">Atelier Dashboard</h1>
+                <h1 className="font-cormorant italic text-4xl md:text-6xl text-cream tracking-tight">Atelier Dashboard</h1>
             </header>
 
             {loading ? (
@@ -88,8 +88,8 @@ export default function AdminDashboard() {
                 </motion.div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <motion.div variants={item} className="glass-card p-10 rounded-3xl border-gold-glow flex flex-col gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                <motion.div variants={item} className="glass-card p-6 md:p-10 rounded-3xl border-gold-glow flex flex-col gap-6">
                     <h3 className="font-cormorant italic text-2xl text-cream">System Readiness</h3>
                     <div className="space-y-4">
                         <SystemCheck label="Supabase Connection" status="active" />
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
                     </div>
                 </motion.div>
 
-                <motion.div variants={item} className="glass-card p-10 rounded-3xl border-gold-glow">
+                <motion.div variants={item} className="glass-card p-6 md:p-10 rounded-3xl border-gold-glow">
                     <h3 className="font-cormorant italic text-2xl text-cream mb-6">Pro Tip</h3>
                     <p className="text-sm text-cream/40 leading-relaxed font-light">
                         Use the "Products" section to add new cinematic set images. Since this is an ultra-luxury brand, ensure every image uploaded highlights the intricate lace or the drape of the silk. Shadows are your best friend.

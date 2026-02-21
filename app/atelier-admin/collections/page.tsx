@@ -34,13 +34,13 @@ export default function CollectionsAdminPage() {
     }
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-8 md:space-y-10">
             <header className="flex flex-col md:flex-row justify-between items-center md:items-end gap-6">
                 <div>
                     <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.5em] mb-4 uppercase">Narratives</p>
                     <h1 className="font-cormorant italic text-5xl md:text-6xl text-cream tracking-tight">The Chapters</h1>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                     <button
                         onClick={async () => {
                             if (!confirm("Replace all current collections with the new catalog collections?")) return;
@@ -68,7 +68,7 @@ export default function CollectionsAdminPage() {
                                 alert(`Ritual failed: ${error.message}`);
                             }
                         }}
-                        className="bg-zinc-900 text-gold px-6 py-3 rounded-lg text-[0.6rem] font-bold tracking-[0.2em] uppercase hover:bg-zinc-800 transition-all border border-gold/10"
+                        className="bg-zinc-900 text-gold px-4 md:px-6 py-3 rounded-lg text-[0.6rem] font-bold tracking-[0.2em] uppercase hover:bg-zinc-800 transition-all border border-gold/10 w-full sm:w-auto"
                     >
                         Manifest Heritage
                     </button>
@@ -77,7 +77,7 @@ export default function CollectionsAdminPage() {
                             setEditingCollection(null);
                             setIsFormOpen(true);
                         }}
-                        className="btn-luxury px-10 py-3 text-[0.7rem] btn-click-effect"
+                        className="btn-luxury px-6 md:px-10 py-3 text-[0.7rem] btn-click-effect w-full sm:w-auto"
                     >
                         Create New Chapter
                     </button>
@@ -85,13 +85,13 @@ export default function CollectionsAdminPage() {
             </header>
 
             {loading ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 animate-pulse">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 animate-pulse">
                     {[1, 2, 3].map(i => (
                         <div key={i} className="aspect-[3/4] rounded-3xl bg-white/5" />
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                     <AnimatePresence>
                         {collections.map((col) => (
                             <motion.div
@@ -199,13 +199,13 @@ function CollectionForm({ onClose, onSuccess, initialData }: {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-dark-base/80 backdrop-blur-md">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 md:p-6 bg-dark-base/80 backdrop-blur-md">
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="glass-card w-full max-w-lg rounded-3xl border-gold-glow p-8 max-h-[90vh] overflow-y-auto"
+                className="glass-card w-full max-w-lg rounded-2xl md:rounded-3xl border-gold-glow p-4 md:p-8 max-h-[92vh] overflow-y-auto"
             >
-                <h2 className="font-cormorant italic text-3xl text-cream mb-8">{initialData ? "Edit Chapter" : "New Chapter"}</h2>
+                <h2 className="font-cormorant italic text-2xl md:text-3xl text-cream mb-6 md:mb-8">{initialData ? "Edit Chapter" : "New Chapter"}</h2>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-2">

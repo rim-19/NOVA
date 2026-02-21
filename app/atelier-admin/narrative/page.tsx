@@ -81,16 +81,16 @@ export default function NarrativeAdminPage() {
     if (loading) return <div className="p-10 animate-pulse text-gold/50">Loading content...</div>;
 
     return (
-        <div className="max-w-4xl space-y-12 pb-24">
+        <div className="max-w-4xl space-y-8 md:space-y-12 pb-24">
             <header>
                 <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.5em] mb-4 uppercase">Homepage Content</p>
-                <h1 className="font-cormorant italic text-5xl text-cream tracking-tight">Narrative</h1>
+                <h1 className="font-cormorant italic text-4xl md:text-5xl text-cream tracking-tight">Narrative</h1>
                 <p className="text-zinc-500 text-xs mt-4 max-w-lg leading-relaxed">
                     Edit the real text shown on the public homepage.
                 </p>
             </header>
 
-            <form onSubmit={handleSave} className="grid gap-12 glass-card p-10 rounded-3xl border border-white/5 shadow-2xl">
+            <form onSubmit={handleSave} className="grid gap-8 md:gap-12 glass-card p-4 md:p-10 rounded-2xl md:rounded-3xl border border-white/5 shadow-2xl">
                 <div className="space-y-6">
                     <div className="flex justify-between items-center border-b border-gold/10 pb-4">
                         <h2 className="text-[0.6rem] text-gold/60 uppercase tracking-[0.3em] font-bold">Promo Banner</h2>
@@ -120,7 +120,7 @@ export default function NarrativeAdminPage() {
                                 })}
                             />
                         </div>
-                        <div className="grid grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
                             <div className="space-y-2">
                                 <label className="text-[0.55rem] text-zinc-500 uppercase tracking-widest">Banner Link</label>
                                 <input
@@ -161,7 +161,7 @@ export default function NarrativeAdminPage() {
                             onChange={(e) => setContent({ ...content, hero_tagline: e.target.value })}
                         />
                     </div>
-                    <div className="grid grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
                         <div className="space-y-2">
                             <label className="text-[0.55rem] text-zinc-500 uppercase tracking-widest">Hero Title - Line 1</label>
                             <input

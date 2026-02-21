@@ -43,13 +43,13 @@ export default function ProductsAdminPage() {
     }
 
     return (
-        <div className="space-y-12">
-            <header className="flex justify-between items-center bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800">
+        <div className="space-y-8 md:space-y-12">
+            <header className="flex flex-col md:flex-row justify-between md:items-center gap-4 bg-zinc-900/50 p-5 md:p-8 rounded-2xl border border-zinc-800">
                 <div>
-                    <h1 className="text-3xl font-light tracking-tight text-white mb-2 font-cormorant italic">Inventory</h1>
+                    <h1 className="text-2xl md:text-3xl font-light tracking-tight text-white mb-2 font-cormorant italic">Inventory</h1>
                     <p className="text-[0.6rem] text-zinc-500 uppercase tracking-[0.3em]">Registry of all masterpieces</p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                     <button
                         onClick={async () => {
                             if (!confirm("Replace all current products with the new catalog set?")) return;
@@ -74,7 +74,7 @@ export default function ProductsAdminPage() {
                                 alert(`Ritual failed: ${error.message}`);
                             }
                         }}
-                        className="bg-zinc-800 text-gold px-6 py-3 rounded-lg text-[0.6rem] font-bold tracking-[0.2em] uppercase hover:bg-zinc-700 transition-all border border-gold/10"
+                        className="bg-zinc-800 text-gold px-4 md:px-6 py-3 rounded-lg text-[0.6rem] font-bold tracking-[0.2em] uppercase hover:bg-zinc-700 transition-all border border-gold/10 w-full sm:w-auto"
                     >
                         Manifest Heritage
                     </button>
@@ -83,7 +83,7 @@ export default function ProductsAdminPage() {
                             setEditingProduct(null);
                             setIsFormOpen(true);
                         }}
-                        className="bg-white text-zinc-950 px-8 py-3 rounded-lg text-xs font-bold tracking-widest uppercase hover:bg-zinc-200 transition-all shadow-xl active:scale-95"
+                        className="bg-white text-zinc-950 px-6 md:px-8 py-3 rounded-lg text-xs font-bold tracking-widest uppercase hover:bg-zinc-200 transition-all shadow-xl active:scale-95 w-full sm:w-auto"
                     >
                         Add New Piece
                     </button>
@@ -98,7 +98,8 @@ export default function ProductsAdminPage() {
                 </div>
             ) : (
                 <div className="bg-zinc-900/30 rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
-                    <table className="w-full text-left">
+                    <div className="overflow-x-auto">
+                    <table className="w-full text-left min-w-[860px]">
                         <thead>
                             <tr className="border-b border-zinc-800 text-[0.6rem] text-zinc-500 uppercase tracking-widest bg-zinc-900/80">
                                 <th className="px-8 py-6 font-medium">Product Details</th>
@@ -171,6 +172,7 @@ export default function ProductsAdminPage() {
                             ))}
                         </tbody>
                     </table>
+                    </div>
                     {!loading && products.length === 0 && (
                         <div className="py-32 text-center bg-zinc-900/20">
                             <p className="text-zinc-600 text-sm font-light italic">The inventory is clear. Add your first masterpiece.</p>
@@ -317,14 +319,14 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/95 backdrop-blur-xl p-4 md:p-8">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/95 backdrop-blur-xl p-2 md:p-8">
             <motion.div
                 initial={{ opacity: 0, scale: 0.98, y: 30 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.98, y: 30 }}
-                className="bg-zinc-900 w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-[2.5rem] border border-zinc-800 p-8 md:p-14 shadow-2xl relative"
+                className="bg-zinc-900 w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl md:rounded-[2.5rem] border border-zinc-800 p-4 md:p-14 shadow-2xl relative"
             >
-                <div className="flex justify-between items-center mb-12">
+                <div className="flex justify-between items-center mb-8 md:mb-12">
                     <div>
                         <h2 className="text-3xl font-light text-white font-cormorant italic">{initialData ? "Refine Masterpiece" : "Define New Piece"}</h2>
                         <p className="text-[0.6rem] text-zinc-500 uppercase tracking-widest mt-2">Every detail is a choice.</p>
@@ -336,8 +338,8 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div className="space-y-8">
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                    <div className="space-y-6 md:space-y-8">
                         <div className="space-y-2">
                             <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Public Title</label>
                             <input
@@ -348,7 +350,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                             />
                         </div>
 
-                        <div className="grid grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
                             <div className="space-y-2">
                                 <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Price (MAD)</label>
                                 <input
@@ -446,7 +448,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                         </div>
                     </div>
 
-                    <div className="space-y-8">
+                        <div className="space-y-6 md:space-y-8">
                         <div className="space-y-4">
                             <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold block">Visual Proof ({form.images.length}/4)</label>
                             <div className="grid grid-cols-2 gap-4">
@@ -482,7 +484,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                             <input type="file" ref={fileInputRef} onChange={handleUpload} multiple className="hidden" accept="image/*" />
                         </div>
 
-                        <div className="space-y-4 pt-12">
+                        <div className="space-y-4 pt-6 md:pt-12">
                             <button
                                 type="submit"
                                 disabled={uploading}

@@ -38,10 +38,10 @@ export default function OrdersAdminPage() {
     }
 
     return (
-        <div className="space-y-12">
+        <div className="space-y-8 md:space-y-12">
             <header>
                 <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.5em] mb-4 uppercase">Leads ledger</p>
-                <h1 className="font-cormorant italic text-5xl md:text-6xl text-cream tracking-tight">The Inquiries</h1>
+                <h1 className="font-cormorant italic text-4xl md:text-6xl text-cream tracking-tight">The Inquiries</h1>
             </header>
 
             {loading ? (
@@ -57,7 +57,7 @@ export default function OrdersAdminPage() {
                                 layout
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="glass-card p-8 rounded-3xl border border-white/5 space-y-6"
+                                className="glass-card p-4 md:p-8 rounded-3xl border border-white/5 space-y-6"
                             >
                                 <div className="flex flex-col md:flex-row justify-between gap-6">
                                     <div className="space-y-1">
@@ -72,11 +72,11 @@ export default function OrdersAdminPage() {
                                         </div>
                                         <p className="text-xs text-cream/40 font-light">{order.phone} • {order.city}</p>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2">
                                         <select
                                             value={order.status}
                                             onChange={(e) => updateStatus(order.id, e.target.value)}
-                                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-[0.65rem] tracking-widest uppercase text-gold/60 outline-none focus:border-gold/30 cursor-pointer"
+                                            className="bg-white/5 border border-white/10 rounded-xl px-3 md:px-4 py-2 text-[0.6rem] md:text-[0.65rem] tracking-widest uppercase text-gold/60 outline-none focus:border-gold/30 cursor-pointer"
                                         >
                                             <option value="new" className="bg-dark-base">New</option>
                                             <option value="processing" className="bg-dark-base">Processing</option>
@@ -94,7 +94,7 @@ export default function OrdersAdminPage() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-6 border-t border-white/5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 pt-6 border-t border-white/5">
                                     <div className="space-y-4">
                                         <p className="text-[0.6rem] text-gold/30 tracking-[0.3em] uppercase">Selection</p>
                                         <div className="space-y-3">

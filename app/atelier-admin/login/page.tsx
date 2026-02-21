@@ -42,11 +42,11 @@ export default function AdminLoginPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, ease: "easeOut" }}
-                className="w-full max-w-sm glass-card p-10 rounded-3xl border-gold-glow relative z-10"
+                className="w-full max-w-sm glass-card p-6 md:p-10 rounded-2xl md:rounded-3xl border-gold-glow relative z-10"
             >
                 <div className="text-center mb-10">
                     <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.5em] mb-4 uppercase">Atelier Access</p>
-                    <h1 className="font-montecarlo text-5xl text-cream">Nova</h1>
+                    <h1 className="font-montecarlo text-4xl md:text-5xl text-cream">Nova</h1>
                 </div>
 
                 <form onSubmit={handleLogin} className="space-y-6">

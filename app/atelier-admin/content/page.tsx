@@ -51,24 +51,24 @@ export default function ContentAdminPage() {
     if (loading) return <div className="animate-pulse space-y-8"><div className="h-20 bg-white/5 rounded-3xl" /><div className="h-64 bg-white/5 rounded-3xl" /></div>;
 
     return (
-        <div className="space-y-12">
-            <header className="flex justify-between items-end">
+        <div className="space-y-8 md:space-y-12">
+            <header className="flex flex-col md:flex-row justify-between md:items-end gap-4">
                 <div>
                     <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.5em] mb-4 uppercase">Visual Voice</p>
-                    <h1 className="font-cormorant italic text-5xl md:text-6xl text-cream tracking-tight">The Content</h1>
+                    <h1 className="font-cormorant italic text-4xl md:text-6xl text-cream tracking-tight">The Content</h1>
                 </div>
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="btn-luxury px-10 py-3 text-[0.7rem] btn-click-effect"
+                    className="btn-luxury px-6 md:px-10 py-3 text-[0.7rem] btn-click-effect w-full md:w-auto"
                 >
                     {saving ? "Rewriting..." : "Publish Changes"}
                 </button>
             </header>
 
-            <div className="grid grid-cols-2 gap-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10">
                 <div className="space-y-10">
-                    <section className="glass-card p-10 rounded-3xl border border-white/5 space-y-6">
+                    <section className="glass-card p-6 md:p-10 rounded-3xl border border-white/5 space-y-6">
                         <h3 className="font-cormorant italic text-2xl text-cream">The Heroic Entrance</h3>
                         <div className="space-y-4">
                             <div className="space-y-2">
@@ -93,7 +93,7 @@ export default function ContentAdminPage() {
                 </div>
 
                 <div className="space-y-10">
-                    <section className="glass-card p-10 rounded-3xl border border-white/5 space-y-6">
+                    <section className="glass-card p-6 md:p-10 rounded-3xl border border-white/5 space-y-6">
                         <h3 className="font-cormorant italic text-2xl text-cream">The Narrative Arc</h3>
                         <div className="space-y-8">
                             {config?.narrative_blocks.map((block, i) => (
