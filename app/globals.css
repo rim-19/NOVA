@@ -1,0 +1,429 @@
+@import "tailwindcss";
+
+/* ============================================================
+   LUXURY CINEMATIC LINGERIE — Design System
+   Mood: Velvet. Shadow. Whisper. Desire.
+   ============================================================ */
+
+@layer base {
+  :root {
+    --burgundy: #7d1736;
+    --burgundy-deep: #5a0e26;
+    --burgundy-light: #9a1f44;
+    --dark-base: #2b0303;
+    --dark-accent: #390a16;
+    --dark-card: #1a0202;
+    --cream: #f5e9e2;
+    --cream-muted: #d4c4bc;
+    --gold: #b8956a;
+    --gold-light: #d4b48a;
+    --shadow-deep: rgba(0, 0, 0, 0.8);
+    --shadow-burgundy: rgba(125, 23, 54, 0.4);
+  }
+
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  body {
+    background: #2b0303;
+    background: linear-gradient(180deg, #2b0303 0%, #390a16 100%);
+    color: #f5e9e2;
+    font-family: "Inter", sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+    overflow-x: hidden;
+    width: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    cursor: auto;
+  }
+
+  /* Custom cursor enabled state */
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
+    cursor: none !important;
+  }
+
+  ::selection {
+    background: rgba(125, 23, 54, 0.4);
+    color: #f5e9e2;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #2b0303;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #7d1736;
+    border-radius: 10px;
+  }
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+
+.font-montecarlo {
+  font-family: "MonteCarlo", cursive;
+  font-weight: 400;
+}
+
+.font-cormorant {
+  font-family: "Cormorant Garamond", serif;
+}
+
+.font-playfair {
+  font-family: "Playfair Display", serif;
+}
+
+/* Emotional headline — MonteCarlo only for key phrases */
+.text-emotional {
+  font-family: "MonteCarlo", cursive;
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: #f5e9e2;
+}
+
+/* Section title style */
+.text-serif-title {
+  font-family: "Cormorant Garamond", "Playfair Display", serif;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  font-style: italic;
+}
+
+/* Label / nav text */
+.text-label {
+  font-family: "Inter", sans-serif;
+  font-weight: 300;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   LACE TEXTURE OVERLAY
+   ============================================================ */
+
+.lace-overlay {
+  position: relative;
+}
+
+.lace-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f5e9e2' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.5;
+}
+
+/* ============================================================
+   LUXURY COMPONENTS
+   ============================================================ */
+
+/* Glass morphism */
+.glass-dark {
+  background: rgba(43, 3, 3, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(125, 23, 54, 0.2);
+}
+
+.glass-card {
+  background: rgba(26, 2, 2, 0.7);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(212, 180, 138, 0.08);
+}
+
+/* Gold border glow */
+.border-gold-glow {
+  border: 1px solid rgba(184, 149, 106, 0.3);
+  box-shadow: 0 0 30px rgba(184, 149, 106, 0.05), inset 0 0 30px rgba(184, 149, 106, 0.02);
+}
+
+/* Burgundy glow */
+.border-burgundy-glow {
+  border: 1px solid rgba(125, 23, 54, 0.4);
+  box-shadow: 0 0 40px rgba(125, 23, 54, 0.2);
+}
+
+/* Luxury button */
+.btn-luxury {
+  font-family: "Inter", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 300;
+  padding: 1rem 2.5rem;
+  background: transparent;
+  border: 1px solid rgba(245, 233, 226, 0.3);
+  color: #f5e9e2;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-luxury::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(125, 23, 54, 0.3), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.btn-luxury:hover::before {
+  transform: translateX(100%);
+}
+
+.btn-luxury:hover {
+  border-color: rgba(184, 149, 106, 0.5);
+  color: #d4b48a;
+  box-shadow: 0 0 30px rgba(125, 23, 54, 0.3);
+}
+
+/* Burgundy button variant */
+.btn-burgundy {
+  font-family: "Inter", sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-weight: 300;
+  padding: 1rem 2.5rem;
+  background: rgba(125, 23, 54, 0.8);
+  border: 1px solid rgba(125, 23, 54, 0.5);
+  color: #f5e9e2;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-burgundy:hover {
+  background: rgba(125, 23, 54, 1);
+  box-shadow: 0 0 40px rgba(125, 23, 54, 0.5), 0 0 80px rgba(125, 23, 54, 0.2);
+}
+
+/* Divider — thin poetic line */
+.divider-luxury {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184, 149, 106, 0.6), transparent);
+  margin: 0 auto;
+}
+
+/* Interactive Feedback */
+.btn-click-effect {
+  transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.2s ease;
+}
+
+.btn-click-effect:active {
+  transform: scale(0.96) !important;
+  opacity: 0.8;
+}
+
+.nav-link-hover {
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.nav-link-hover:hover {
+  letter-spacing: 0.35em !important;
+  color: #f5e9e2 !important;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes slowZoom {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(125, 23, 54, 0.3);
+  }
+
+  50% {
+    box-shadow: 0 0 50px rgba(125, 23, 54, 0.7), 0 0 100px rgba(125, 23, 54, 0.2);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes revealLine {
+  0% {
+    width: 0;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+@keyframes cursorPulse {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0.4;
+  }
+}
+
+@keyframes loadingBar {
+  0% {
+    transform: scaleX(0);
+  }
+
+  50% {
+    transform: scaleX(0.7);
+  }
+
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.animate-loading-bar {
+  animation: loadingBar 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+.animate-slow-zoom {
+  animation: slowZoom 20s ease-in-out infinite alternate;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* ============================================================
+   IMAGE EFFECTS
+   ============================================================ */
+
+.img-luxury {
+  filter: contrast(1.05) saturate(0.85) brightness(0.9);
+  transition: filter 0.8s ease;
+}
+
+.img-luxury:hover {
+  filter: contrast(1.1) saturate(0.95) brightness(1);
+}
+
+/* ============================================================
+   SCROLL ANIMATIONS (used by GSAP triggers)
+   ============================================================ */
+
+.gsap-fade-up {
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.gsap-fade-in {
+  opacity: 0;
+}
+
+.gsap-scale-in {
+  opacity: 0;
+  transform: scale(0.96);
+}
+
+/* ============================================================
+   RESPONSIVE TOUCH INTERACTIONS (Mobile)
+   ============================================================ */
+
+@media (hover: none) {
+  body {
+    cursor: auto;
+  }
+
+  body * {
+    cursor: auto;
+  }
+
+  /* Reduce blur intensity on mobile for performance */
+  .glass-dark {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+
+/* Mobile specific font adjustments */
+@media (max-width: 768px) {
+  .text-emotional {
+    font-size: clamp(2rem, 12vw, 4rem);
+    line-height: 1.3;
+  }
+}
