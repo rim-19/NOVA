@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { type Product } from "@/lib/supabase";
@@ -15,7 +15,6 @@ interface ProductCardProps {
 export function ProductCard({ product, index = 0, className = "" }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [showSecondImage, setShowSecondImage] = useState(false);
-    const [showTeaser, setShowTeaser] = useState(false);
 
     useEffect(() => {
         // Automatic cycle for mobile/touch devices
@@ -38,15 +37,6 @@ export function ProductCard({ product, index = 0, className = "" }: ProductCardP
         setShowSecondImage(isHovered);
     }, [isHovered]);
 
-    const handleMobileClick = (e: React.MouseEvent) => {
-        const isMobile = window.matchMedia("(hover: none)").matches;
-        if (isMobile) {
-            e.preventDefault();
-            setShowTeaser(true);
-            setTimeout(() => setShowTeaser(false), 2500);
-        }
-    };
-
     const secondImageExists = product.images && product.images.length > 1;
 
     return (
@@ -61,7 +51,6 @@ export function ProductCard({ product, index = 0, className = "" }: ProductCardP
             <Link
                 href={`/product/${product.slug}`}
                 className="block"
-                onClick={handleMobileClick}
             >
                 <div className="relative aspect-[3/4] rounded-2xl overflow-hidden glass-dark border border-gold/5 shadow-2xl transition-all duration-700 group-hover:border-gold/20 group-hover:shadow-gold-glow/10 bg-dark-card">
                     {/* Layer 0: Base Image */}
@@ -120,37 +109,10 @@ export function ProductCard({ product, index = 0, className = "" }: ProductCardP
                         <h3 className="font-cormorant italic font-bold text-lg md:text-xl text-[#b8956a] mb-2 leading-tight">
                             {product.name}
                         </h3>
-                        <p className="font-montecarlo text-lg md:text-xl text-gold/60 opacity-0 group-hover:opacity-100 transition-all duration-700 translate-y-4 group-hover:translate-y-0">
+                        <p className="font-montecarlo text-lg md:text-xl text-gold/60 opacity-100 md:opacity-0 transition-all duration-700 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 md:group-hover:opacity-100">
                             {product.poetic_description}
                         </p>
                     </div>
-
-                    {/* Private Collection Teaser Overlay (Mobile) */}
-                    <AnimatePresence>
-                        {showTeaser && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 z-[40] flex flex-col items-center justify-center p-8 bg-dark-base/90 backdrop-blur-md"
-                            >
-                                <div className="absolute inset-0 opacity-20 overflow-hidden">
-                                    <Image
-                                        src="/assets/blurred_assets/image copy 3.png"
-                                        alt=""
-                                        fill
-                                        className="object-cover scale-150 blur-xl"
-                                    />
-                                </div>
-                                <div className="relative z-10 text-center space-y-4">
-                                    <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.5em] uppercase">Private Directive</p>
-                                    <h4 className="font-cormorant italic text-2xl text-cream">Beyond Lingerie</h4>
-                                    <div className="w-8 h-px bg-gold/20 mx-auto" />
-                                    <p className="font-montecarlo text-xl text-gold/60">The Private Collection Opens Soon</p>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
                 </div>
             </Link>
         </motion.div>
