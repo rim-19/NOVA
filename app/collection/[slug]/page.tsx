@@ -30,14 +30,19 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ slu
 
                 if (error) throw error;
 
-                if (data && data.length > 0) {
-                    console.log(`Fetched ${data.length} products from Supabase`);
-                    const deduped = Array.from(new Map(data.map((product) => [product.slug, product])).values());
-                    setProducts(deduped);
+                const localProducts = catalogProducts.filter((product) => product.collection_slug === slug);
+                const liveProducts = Array.from(new Map((data ?? []).map((product) => [product.slug, product])).values());
+
+                // Always include local catalog products (newly added assets) and let DB entries override same slugs.
+                const mergedBySlug = new Map(localProducts.map((product) => [product.slug, product]));
+                liveProducts.forEach((product) => mergedBySlug.set(product.slug, product));
+
+                const merged = Array.from(mergedBySlug.values());
+                if (merged.length > 0) {
+                    setProducts(merged);
                 } else {
-                    console.warn(`No products found for ${slug} in Supabase. Triggering high-end fallback.`);
-                    const filtered = catalogProducts.filter(p => p.collection_slug === slug);
-                    setProducts(filtered.length > 0 ? filtered : catalogProducts.slice(0, 4));
+                    console.warn(`No products found for ${slug} in database or local catalog. Using safe fallback.`);
+                    setProducts(catalogProducts.slice(0, 4));
                 }
             } catch (err) {
                 console.error("Supabase Error, using robust fallback:", err);
