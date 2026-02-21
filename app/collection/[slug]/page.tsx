@@ -14,6 +14,7 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ slu
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const sectionRef = useRef<HTMLDivElement>(null);
+    const scrollKey = `scroll:/collection/${slug}`;
 
     useEffect(() => {
         if (!slug) return;
@@ -68,6 +69,27 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ slu
         }, sectionRef);
         return () => ctx.revert();
     }, [products]);
+
+    useEffect(() => {
+        if (!slug) return;
+        const saveScroll = () => {
+            sessionStorage.setItem(scrollKey, String(window.scrollY));
+        };
+        window.addEventListener("scroll", saveScroll, { passive: true });
+        return () => {
+            saveScroll();
+            window.removeEventListener("scroll", saveScroll);
+        };
+    }, [slug, scrollKey]);
+
+    useEffect(() => {
+        if (loading) return;
+        const saved = sessionStorage.getItem(scrollKey);
+        if (!saved) return;
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: Number(saved), behavior: "auto" });
+        });
+    }, [loading, scrollKey]);
 
     if (!slug) return null;
 

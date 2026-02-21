@@ -119,18 +119,27 @@ export default function AboutPage() {
           <div className="order-1 lg:order-2 reveal-image lg:justify-self-end">
             <div
               className="relative w-full max-w-[520px] mx-auto lg:mx-0 aspect-[3/5] rounded-3xl overflow-hidden shadow-2xl"
-              style={{ boxShadow: "0 24px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(184,149,106,0.12)" }}
+              style={{ boxShadow: "0 28px 85px rgba(0,0,0,0.52), 0 0 0 1px rgba(184,149,106,0.14)" }}
             >
+              <Image
+                src="/new_assets/about2.jpeg"
+                alt="NovaLingerie model"
+                fill
+                priority
+                className="object-cover lg:hidden"
+                style={{ filter: "brightness(0.85) contrast(1.05) saturate(0.9)" }}
+                sizes="(max-width: 1024px) 92vw, 40vw"
+              />
               <Image
                 src="/new_assets/about1.jpg"
                 alt="NovaLingerie model"
                 fill
                 priority
-                className="object-cover"
+                className="object-cover hidden lg:block"
                 style={{ filter: "brightness(0.85) contrast(1.05) saturate(0.9)" }}
                 sizes="(max-width: 1024px) 92vw, 40vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-dark-base/30" />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-dark-base/35" />
             </div>
           </div>
         </div>

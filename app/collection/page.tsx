@@ -12,6 +12,7 @@ export default function CollectionArchivePage() {
     const [collectionsList, setCollectionsList] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(true);
     const sectionRef = useRef<HTMLDivElement>(null);
+    const scrollKey = "scroll:/collection";
 
     useEffect(() => {
         const fetchCollections = async () => {
@@ -50,6 +51,26 @@ export default function CollectionArchivePage() {
             );
         }, sectionRef);
         return () => ctx.revert();
+    }, [loading]);
+
+    useEffect(() => {
+        const saveScroll = () => {
+            sessionStorage.setItem(scrollKey, String(window.scrollY));
+        };
+        window.addEventListener("scroll", saveScroll, { passive: true });
+        return () => {
+            saveScroll();
+            window.removeEventListener("scroll", saveScroll);
+        };
+    }, []);
+
+    useEffect(() => {
+        if (loading) return;
+        const saved = sessionStorage.getItem(scrollKey);
+        if (!saved) return;
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: Number(saved), behavior: "auto" });
+        });
     }, [loading]);
 
     return (
