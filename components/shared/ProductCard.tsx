@@ -15,8 +15,10 @@ interface ProductCardProps {
 export function ProductCard({ product, index = 0, className = "" }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
     const [showSecondImage, setShowSecondImage] = useState(false);
+    const secondImageExists = product.images && product.images.length > 1;
 
     useEffect(() => {
+        if (!secondImageExists) return;
         // Automatic cycle for mobile/touch devices
         const isMobile = window.matchMedia("(hover: none)").matches;
         if (!isMobile) return;
@@ -27,17 +29,19 @@ export function ProductCard({ product, index = 0, className = "" }: ProductCardP
         }, 3000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [secondImageExists]);
 
     // Desktop hover state
     useEffect(() => {
+        if (!secondImageExists) {
+            setShowSecondImage(false);
+            return;
+        }
         const isMobile = window.matchMedia("(hover: none)").matches;
         if (isMobile) return;
 
         setShowSecondImage(isHovered);
-    }, [isHovered]);
-
-    const secondImageExists = product.images && product.images.length > 1;
+    }, [isHovered, secondImageExists]);
 
     return (
         <motion.div
@@ -89,27 +93,27 @@ export function ProductCard({ product, index = 0, className = "" }: ProductCardP
 
                     {/* Price tag */}
                     <div className="absolute top-6 left-6 flex flex-col gap-2">
-                        <div className="px-3 py-1.5 glass-dark rounded-full border border-gold/10">
+                        <div className="px-2 py-1 md:px-3 md:py-1.5 glass-dark rounded-full border border-gold/10">
                             {product.discount_price ? (
                                 <div className="flex items-center gap-2">
                                     <span className="text-[0.65rem] text-gold/40 line-through tracking-widest">{product.price.toLocaleString("en-US")}</span>
                                     <span className="text-[0.65rem] text-gold font-bold tracking-widest">{product.discount_price.toLocaleString("en-US")} MAD</span>
                                 </div>
                             ) : product.price > 0 ? (
-                                <span className="text-[0.65rem] text-gold/80 tracking-widest">{product.price.toLocaleString("en-US")} MAD</span>
+                                <span className="text-[0.55rem] md:text-[0.65rem] text-gold/80 tracking-widest whitespace-nowrap">{product.price.toLocaleString("en-US")} MAD</span>
                             ) : (
-                                <span className="text-[0.65rem] text-gold/50 tracking-widest">PRICE ON REQUEST</span>
+                                <span className="text-[0.55rem] md:text-[0.65rem] text-gold/50 tracking-[0.16em] md:tracking-widest whitespace-nowrap">PRICE ON REQUEST</span>
                             )}
                         </div>
                     </div>
 
                     {/* Name & Poetic Line */}
-                    <div className="absolute bottom-6 left-6 right-6 md:bottom-8 md:left-8 md:right-8">
-                        <p className="text-[0.5rem] md:text-[0.55rem] text-gold/40 tracking-[0.4em] uppercase mb-2">{product.collection}</p>
-                        <h3 className="font-cormorant italic font-bold text-lg md:text-xl text-[#b8956a] mb-2 leading-tight">
+                    <div className="absolute bottom-6 left-4 right-4 md:bottom-8 md:left-8 md:right-8">
+                        <p className="text-[0.46rem] md:text-[0.55rem] text-gold/40 tracking-[0.28em] md:tracking-[0.4em] uppercase mb-1 md:mb-2">{product.collection}</p>
+                        <h3 className="font-cormorant italic font-bold text-base md:text-xl text-[#b8956a] mb-1 md:mb-2 leading-tight line-clamp-2">
                             {product.name}
                         </h3>
-                        <p className="font-montecarlo text-lg md:text-xl text-gold/60 opacity-100 md:opacity-0 transition-all duration-700 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 md:group-hover:opacity-100">
+                        <p className="hidden md:block font-montecarlo text-lg md:text-xl text-gold/60 opacity-100 md:opacity-0 transition-all duration-700 translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 md:group-hover:opacity-100">
                             {product.poetic_description}
                         </p>
                     </div>

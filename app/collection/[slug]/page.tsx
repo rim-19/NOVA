@@ -90,7 +90,7 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ slu
                     <div className="divider-luxury mt-8" />
                 </header>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 min-h-[400px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 min-h-[400px]">
                     {products.map((product, index) => (
                         <ProductCard
                             key={product.id}

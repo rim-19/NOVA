@@ -141,9 +141,8 @@ export function NarrativeSection() {
                                 alt={block.label}
                                 width={700}
                                 height={900}
-                                className="w-full object-cover img-luxury"
+                                className="w-full h-auto md:h-[clamp(300px,60vw,600px)] object-contain md:object-cover img-luxury"
                                 style={{
-                                    height: "clamp(300px, 60vw, 600px)",
                                     filter: "contrast(1.05) saturate(0.8) brightness(0.85)",
                                 }}
                             />

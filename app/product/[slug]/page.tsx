@@ -101,6 +101,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     };
 
     useEffect(() => {
+        if (!product || product.images.length < 2) return;
         // Automatic cycle for mobile/touch devices
         const isMobile = window.matchMedia("(hover: none)").matches;
         if (!isMobile) return;
