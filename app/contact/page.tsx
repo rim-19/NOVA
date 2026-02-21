@@ -76,24 +76,14 @@ export default function ContactPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
                     {/* Left Side: Poetry & Address */}
-                    <div className="flex flex-col gap-10 reveal-content opacity-0">
+                    <div className="flex flex-col gap-10 reveal-content opacity-0 items-center text-center">
                         <div>
                             <h2 className="font-cormorant italic text-2xl text-cream mb-6">Let's Speak</h2>
                             <p className="font-inter text-sm text-cream/40 leading-relaxed font-light">
-                                Whether it is a custom sizing inquiry, a question about our silks, or a private collection request — we are here to listen.
+                                Whether it is a custom sizing inquiry, a question about our silks, or a private collection request - we are here to listen.
                                 Silence is luxury, but your voice is our inspiration.
                             </p>
                         </div>
-
-                        <div className="space-y-4">
-                            <p className="text-label text-[0.6rem] text-gold/50 tracking-[0.4em] uppercase">The Studio</p>
-                            <address className="not-italic font-inter text-sm text-cream/30 space-y-1 font-light leading-relaxed">
-                                <p>12 Avenue de l'Atelier</p>
-                                <p>Casablanca, Morocco 20000</p>
-                                <p className="pt-2">Direct: inquiries@nova-atelier.com</p>
-                            </address>
-                        </div>
-
                         <div className="pt-8">
                             <p className="font-montecarlo text-2xl text-gold/20">Nova</p>
                         </div>
@@ -192,3 +182,6 @@ export default function ContactPage() {
         </div>
     );
 }
+
+
+
