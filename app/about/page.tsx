@@ -117,9 +117,12 @@ export default function AboutPage() {
           </div>
 
           <div className="order-1 lg:order-2 reveal-image lg:justify-self-end">
-            <div className="relative w-full max-w-[520px] mx-auto lg:mx-0 aspect-[3/5] rounded-3xl overflow-hidden">
+            <div
+              className="relative w-full max-w-[520px] mx-auto lg:mx-0 aspect-[3/5] rounded-3xl overflow-hidden shadow-2xl"
+              style={{ boxShadow: "0 24px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(184,149,106,0.12)" }}
+            >
               <Image
-                src="/assets/about.jpeg"
+                src="/new_assets/about1.jpg"
                 alt="NovaLingerie model"
                 fill
                 priority

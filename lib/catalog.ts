@@ -435,13 +435,15 @@ export const catalogProducts: Product[] = [
     },
 ];
 
-const featuredSlugs = new Set([
-    "wild-muse-corset-set",
+const featuredOrder = [
+    "ice-bloom-lace-teddy",
     "heartline-chain-set",
     "velvet-nocturne-set",
     "midnight-command-corset-set",
     "midnight-whisper-lace-set",
     "rouge-plume-garter-set",
-]);
+];
 
-export const featuredCatalogProducts = catalogProducts.filter((product) => featuredSlugs.has(product.slug));
+export const featuredCatalogProducts = featuredOrder
+    .map((slug) => catalogProducts.find((product) => product.slug === slug))
+    .filter((product): product is Product => Boolean(product));
