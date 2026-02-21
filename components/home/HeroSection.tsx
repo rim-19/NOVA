@@ -7,6 +7,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export function HeroSection() {
+    const [videoReady, setVideoReady] = useState(false);
     const [content, setContent] = useState({
         hero_tagline: "Luxury Intimate Collection",
         hero_title_1: "Desire is not worn.",
@@ -102,15 +103,19 @@ export function HeroSection() {
             style={{ height: "100vh", minHeight: "500px" }}
         >
             {/* Background image with overlay */}
-            <div ref={bgRef} className="absolute inset-0 will-change-transform">
+            <div
+                ref={bgRef}
+                className="absolute inset-0 will-change-transform"
+                style={{ background: "#2B0303" }}
+            >
                 <video
                     autoPlay
                     loop
                     muted
                     playsInline
                     preload="auto"
-                    poster="/new_assets/hero.png"
-                    className="w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury"
+                    onLoadedData={() => setVideoReady(true)}
+                    className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-500 ${videoReady ? "opacity-100" : "opacity-0"}`}
                 >
                     <source src="/new_assets/hero_video.mp4" type="video/mp4" />
                 </video>
