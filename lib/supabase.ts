@@ -61,6 +61,7 @@ export type HomepageConfig = {
 export type CartItem = {
     id: string;
     name: string;
+    slug?: string;
     price: number;
     original_price?: number;
     quantity: number;
