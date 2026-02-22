@@ -111,7 +111,7 @@ export function HeroSection() {
                     onLoadedData={() => setVideoReady(true)}
                     className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-500 ${videoReady ? "opacity-100" : "opacity-0"}`}
                 >
-                    <source src="/new_assets/hero_video.mp4" type="video/mp4" />
+                    <source src="/new_assets/hero_video1.mp4" type="video/mp4" />
                 </video>
                 {/* Multi-layer overlay for depth */}
                 <div

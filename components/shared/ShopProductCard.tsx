@@ -50,11 +50,10 @@ export function ShopProductCard({ product }: Props) {
 
   return (
     <article
-      className="group relative rounded-2xl overflow-hidden border border-gold/10 bg-dark-card/70"
+      className="group relative rounded-2xl overflow-hidden bg-dark-card/70 shadow-[0_10px_40px_rgba(0,0,0,0.45),0_0_30px_rgba(184,149,106,0.08)]"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => {
         setHovered(false);
-        setOpenQuickAdd(false);
       }}
     >
       <Link href={`/product/${product.slug}`} className="block">
@@ -82,24 +81,8 @@ export function ShopProductCard({ product }: Props) {
       </Link>
 
       <button
-        aria-label="Favorite"
-        className={`absolute right-3 top-3 z-20 rounded-full border px-2 py-2 transition-colors ${
-          liked
-            ? "border-gold bg-gold/20 text-gold"
-            : "border-white/20 bg-black/30 text-white/70 hover:border-gold/60 hover:text-gold"
-        }`}
-        onClick={() => setLiked((prev) => !prev)}
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
-          <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
-        </svg>
-      </button>
-
-      <button
         aria-label="Quick add"
-        className={`absolute right-3 bottom-20 z-20 rounded-full border border-gold/50 bg-dark-base/80 p-2 text-gold transition md:opacity-0 md:group-hover:opacity-100 ${
-          openQuickAdd ? "opacity-100" : "opacity-100"
-        }`}
+        className="absolute right-3 top-3 z-20 rounded-full bg-dark-base/75 p-2 text-gold shadow-[0_0_18px_rgba(184,149,106,0.22)] transition md:opacity-0 md:group-hover:opacity-100"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -113,68 +96,80 @@ export function ShopProductCard({ product }: Props) {
       </button>
 
       <div className="p-4">
-        <p className="text-[0.58rem] uppercase tracking-[0.35em] text-gold/50">{product.collection}</p>
+        <div className="mb-1 flex items-center justify-between gap-2">
+          <p className="text-[0.52rem] uppercase tracking-[0.33em] text-gold/50">{product.collection}</p>
+          <button
+            aria-label="Favorite"
+            className={`rounded-full p-1.5 transition-colors ${liked ? "text-gold" : "text-cream/55 hover:text-gold"}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setLiked((prev) => !prev);
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
+              <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
+            </svg>
+          </button>
+        </div>
         <Link href={`/product/${product.slug}`} className="block">
-          <h3 className="mt-1 font-cormorant text-xl italic font-bold text-[#b8956a] leading-tight">
+          <h3 className="mt-0.5 font-cormorant text-base italic font-bold text-[#b8956a] leading-tight text-right">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-1 text-[0.72rem] text-cream/50 line-clamp-2">{product.poetic_description}</p>
-        <p className="mt-2 text-sm font-medium text-gold">{displayPrice}</p>
+        <p className="mt-1 text-[0.63rem] text-cream/50 line-clamp-2 text-right">{product.poetic_description}</p>
+        <p className="mt-1 text-xs font-medium text-gold text-right">{displayPrice}</p>
       </div>
+      <div className="mx-3 mb-3 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
-      <div
-        className={`absolute inset-x-3 bottom-3 z-30 rounded-xl border border-gold/20 bg-dark-base/95 p-3 transition-all ${
-          openQuickAdd ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none"
-        }`}
-      >
-        <div className="mb-2 flex flex-wrap gap-2">
-          {product.sizes.map((itemSize) => (
+      {openQuickAdd && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 p-4" onClick={() => setOpenQuickAdd(false)}>
+          <div
+            className="w-full max-w-xs rounded-2xl bg-dark-card p-4 shadow-[0_20px_40px_rgba(0,0,0,0.55),0_0_30px_rgba(184,149,106,0.18)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-[0.55rem] uppercase tracking-[0.28em] text-gold/60">Quick Add</p>
+            <h4 className="mt-1 font-cormorant text-lg italic text-cream">{product.name}</h4>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              {product.sizes.map((itemSize) => (
+                <button
+                  key={itemSize}
+                  className={`rounded-md px-2 py-1 text-[0.62rem] tracking-widest transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 ${
+                    size === itemSize
+                      ? "bg-gold/25 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)] scale-[1.03]"
+                      : "bg-black/30 text-cream/60 hover:bg-black/45"
+                  }`}
+                  onClick={() => setSize(itemSize)}
+                >
+                  {itemSize}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-3 flex gap-2">
+              {[1, 2, 3].map((n) => (
+                <button
+                  key={n}
+                  className={`rounded-md px-2 py-1 text-[0.62rem] tracking-wider ${
+                    qty === n ? "bg-gold/20 text-gold" : "bg-black/30 text-cream/60"
+                  }`}
+                  onClick={() => setQty(n)}
+                >
+                  {n}x
+                </button>
+              ))}
+            </div>
+
             <button
-              key={itemSize}
-              className={`rounded-md border px-2 py-1 text-[0.62rem] tracking-widest ${
-                size === itemSize ? "border-gold text-gold" : "border-white/20 text-cream/60"
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setSize(itemSize);
-              }}
+              className="mt-4 w-full rounded-full bg-burgundy/50 px-3 py-2 text-[0.62rem] uppercase tracking-[0.25em] text-cream"
+              onClick={onQuickAdd}
             >
-              {itemSize}
+              Add To Cart
             </button>
-          ))}
+          </div>
         </div>
-
-        <div className="mb-3 flex gap-2">
-          {[1, 2, 3].map((n) => (
-            <button
-              key={n}
-              className={`rounded-md border px-2 py-1 text-[0.62rem] tracking-wider ${
-                qty === n ? "border-gold text-gold" : "border-white/20 text-cream/60"
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setQty(n);
-              }}
-            >
-              {n}x
-            </button>
-          ))}
-        </div>
-
-        <button
-          className="w-full rounded-full border border-gold/50 bg-burgundy/40 px-3 py-2 text-[0.62rem] uppercase tracking-[0.25em] text-cream"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onQuickAdd();
-          }}
-        >
-          Add To Cart
-        </button>
-      </div>
+      )}
     </article>
   );
 }
