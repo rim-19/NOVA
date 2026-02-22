@@ -28,7 +28,6 @@ export function HeroSection() {
     const titleRef = useRef<HTMLHeadingElement>(null);
     const subRef = useRef<HTMLParagraphElement>(null);
     const ctaRef = useRef<HTMLDivElement>(null);
-    const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
@@ -85,12 +84,7 @@ export function HeroSection() {
                     { opacity: 1, y: 0, duration: 1.2, ease: "power2.out" },
                     "-=0.8"
                 )
-                .fromTo(
-                    scrollIndicatorRef.current,
-                    { opacity: 0 },
-                    { opacity: 0.5, duration: 1 },
-                    "-=0.5"
-                );
+                ;
         });
 
         return () => ctx.revert();
@@ -221,47 +215,6 @@ export function HeroSection() {
                 </div>
             </div>
 
-            {/* Scroll indicator */}
-            <div
-                ref={scrollIndicatorRef}
-                className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 opacity-0 flex flex-col items-center gap-2"
-            >
-                <span
-                    className="text-label"
-                    style={{
-                        color: "rgba(245,233,226,0.3)",
-                        fontSize: "0.6rem",
-                        letterSpacing: "0.4em",
-                    }}
-                >
-                    scroll
-                </span>
-                <div
-                    className="w-px h-12 relative overflow-hidden"
-                    style={{ background: "rgba(245,233,226,0.1)" }}
-                >
-                    <div
-                        className="absolute top-0 left-0 w-full"
-                        style={{
-                            height: "40%",
-                            background:
-                                "linear-gradient(180deg, rgba(184,149,106,0.6) 0%, transparent 100%)",
-                            animation: "scrollLine 2s ease-in-out infinite",
-                        }}
-                    />
-                </div>
-            </div>
-
-            <style jsx>{`
-        @keyframes scrollLine {
-          0% {
-            transform: translateY(-100%);
-          }
-          100% {
-            transform: translateY(300%);
-          }
-        }
-      `}</style>
         </section>
     );
 }

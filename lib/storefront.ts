@@ -1,0 +1,207 @@
+import type { Product } from "@/lib/supabase";
+import { catalogProducts, featuredCatalogProducts } from "@/lib/catalog";
+
+export type StoreCollectionType = "set" | "bodysuit" | "bodysocks" | "accessories";
+
+export type StorefrontProduct = Product & {
+  product_type: StoreCollectionType;
+  colors: string[];
+  is_bestseller: boolean;
+  is_new_arrival: boolean;
+  popularity: number;
+};
+
+export type StorefrontCollection = {
+  slug: StoreCollectionType;
+  name: string;
+  image: string;
+};
+
+const COLLECTIONS: StorefrontCollection[] = [
+  { slug: "set", name: "Set", image: "/new_assets/sultry_suspcius_collection/sultry2.jpeg" },
+  { slug: "bodysuit", name: "Bodysuit", image: "/new_assets/dentelle_sensual_collection/dentelle4.jpeg" },
+  { slug: "bodysocks", name: "Bodysocks", image: "/new_assets/dark_mystrouis_collection/dark8.jpeg" },
+  { slug: "accessories", name: "Accessories", image: "/new_assets/dark_mystrouis_collection/dark3.jpeg" },
+];
+
+const EXTRA_WHATSAPP_ASSETS = [
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55 (1).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55 (2).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55.jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.56 (1).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.56.jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.57 (1).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.57.jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (1).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (2).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (3).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58.jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.59 (1).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.59.jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00 (1).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00 (2).jpeg",
+  "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00.jpeg",
+];
+
+const TYPE_LABEL: Record<StoreCollectionType, string> = {
+  set: "Set",
+  bodysuit: "Bodysuit",
+  bodysocks: "Bodysocks",
+  accessories: "Accessories",
+};
+
+function toAssetUrl(path: string): string {
+  return path
+    .split("/")
+    .map((chunk) => encodeURIComponent(chunk))
+    .join("/")
+    .replace(/^%2F/, "/");
+}
+
+function hash(input: string): number {
+  let h = 0;
+  for (let i = 0; i < input.length; i += 1) {
+    h = (h << 5) - h + input.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h);
+}
+
+function inferType(name: string): StoreCollectionType {
+  const t = name.toLowerCase();
+  if (t.includes("set") || t.includes("corset") || t.includes("two-piece")) return "set";
+  if (t.includes("sock") || t.includes("mesh") || t.includes("net")) return "bodysocks";
+  if (t.includes("harness") || t.includes("chain") || t.includes("accessory") || t.includes("choker")) return "accessories";
+  return "bodysuit";
+}
+
+function inferColors(name: string): string[] {
+  const n = name.toLowerCase();
+  if (n.includes("ruby") || n.includes("crimson") || n.includes("scarlet") || n.includes("rouge")) return ["red", "black"];
+  if (n.includes("leopard") || n.includes("feline") || n.includes("wild")) return ["brown", "black"];
+  if (n.includes("ice") || n.includes("blue")) return ["blue"];
+  if (n.includes("violet") || n.includes("plum")) return ["purple"];
+  if (n.includes("mocha")) return ["brown"];
+  return ["black"];
+}
+
+function ensureSizes(type: StoreCollectionType, sizes?: string[]): string[] {
+  const base = sizes && sizes.length ? sizes : ["S", "M", "L"];
+  if (type === "accessories") return ["S", "M", "L", "XL"];
+  return base.includes("XL") ? base : [...base, "XL"];
+}
+
+function estimatePrice(slug: string): number {
+  const h = hash(slug);
+  const min = 220;
+  const max = 599;
+  return min + (h % (max - min + 1));
+}
+
+function catalogToStorefront(product: Product, index: number): StorefrontProduct {
+  const type = inferType(product.name);
+  return {
+    ...product,
+    collection_slug: type,
+    collection: TYPE_LABEL[type],
+    product_type: type,
+    colors: inferColors(product.name),
+    price: product.price > 0 ? product.price : estimatePrice(product.slug),
+    sizes: ensureSizes(type, product.sizes),
+    images: product.images.map(toAssetUrl),
+    is_featured: index % 5 === 0 || product.is_featured,
+    is_bestseller: index % 6 === 0,
+    is_new_arrival: index % 4 === 0,
+    popularity: 100 - (index % 100),
+    created_at: product.created_at ?? `2026-01-${String((index % 28) + 1).padStart(2, "0")}T00:00:00.000Z`,
+  };
+}
+
+function titleFromWhatsapp(index: number): string {
+  const names = [
+    "Velvet Obsession",
+    "Midnight Caress",
+    "Lace Voltage",
+    "Secret Pulse",
+    "Noir Whisper",
+    "Silk Provocation",
+    "Ritual Glow",
+    "Desire Current",
+  ];
+  return `${names[index % names.length]} ${index + 1}`;
+}
+
+function whatsappToStorefront(path: string, index: number): StorefrontProduct {
+  const type: StoreCollectionType = COLLECTIONS[index % COLLECTIONS.length].slug;
+  const slug = `whatsapp-drop-${String(index + 1).padStart(2, "0")}`;
+  const name = titleFromWhatsapp(index);
+  return {
+    id: slug,
+    slug,
+    name,
+    collection_slug: type,
+    collection: TYPE_LABEL[type],
+    product_type: type,
+    price: estimatePrice(slug),
+    images: [toAssetUrl(path)],
+    poetic_description: "A slow-burning silhouette meant to stay in memory.",
+    description: "A sensual statement cut to frame the body with confidence, softness, and magnetic presence.",
+    sizes: ensureSizes(type),
+    colors: ["black", "red"],
+    is_featured: index < 3,
+    is_bestseller: index % 4 === 0,
+    is_new_arrival: true,
+    popularity: 80 - index,
+    created_at: `2026-02-${String((index % 28) + 1).padStart(2, "0")}T00:00:00.000Z`,
+  };
+}
+
+function randomRank(slug: string): number {
+  return hash(`nova-${slug}`) % 1000;
+}
+
+const CATALOG_STOREFRONT = catalogProducts.map(catalogToStorefront);
+const WHATSAPP_STOREFRONT = EXTRA_WHATSAPP_ASSETS.map(whatsappToStorefront);
+
+export const storefrontProducts: StorefrontProduct[] = [...CATALOG_STOREFRONT, ...WHATSAPP_STOREFRONT].sort(
+  (a, b) => randomRank(a.slug) - randomRank(b.slug)
+);
+
+export const storefrontCollections = COLLECTIONS.map((col) => ({
+  ...col,
+  image: toAssetUrl(col.image),
+}));
+
+export const pickedForYouProducts: StorefrontProduct[] = featuredCatalogProducts
+  .map((p) => storefrontProducts.find((sp) => sp.slug === p.slug))
+  .filter((p): p is StorefrontProduct => Boolean(p))
+  .slice(0, 6);
+
+export function toStorefrontProduct(product: Product, fallbackIndex = 0): StorefrontProduct {
+  const type = inferType(product.name);
+  return {
+    ...product,
+    collection_slug: type,
+    collection: TYPE_LABEL[type],
+    product_type: type,
+    price: product.price > 0 ? product.price : estimatePrice(product.slug),
+    images: (product.images || []).map(toAssetUrl),
+    colors: inferColors(product.name),
+    sizes: ensureSizes(type, product.sizes),
+    is_bestseller: false,
+    is_new_arrival: true,
+    popularity: 50 - fallbackIndex,
+    created_at: product.created_at ?? new Date().toISOString(),
+  };
+}
+
+export function mergeStorefrontWithLive(liveProducts: Product[]): StorefrontProduct[] {
+  const bySlug = new Map(storefrontProducts.map((p) => [p.slug, p]));
+  liveProducts.forEach((p, i) => bySlug.set(p.slug, toStorefrontProduct(p, i)));
+  return Array.from(bySlug.values()).sort((a, b) => randomRank(a.slug) - randomRank(b.slug));
+}
+
+export function findStorefrontProductBySlug(slug: string): StorefrontProduct | undefined {
+  return storefrontProducts.find((p) => p.slug === slug);
+}
+
