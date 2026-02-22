@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import {
-  pickedForYouProducts,
   storefrontCollections,
   storefrontProducts,
   toStorefrontProduct,
@@ -59,7 +58,6 @@ export default function CollectionArchivePage() {
   const [sortBy, setSortBy] = useState<SortKey>("featured");
   const [selectedSize, setSelectedSize] = useState<(typeof sizeOptions)[number]>("all");
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const [gridCols, setGridCols] = useState<2 | 3 | 4>(2);
   const [page, setPage] = useState(1);
   const [activePanel, setActivePanel] = useState<PanelKey>(null);
 
@@ -125,7 +123,7 @@ export default function CollectionArchivePage() {
         selectedFilter === "all"
           ? true
           : selectedFilter.startsWith("color:")
-            ? product.colors.includes(selectedFilter.replace("color:", ""))
+            ? (product.colors || []).includes(selectedFilter.replace("color:", ""))
             : selectedFilter.startsWith("type:")
               ? product.product_type === selectedFilter.replace("type:", "")
               : true;
@@ -138,7 +136,7 @@ export default function CollectionArchivePage() {
     base = [...base].sort((a, b) => {
       switch (sortBy) {
         case "best-sellers":
-          return (b.popularity || 0) - (a.popularity || 0);
+          return Number(Boolean(b.is_bestseller)) - Number(Boolean(a.is_bestseller)) || (b.popularity || 0) - (a.popularity || 0);
         case "price-low":
           return a.price - b.price;
         case "price-high":
@@ -156,6 +154,13 @@ export default function CollectionArchivePage() {
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / ITEMS_PER_PAGE));
   const paginated = filteredAndSorted.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const pickedForYou = useMemo(
+    () =>
+      [...allProducts]
+        .sort((a, b) => Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || (b.popularity || 0) - (a.popularity || 0))
+        .slice(0, 6),
+    [allProducts]
+  );
 
   return (
     <div className="min-h-screen pt-20 md:pt-28 pb-20 px-3 md:px-8 lg:px-12" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
@@ -262,22 +267,7 @@ export default function CollectionArchivePage() {
               </button>
             </div>
 
-            <div className="flex gap-1">
-              {[2, 3, 4].map((n) => (
-                <button
-                  key={n}
-                  onClick={() => setGridCols(n as 2 | 3 | 4)}
-                  className={`rounded-full bg-dark-base/70 px-2.5 py-2 text-[0.58rem] ${gridCols === n ? "text-gold" : "text-cream/60"}`}
-                  aria-label={`${n} columns`}
-                >
-                  <span className={`inline-grid gap-[2px] ${n === 2 ? "grid-cols-2" : n === 3 ? "grid-cols-3" : "grid-cols-4"}`}>
-                    {Array.from({ length: n }).map((_, i) => (
-                      <span key={i} className="h-2 w-[3px] rounded-sm bg-current opacity-90" />
-                    ))}
-                  </span>
-                </button>
-              ))}
-            </div>
+            <div />
           </div>
         </section>
 
@@ -288,10 +278,7 @@ export default function CollectionArchivePage() {
             ))}
           </div>
         ) : (
-          <section
-            className="grid gap-3 md:gap-5"
-            style={{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }}
-          >
+          <section className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
             {paginated.map((product) => (
               <div key={product.slug} className="w-full md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto">
                 <ShopProductCard product={product} />
@@ -338,7 +325,7 @@ export default function CollectionArchivePage() {
               dragElastic={0.08}
               className="flex w-max gap-4 cursor-grab active:cursor-grabbing"
             >
-              {pickedForYouProducts.map((product, index) => (
+              {pickedForYou.map((product, index) => (
                 <motion.div
                   key={product.slug}
                   initial={{ opacity: 0, y: 20 }}

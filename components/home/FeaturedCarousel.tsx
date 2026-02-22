@@ -26,8 +26,8 @@ export function FeaturedCarousel() {
                 .eq("is_featured", true)
                 .order("created_at", { ascending: false });
 
-            if (!error && data) {
-                setProducts(demoProducts);
+            if (!error && data && data.length > 0) {
+                setProducts(data as Product[]);
             } else {
                 setProducts(demoProducts);
             }

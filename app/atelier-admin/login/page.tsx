@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { isAdminEmail } from "@/lib/admin";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
 export default function AdminLoginPage() {
@@ -11,6 +13,7 @@ export default function AdminLoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -18,12 +21,16 @@ export default function AdminLoginPage() {
         setError(null);
 
         try {
-            const { error: authError } = await supabase.auth.signInWithPassword({
+            const { data, error: authError } = await supabase.auth.signInWithPassword({
                 email,
                 password,
             });
 
             if (authError) throw authError;
+            if (!isAdminEmail(data.user?.email)) {
+                await supabase.auth.signOut();
+                throw new Error("This account is not authorized for the atelier dashboard.");
+            }
 
             router.push("/atelier-admin");
         } catch (err: any) {
@@ -70,8 +77,10 @@ export default function AdminLoginPage() {
                         />
                     </div>
 
-                    {error && (
-                        <p className="text-[0.65rem] text-red-500/80 tracking-wide text-center uppercase">{error}</p>
+                    {(error || searchParams.get("error") === "unauthorized") && (
+                        <p className="text-[0.65rem] text-red-500/80 tracking-wide text-center uppercase">
+                            {error || "This account is not authorized for the atelier dashboard."}
+                        </p>
                     )}
 
                     <button

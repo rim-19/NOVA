@@ -130,6 +130,11 @@ export default function ProductsAdminPage() {
                                             <div>
                                                 <span className="text-sm font-medium text-zinc-200 block mb-1">{product.name}</span>
                                                 <span className="text-[0.6rem] text-zinc-600 uppercase tracking-widest">{product.collection || "No Collection"}</span>
+                                                <div className="mt-2 flex flex-wrap gap-1">
+                                                    {product.is_featured && <span className="px-2 py-0.5 rounded-full text-[0.48rem] tracking-[0.15em] uppercase bg-gold/15 text-gold">Featured</span>}
+                                                    {product.is_bestseller && <span className="px-2 py-0.5 rounded-full text-[0.48rem] tracking-[0.15em] uppercase bg-burgundy/30 text-cream/80">Best Seller</span>}
+                                                    {product.is_new_arrival && <span className="px-2 py-0.5 rounded-full text-[0.48rem] tracking-[0.15em] uppercase bg-emerald-500/15 text-emerald-300">New</span>}
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -220,13 +225,24 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
         price: initialData?.price || 0,
         poetic_description: initialData?.poetic_description || "",
         description: initialData?.description || "",
+        colors: (initialData?.colors || []).join(", "),
         sizes: initialData?.sizes || ["S", "M", "L", "XL", "XXL"],
         images: initialData?.images || [],
         is_featured: initialData?.is_featured || false,
+        is_bestseller: initialData?.is_bestseller || false,
+        is_new_arrival: initialData?.is_new_arrival || false,
     });
     const [uploading, setUploading] = useState(false);
     const [imageUrlDraft, setImageUrlDraft] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (!collections.length) return;
+        const exists = collections.some((collection) => collection.slug === form.collection_slug);
+        if (!exists) {
+            setForm((prev) => ({ ...prev, collection_slug: collections[0].slug }));
+        }
+    }, [collections, form.collection_slug]);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -240,8 +256,6 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                 const fileExt = file.name.split('.').pop();
                 const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
                 const filePath = `products/${fileName}`;
-
-                console.log(`Starting upload for: ${file.name}`);
 
                 const { error: uploadError } = await supabase.storage
                     .from(STORAGE_BUCKET)
@@ -287,8 +301,6 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        console.log("Submitting with images:", form.images);
-
         if (form.images.length === 0) {
             return alert("The ritual requires at least one shadow. Please upload an image first.");
         }
@@ -296,7 +308,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
         setUploading(true);
         const slug = form.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
         const selectedCollection = collections.find((c) => c.slug === form.collection_slug);
-        const productData = {
+        const productData: any = {
             name: form.name,
             slug,
             collection_slug: form.collection_slug,
@@ -305,14 +317,28 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
             images: form.images,
             poetic_description: form.poetic_description || null,
             description: form.description || null,
+            colors: form.colors.split(",").map((item) => item.trim().toLowerCase()).filter(Boolean),
             sizes: form.sizes.length ? form.sizes : ["S", "M", "L"],
             is_visible: true,
             is_featured: form.is_featured,
+            is_bestseller: form.is_bestseller,
+            is_new_arrival: form.is_new_arrival,
         };
 
-        const { error } = initialData
+        let { error } = initialData
             ? await supabase.from("products").update(productData).eq("id", initialData.id)
             : await supabase.from("products").insert([productData]);
+
+        // Backward-compatible retry if optional columns are not yet migrated in DB.
+        if (error && /is_bestseller|is_new_arrival|colors/i.test(error.message)) {
+            const fallbackData = { ...productData };
+            delete fallbackData.colors;
+            delete fallbackData.is_bestseller;
+            delete fallbackData.is_new_arrival;
+            ({ error } = initialData
+                ? await supabase.from("products").update(fallbackData).eq("id", initialData.id)
+                : await supabase.from("products").insert([fallbackData]));
+        }
 
         if (!error) onSuccess();
         else {
@@ -393,6 +419,16 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                         </div>
 
                         <div className="space-y-2">
+                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Colors (comma separated)</label>
+                            <input
+                                className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all"
+                                value={form.colors}
+                                onChange={e => setForm({ ...form, colors: e.target.value })}
+                                placeholder="black, red, purple"
+                            />
+                        </div>
+
+                        <div className="space-y-2">
                             <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Ritual of Sizing</label>
                             <div className="flex flex-wrap gap-2 pt-2">
                                 {["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
@@ -424,6 +460,27 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                 className="w-5 h-5 accent-gold"
                             />
                             <label htmlFor="featured" className="text-[0.6rem] text-zinc-400 uppercase tracking-[0.2em] font-bold cursor-pointer">Mark as Masterpiece (Homepage View)</label>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <label className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-xl border border-zinc-800">
+                                <input
+                                    type="checkbox"
+                                    checked={form.is_bestseller}
+                                    onChange={e => setForm({ ...form, is_bestseller: e.target.checked })}
+                                    className="w-4 h-4 accent-gold"
+                                />
+                                <span className="text-[0.58rem] text-zinc-400 uppercase tracking-[0.2em] font-bold">Best Seller</span>
+                            </label>
+                            <label className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-xl border border-zinc-800">
+                                <input
+                                    type="checkbox"
+                                    checked={form.is_new_arrival}
+                                    onChange={e => setForm({ ...form, is_new_arrival: e.target.checked })}
+                                    className="w-4 h-4 accent-gold"
+                                />
+                                <span className="text-[0.58rem] text-zinc-400 uppercase tracking-[0.2em] font-bold">New Arrival</span>
+                            </label>
                         </div>
 
                     </div>

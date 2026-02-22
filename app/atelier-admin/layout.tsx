@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { isAdminEmail } from "@/lib/admin";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 
@@ -26,6 +27,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             const { data: { user } } = await supabase.auth.getUser();
             if (!user && pathname !== "/atelier-admin/login") {
                 router.push("/atelier-admin/login");
+            } else if (user && !isAdminEmail(user.email)) {
+                await supabase.auth.signOut();
+                if (pathname !== "/atelier-admin/login") {
+                    router.push("/atelier-admin/login?error=unauthorized");
+                }
             } else {
                 setUser(user);
             }
@@ -35,8 +41,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         checkUser();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-            if (!session?.user && pathname !== "/atelier-admin/login") {
+            const sessionUser = session?.user ?? null;
+            if (sessionUser && !isAdminEmail(sessionUser.email)) {
+                supabase.auth.signOut();
+                setUser(null);
+                if (pathname !== "/atelier-admin/login") {
+                    router.push("/atelier-admin/login?error=unauthorized");
+                }
+                return;
+            }
+
+            setUser(sessionUser);
+            if (!sessionUser && pathname !== "/atelier-admin/login") {
                 router.push("/atelier-admin/login");
             }
         });

@@ -31,15 +31,15 @@ export function PrivateAtelierGate() {
     }, [isOpen]);
 
     const hintImages = [
-        { src: "/assets/blurred/private_1.jpeg", top: "8%", left: "7%", delay: 0.1 },
-        { src: "/assets/blurred/private_2.jpeg", top: "28%", left: "2%", delay: 0.2 },
-        { src: "/assets/blurred/private_3.jpeg", top: "56%", left: "8%", delay: 0.3 },
-        { src: "/assets/blurred/private_4.jpeg", top: "14%", left: "38%", delay: 0.4 },
-        { src: "/assets/blurred/private_5.jpeg", top: "64%", left: "40%", delay: 0.5 },
-        { src: "/assets/blurred/private_6.jpeg", top: "36%", left: "72%", delay: 0.6 },
-        { src: "/assets/blurred/private_png_1.png", top: "7%", left: "74%", delay: 0.7 },
-        { src: "/assets/blurred/private_png_2.png", top: "62%", left: "74%", delay: 0.8 },
-        { src: "/assets/blurred/private_png_3.png", top: "82%", left: "30%", delay: 0.9 },
+        { src: "/assets/blurred/private_1.jpeg", top: "12%", left: "46%", delay: 0.1 },
+        { src: "/assets/blurred/private_2.jpeg", top: "18%", left: "66%", delay: 0.2 },
+        { src: "/assets/blurred/private_3.jpeg", top: "34%", left: "79%", delay: 0.3 },
+        { src: "/assets/blurred/private_4.jpeg", top: "56%", left: "75%", delay: 0.4 },
+        { src: "/assets/blurred/private_5.jpeg", top: "72%", left: "60%", delay: 0.5 },
+        { src: "/assets/blurred/private_6.jpeg", top: "76%", left: "40%", delay: 0.6 },
+        { src: "/assets/blurred/private_png_1.png", top: "66%", left: "22%", delay: 0.7 },
+        { src: "/assets/blurred/private_png_2.png", top: "44%", left: "14%", delay: 0.8 },
+        { src: "/assets/blurred/private_png_3.png", top: "24%", left: "23%", delay: 0.9 },
     ];
 
     return (
@@ -112,7 +112,7 @@ export function PrivateAtelierGate() {
                                         alt=""
                                         fill
                                         className="object-cover"
-                                        style={{ filter: "blur(0.25px) brightness(0.82) contrast(1.05)" }}
+                                        style={{ filter: "blur(1.1px) brightness(0.74) contrast(1.04)" }}
                                     />
                                     <div className="absolute inset-0 bg-burgundy/10 mix-blend-overlay" />
                                 </motion.div>
