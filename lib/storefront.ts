@@ -182,8 +182,8 @@ export function toStorefrontProduct(product: Product, fallbackIndex = 0): Storef
   const colors = product.colors && product.colors.length ? product.colors : inferColors(product.name);
   return {
     ...product,
-    collection_slug: type,
-    collection: TYPE_LABEL[type],
+    collection_slug: product.collection_slug || type,
+    collection: product.collection || TYPE_LABEL[type],
     product_type: type,
     price: product.price > 0 ? product.price : estimatePrice(product.slug),
     images: (product.images || []).map(toAssetUrl),

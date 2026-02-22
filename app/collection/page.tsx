@@ -4,11 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import {
-  mergeStorefrontWithLive,
   pickedForYouProducts,
   storefrontCollections,
   storefrontProducts,
-  type StoreCollectionType,
+  toStorefrontProduct,
   type StorefrontProduct,
 } from "@/lib/storefront";
 import { ShopProductCard } from "@/components/shared/ShopProductCard";
@@ -45,12 +44,13 @@ export default function CollectionArchivePage() {
   const whatsappHref = `https://wa.me/${whatsappNumber}`;
 
   const [allProducts, setAllProducts] = useState<StorefrontProduct[]>(storefrontProducts);
+  const [collectionsList, setCollectionsList] = useState<Array<{ slug: string; name: string; image: string }>>(storefrontCollections);
   const [loading, setLoading] = useState(true);
 
-  const [selectedType, setSelectedType] = useState<StoreCollectionType | "all">(() => {
+  const [selectedType, setSelectedType] = useState<string | "all">(() => {
     if (typeof window === "undefined") return "all";
     const typeParam = new URLSearchParams(window.location.search).get("type");
-    if (typeParam === "set" || typeParam === "bodysuit" || typeParam === "bodysocks" || typeParam === "accessories") {
+    if (typeParam) {
       return typeParam;
     }
     return "all";
@@ -72,16 +72,27 @@ export default function CollectionArchivePage() {
 
   useEffect(() => {
     const fetchLive = async () => {
-      const { data, error } = await supabase
-        .from("products")
-        .select("*")
-        .eq("is_visible", true)
-        .order("created_at", { ascending: false });
+      const [productsRes, collectionsRes] = await Promise.all([
+        supabase.from("products").select("*").eq("is_visible", true).order("created_at", { ascending: false }),
+        supabase.from("collections").select("slug,name,image").order("created_at", { ascending: true }),
+      ]);
 
-      if (!error && data) {
-        setAllProducts(mergeStorefrontWithLive(data));
-      } else {
+      if (!productsRes.error && productsRes.data) {
+        setAllProducts(productsRes.data.map((product, i) => toStorefrontProduct(product, i)));
+      } else if (productsRes.error) {
         setAllProducts(storefrontProducts);
+      }
+
+      if (!collectionsRes.error && collectionsRes.data && collectionsRes.data.length > 0) {
+        setCollectionsList(
+          collectionsRes.data.map((collection) => ({
+            slug: collection.slug,
+            name: collection.name,
+            image: collection.image || storefrontCollections[0]?.image || "/new_assets/dark_mystrouis_collection/dark3.jpeg",
+          }))
+        );
+      } else {
+        setCollectionsList(storefrontCollections);
       }
       setLoading(false);
     };
@@ -104,7 +115,10 @@ export default function CollectionArchivePage() {
 
   const filteredAndSorted = useMemo(() => {
     let base = allProducts.filter((product) => {
-      const typeOk = selectedType === "all" || product.product_type === selectedType;
+      const typeOk =
+        selectedType === "all" ||
+        product.collection_slug === selectedType ||
+        product.product_type === selectedType;
       const searchOk = !search || product.name.toLowerCase().includes(search.toLowerCase());
       const sizeOk = selectedSize === "all" || product.sizes.includes(selectedSize);
       const filterOk =
@@ -162,7 +176,7 @@ export default function CollectionArchivePage() {
             dragElastic={0.06}
             className="flex w-max gap-3 cursor-grab active:cursor-grabbing px-0.5"
           >
-            {storefrontCollections.map((collection) => {
+            {collectionsList.map((collection) => {
               const isActive = selectedType === collection.slug;
               return (
                 <button
@@ -184,7 +198,7 @@ export default function CollectionArchivePage() {
         </section>
 
         <section className="hidden md:grid mb-3 grid-cols-4 gap-5">
-          {storefrontCollections.map((collection) => {
+          {collectionsList.map((collection) => {
             const isActive = selectedType === collection.slug;
             return (
               <button
@@ -279,7 +293,9 @@ export default function CollectionArchivePage() {
             style={{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }}
           >
             {paginated.map((product) => (
-              <ShopProductCard key={product.slug} product={product} />
+              <div key={product.slug} className="w-full md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto">
+                <ShopProductCard product={product} />
+              </div>
             ))}
           </section>
         )}

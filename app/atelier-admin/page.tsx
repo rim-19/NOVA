@@ -99,10 +99,12 @@ export default function AdminDashboard() {
                 </motion.div>
 
                 <motion.div variants={item} className="glass-card p-6 md:p-10 rounded-3xl border-gold-glow">
-                    <h3 className="font-cormorant italic text-2xl text-cream mb-6">Pro Tip</h3>
-                    <p className="text-sm text-cream/40 leading-relaxed font-light">
-                        Use the "Products" section to add new cinematic set images. Since this is an ultra-luxury brand, ensure every image uploaded highlights the intricate lace or the drape of the silk. Shadows are your best friend.
-                    </p>
+                    <h3 className="font-cormorant italic text-2xl text-cream mb-6">Operational Notes</h3>
+                    <ul className="text-sm text-cream/50 leading-relaxed font-light space-y-2">
+                        <li>Products and collections in this panel are the same records used by the live storefront.</li>
+                        <li>If image upload fails, verify the Supabase storage bucket configured for admin uploads.</li>
+                        <li>Use "Manifest Heritage" only to replace catalog content in bulk.</li>
+                    </ul>
                 </motion.div>
             </div>
         </div>

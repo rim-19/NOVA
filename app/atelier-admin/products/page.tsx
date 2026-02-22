@@ -6,12 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { catalogProducts } from "@/lib/catalog";
 
-const storefrontTypeOptions = [
-    { slug: "set", name: "Set" },
-    { slug: "bodysuit", name: "Bodysuit" },
-    { slug: "bodysocks", name: "Bodysocks" },
-    { slug: "accessories", name: "Accessories" },
-] as const;
+const STORAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "product-images";
 
 export default function ProductsAdminPage() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -60,10 +55,18 @@ export default function ProductsAdminPage() {
                     <button
                         onClick={async () => {
                             if (!confirm("Replace all current products with the new catalog set?")) return;
-                            const demoProducts = catalogProducts.map(({ id, ...product }) => ({
-                                ...product,
+                            const demoProducts = catalogProducts.map((product) => ({
+                                name: product.name,
+                                slug: product.slug,
+                                collection_slug: product.collection_slug,
+                                collection: product.collection,
+                                price: product.price || 0,
+                                images: product.images,
+                                poetic_description: product.poetic_description || null,
+                                description: product.description || null,
+                                sizes: product.sizes?.length ? product.sizes : ["S", "M", "L"],
                                 is_visible: true,
-                                is_featured: false,
+                                is_featured: Boolean(product.is_featured),
                             }));
                             const { error: deleteError } = await supabase
                                 .from("products")
@@ -213,30 +216,17 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
 }) {
     const [form, setForm] = useState({
         name: initialData?.name || "",
-        collection_slug: initialData?.collection_slug || "set",
+        collection_slug: initialData?.collection_slug || collections[0]?.slug || "set",
         price: initialData?.price || 0,
-        discount_price: initialData?.discount_price,
         poetic_description: initialData?.poetic_description || "",
         description: initialData?.description || "",
-        product_type: (initialData?.product_type as any) || "set",
-        colors: (initialData?.colors && initialData.colors.length ? initialData.colors.join(", ") : ""),
-        is_bestseller: initialData?.is_bestseller || false,
-        is_new_arrival: initialData?.is_new_arrival || false,
-        popularity: initialData?.popularity || 50,
-        category: initialData?.category || "Lingerie Set",
-        materials: initialData?.materials || "",
-        care_instructions: initialData?.care_instructions || "",
         sizes: initialData?.sizes || ["S", "M", "L", "XL", "XXL"],
         images: initialData?.images || [],
         is_featured: initialData?.is_featured || false,
     });
     const [uploading, setUploading] = useState(false);
+    const [imageUrlDraft, setImageUrlDraft] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
-
-    // Track state in console for debugging
-    useEffect(() => {
-        console.log("Current Form State:", form);
-    }, [form]);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -254,7 +244,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                 console.log(`Starting upload for: ${file.name}`);
 
                 const { error: uploadError } = await supabase.storage
-                    .from('product-images')
+                    .from(STORAGE_BUCKET)
                     .upload(filePath, file, {
                         cacheControl: '3600',
                         upsert: false
@@ -262,12 +252,12 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
 
                 if (uploadError) {
                     console.error("Upload failed details:", uploadError);
-                    alert(`Upload failed for ${file.name}: ${uploadError.message}`);
+                    alert(`Upload failed for ${file.name}: ${uploadError.message}. Check bucket '${STORAGE_BUCKET}' and storage policies.`);
                     continue;
                 }
 
                 const { data } = supabase.storage
-                    .from('product-images')
+                    .from(STORAGE_BUCKET)
                     .getPublicUrl(filePath);
 
                 if (data?.publicUrl) {
@@ -305,13 +295,19 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
 
         setUploading(true);
         const slug = form.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-        const selectedType = storefrontTypeOptions.find((c) => c.slug === form.product_type);
+        const selectedCollection = collections.find((c) => c.slug === form.collection_slug);
         const productData = {
-            ...form,
+            name: form.name,
             slug,
-            collection_slug: form.product_type,
-            collection: selectedType?.name || "Set",
-            colors: form.colors.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean),
+            collection_slug: form.collection_slug,
+            collection: selectedCollection?.name || form.collection_slug,
+            price: form.price,
+            images: form.images,
+            poetic_description: form.poetic_description || null,
+            description: form.description || null,
+            sizes: form.sizes.length ? form.sizes : ["S", "M", "L"],
+            is_visible: true,
+            is_featured: form.is_featured,
         };
 
         const { error } = initialData
@@ -370,41 +366,20 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Sale Price (Optional)</label>
-                                <input
-                                    type="number"
-                                    className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all font-mono"
-                                    value={form.discount_price || ""}
-                                    onChange={e => setForm({ ...form, discount_price: e.target.value ? parseInt(e.target.value) : undefined })}
-                                    placeholder="Empty if no reduction"
-                                />
+                                <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Collection</label>
+                                <select
+                                    className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all"
+                                    value={form.collection_slug}
+                                    onChange={e => setForm({ ...form, collection_slug: e.target.value })}
+                                    required
+                                >
+                                    {collections.map((collection) => (
+                                        <option key={collection.slug} value={collection.slug}>
+                                            {collection.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Type (Storefront Collection)</label>
-                            <select
-                                className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all"
-                                value={form.product_type}
-                                onChange={e => setForm({ ...form, product_type: e.target.value as any })}
-                                required
-                            >
-                                {storefrontTypeOptions.map((collection) => (
-                                    <option key={collection.slug} value={collection.slug}>
-                                        {collection.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Colors (comma separated)</label>
-                            <input
-                                className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all"
-                                value={form.colors}
-                                onChange={e => setForm({ ...form, colors: e.target.value })}
-                                placeholder="black, red, brown"
-                            />
                         </div>
 
                         <div className="space-y-2">
@@ -414,16 +389,6 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                 value={form.poetic_description}
                                 onChange={e => setForm({ ...form, poetic_description: e.target.value })}
                                 placeholder="A whisper of midnight..."
-                            />
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Composition & Materials</label>
-                            <textarea
-                                className="w-full bg-zinc-800 border border-zinc-700 rounded-xl p-4 text-sm text-zinc-300 outline-none focus:border-gold transition-all h-24 resize-none"
-                                value={form.materials}
-                                onChange={e => setForm({ ...form, materials: e.target.value })}
-                                placeholder="90% Silk, 10% Calais Lace..."
                             />
                         </div>
 
@@ -461,38 +426,6 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                             <label htmlFor="featured" className="text-[0.6rem] text-zinc-400 uppercase tracking-[0.2em] font-bold cursor-pointer">Mark as Masterpiece (Homepage View)</label>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <label className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-xl border border-zinc-800">
-                                <input
-                                    type="checkbox"
-                                    checked={form.is_bestseller}
-                                    onChange={e => setForm({ ...form, is_bestseller: e.target.checked })}
-                                    className="w-4 h-4 accent-gold"
-                                />
-                                <span className="text-[0.58rem] text-zinc-400 uppercase tracking-[0.2em] font-bold">Best Seller</span>
-                            </label>
-                            <label className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-xl border border-zinc-800">
-                                <input
-                                    type="checkbox"
-                                    checked={form.is_new_arrival}
-                                    onChange={e => setForm({ ...form, is_new_arrival: e.target.checked })}
-                                    className="w-4 h-4 accent-gold"
-                                />
-                                <span className="text-[0.58rem] text-zinc-400 uppercase tracking-[0.2em] font-bold">New Arrival</span>
-                            </label>
-                        </div>
-
-                        <div className="space-y-2">
-                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Popularity Score (0-100)</label>
-                            <input
-                                type="number"
-                                min={0}
-                                max={100}
-                                className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all font-mono"
-                                value={form.popularity}
-                                onChange={e => setForm({ ...form, popularity: parseInt(e.target.value) || 0 })}
-                            />
-                        </div>
                     </div>
 
                         <div className="space-y-6 md:space-y-8">
@@ -529,6 +462,27 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                 )}
                             </div>
                             <input type="file" ref={fileInputRef} onChange={handleUpload} multiple className="hidden" accept="image/*" />
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={imageUrlDraft}
+                                    onChange={(e) => setImageUrlDraft(e.target.value)}
+                                    placeholder="/new_assets/collection/item.jpeg or https://..."
+                                    className="w-full bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-xs text-zinc-200 outline-none focus:border-gold"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const cleaned = imageUrlDraft.trim();
+                                        if (!cleaned) return;
+                                        setForm((prev) => ({ ...prev, images: [...prev.images, cleaned] }));
+                                        setImageUrlDraft("");
+                                    }}
+                                    className="px-4 py-2 rounded-lg text-[0.58rem] uppercase tracking-[0.16em] bg-zinc-800 border border-zinc-700 hover:border-gold/40 text-zinc-300"
+                                >
+                                    Add URL
+                                </button>
+                            </div>
                         </div>
 
                         <div className="space-y-4 pt-6 md:pt-12">

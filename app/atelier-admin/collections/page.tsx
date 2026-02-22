@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { catalogCollections } from "@/lib/catalog";
 
+const STORAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "product-images";
+
 export default function CollectionsAdminPage() {
     const [collections, setCollections] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(true);
@@ -159,6 +161,7 @@ function CollectionForm({ onClose, onSuccess, initialData }: {
         hero_phrase: initialData?.hero_phrase || "",
     });
     const [uploading, setUploading] = useState(false);
+    const [imageUrlDraft, setImageUrlDraft] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,14 +174,16 @@ function CollectionForm({ onClose, onSuccess, initialData }: {
         const filePath = `collections/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
-            .from('product-images')
+            .from(STORAGE_BUCKET)
             .upload(filePath, file);
 
         if (!uploadError) {
             const { data: { publicUrl } } = supabase.storage
-                .from('product-images')
+                .from(STORAGE_BUCKET)
                 .getPublicUrl(filePath);
             setForm({ ...form, image: publicUrl });
+        } else {
+            alert(`Upload failed: ${uploadError.message}. Check bucket '${STORAGE_BUCKET}' and storage policies.`);
         }
         setUploading(false);
     };
@@ -253,6 +258,27 @@ function CollectionForm({ onClose, onSuccess, initialData }: {
                             {uploading && <div className="absolute inset-0 bg-dark-base/50 flex items-center justify-center animate-spin" />}
                         </div>
                         <input type="file" ref={fileInputRef} onChange={handleUpload} className="hidden" accept="image/*" />
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={imageUrlDraft}
+                                onChange={(e) => setImageUrlDraft(e.target.value)}
+                                placeholder="/new_assets/... or https://..."
+                                className="admin-input w-full"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const cleaned = imageUrlDraft.trim();
+                                    if (!cleaned) return;
+                                    setForm((prev) => ({ ...prev, image: cleaned }));
+                                    setImageUrlDraft("");
+                                }}
+                                className="px-4 py-2 text-[0.58rem] uppercase tracking-[0.16em] rounded-xl border border-zinc-700 text-zinc-300 hover:border-gold/50"
+                            >
+                                Use URL
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex gap-4 pt-6">

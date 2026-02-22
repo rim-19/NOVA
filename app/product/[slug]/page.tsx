@@ -18,6 +18,7 @@ import { ShopProductCard } from "@/components/shared/ShopProductCard";
 export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = React.use(params);
   const [product, setProduct] = useState<StorefrontProduct | null>(null);
+  const [liveProducts, setLiveProducts] = useState<StorefrontProduct[]>(storefrontProducts);
   const [loading, setLoading] = useState(true);
   const [selectedSize, setSelectedSize] = useState("");
   const [addedToCart, setAddedToCart] = useState(false);
@@ -38,7 +39,16 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     async function fetchProduct() {
       setLoading(true);
       try {
-        const { data, error } = await supabase.from("products").select("*").eq("slug", slug).single();
+        const [oneRes, allRes] = await Promise.all([
+          supabase.from("products").select("*").eq("slug", slug).single(),
+          supabase.from("products").select("*").eq("is_visible", true),
+        ]);
+
+        if (!allRes.error && allRes.data) {
+          setLiveProducts(allRes.data.map((item, index) => toStorefrontProduct(item as Product, index)));
+        }
+
+        const { data, error } = oneRes;
         if (!error && data) {
           setProduct(toStorefrontProduct(data as Product));
         } else {
@@ -55,8 +65,8 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   const recommendations = useMemo(() => {
     if (!product) return [];
-    return storefrontProducts.filter((p) => p.slug !== product.slug && p.product_type === product.product_type).slice(0, 5);
-  }, [product]);
+    return liveProducts.filter((p) => p.slug !== product.slug && p.collection_slug === product.collection_slug).slice(0, 5);
+  }, [product, liveProducts]);
 
   useEffect(() => {
     const update = () => {
@@ -213,4 +223,3 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     </div>
   );
 }
-

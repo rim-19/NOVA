@@ -99,12 +99,12 @@ export function PrivateAtelierGate() {
                                         y: { duration: 8 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
                                         rotate: { duration: 11 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
                                     }}
-                                    className="absolute w-16 md:w-24 aspect-[5/6] overflow-hidden shadow-2xl border border-white/5"
+                                    className="absolute w-20 md:w-28 aspect-[5/6] overflow-hidden shadow-2xl border border-white/5"
                                     style={{
                                         top: img.top,
                                         left: img.left,
                                         clipPath:
-                                            "polygon(50% 96%, 20% 72%, 9% 52%, 9% 31%, 24% 16%, 40% 15%, 50% 26%, 60% 15%, 76% 16%, 91% 31%, 91% 52%, 80% 72%)",
+                                            "polygon(50% 98%, 24% 78%, 12% 58%, 11% 34%, 24% 18%, 40% 14%, 50% 24%, 60% 14%, 76% 18%, 89% 34%, 88% 58%, 76% 78%)",
                                     }}
                                 >
                                     <Image
@@ -112,7 +112,7 @@ export function PrivateAtelierGate() {
                                         alt=""
                                         fill
                                         className="object-cover"
-                                        style={{ filter: "blur(0.55px) brightness(0.78) contrast(1.08)" }}
+                                        style={{ filter: "blur(0.25px) brightness(0.82) contrast(1.05)" }}
                                     />
                                     <div className="absolute inset-0 bg-burgundy/10 mix-blend-overlay" />
                                 </motion.div>

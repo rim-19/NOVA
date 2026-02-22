@@ -30,9 +30,8 @@ export function CollectionSection() {
                 .select("*")
                 .order("created_at", { ascending: true });
 
-            if (!error && data) {
-                const liveBySlug = new Map(data.map((collection) => [collection.slug, collection]));
-                setCollectionsList(demoCollections.map((collection) => liveBySlug.get(collection.slug) ?? collection) as any);
+            if (!error && data && data.length > 0) {
+                setCollectionsList(data as any);
             } else {
                 setCollectionsList(demoCollections as any);
             }
