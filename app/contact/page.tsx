@@ -8,7 +8,6 @@ const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "212781563070
 export default function ContactPage() {
     const [form, setForm] = useState({
         name: "",
-        email: "",
         phone: "",
         subject: "Personal Inquiry",
         message: ""
@@ -39,11 +38,11 @@ export default function ContactPage() {
 
         try {
             const text = encodeURIComponent(
-                `New Contact Inquiry - NOVA\n\nName: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nSubject: ${form.subject}\nMessage: ${form.message}`
+                `New Contact Inquiry - NOVA\n\nName: ${form.name}\nPhone: ${form.phone}\nSubject: ${form.subject}\nMessage: ${form.message}`
             );
             window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
             setStatus({ type: 'success', msg: "Redirecting to WhatsApp..." });
-            setForm({ name: "", email: "", phone: "", subject: "Personal Inquiry", message: "" });
+            setForm({ name: "", phone: "", subject: "Personal Inquiry", message: "" });
         } catch (err) {
             console.error(err);
             setStatus({ type: 'error', msg: "A shadow passed over our servers. Please try again soon." });
@@ -101,19 +100,6 @@ export default function ContactPage() {
                                     onChange={handleChange}
                                     required
                                     placeholder="Your name..."
-                                    className="bg-transparent border-b border-burgundy/20 py-2 outline-none font-cormorant italic text-cream focus:border-gold/50 transition-colors"
-                                />
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                                <label className="text-label text-[0.6rem] text-gold/40 tracking-wider">Email Address</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={form.email}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="you@email.com..."
                                     className="bg-transparent border-b border-burgundy/20 py-2 outline-none font-cormorant italic text-cream focus:border-gold/50 transition-colors"
                                 />
                             </div>

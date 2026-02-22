@@ -6,6 +6,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { catalogProducts } from "@/lib/catalog";
 
+const storefrontTypeOptions = [
+    { slug: "set", name: "Set" },
+    { slug: "bodysuit", name: "Bodysuit" },
+    { slug: "bodysocks", name: "Bodysocks" },
+    { slug: "accessories", name: "Accessories" },
+] as const;
+
 export default function ProductsAdminPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [collections, setCollections] = useState<Collection[]>([]);
@@ -206,11 +213,16 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
 }) {
     const [form, setForm] = useState({
         name: initialData?.name || "",
-        collection_slug: initialData?.collection_slug || (collections[0]?.slug || ""),
+        collection_slug: initialData?.collection_slug || "set",
         price: initialData?.price || 0,
         discount_price: initialData?.discount_price,
         poetic_description: initialData?.poetic_description || "",
         description: initialData?.description || "",
+        product_type: (initialData?.product_type as any) || "set",
+        colors: (initialData?.colors && initialData.colors.length ? initialData.colors.join(", ") : ""),
+        is_bestseller: initialData?.is_bestseller || false,
+        is_new_arrival: initialData?.is_new_arrival || false,
+        popularity: initialData?.popularity || 50,
         category: initialData?.category || "Lingerie Set",
         materials: initialData?.materials || "",
         care_instructions: initialData?.care_instructions || "",
@@ -225,12 +237,6 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
     useEffect(() => {
         console.log("Current Form State:", form);
     }, [form]);
-
-    useEffect(() => {
-        if (!form.collection_slug && collections.length > 0) {
-            setForm((prev) => ({ ...prev, collection_slug: collections[0].slug }));
-        }
-    }, [collections, form.collection_slug]);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -299,11 +305,13 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
 
         setUploading(true);
         const slug = form.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-        const selectedCollection = collections.find((c) => c.slug === form.collection_slug);
+        const selectedType = storefrontTypeOptions.find((c) => c.slug === form.product_type);
         const productData = {
             ...form,
             slug,
-            collection: selectedCollection?.name || initialData?.collection || "Uncategorized",
+            collection_slug: form.product_type,
+            collection: selectedType?.name || "Set",
+            colors: form.colors.split(",").map((c) => c.trim().toLowerCase()).filter(Boolean),
         };
 
         const { error } = initialData
@@ -374,23 +382,29 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Collection</label>
+                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Type (Storefront Collection)</label>
                             <select
                                 className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all"
-                                value={form.collection_slug}
-                                onChange={e => setForm({ ...form, collection_slug: e.target.value })}
+                                value={form.product_type}
+                                onChange={e => setForm({ ...form, product_type: e.target.value as any })}
                                 required
                             >
-                                {collections.length === 0 ? (
-                                    <option value="">No collections available</option>
-                                ) : (
-                                    collections.map((collection) => (
-                                        <option key={collection.id} value={collection.slug}>
-                                            {collection.name}
-                                        </option>
-                                    ))
-                                )}
+                                {storefrontTypeOptions.map((collection) => (
+                                    <option key={collection.slug} value={collection.slug}>
+                                        {collection.name}
+                                    </option>
+                                ))}
                             </select>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Colors (comma separated)</label>
+                            <input
+                                className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all"
+                                value={form.colors}
+                                onChange={e => setForm({ ...form, colors: e.target.value })}
+                                placeholder="black, red, brown"
+                            />
                         </div>
 
                         <div className="space-y-2">
@@ -445,6 +459,39 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                 className="w-5 h-5 accent-gold"
                             />
                             <label htmlFor="featured" className="text-[0.6rem] text-zinc-400 uppercase tracking-[0.2em] font-bold cursor-pointer">Mark as Masterpiece (Homepage View)</label>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <label className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-xl border border-zinc-800">
+                                <input
+                                    type="checkbox"
+                                    checked={form.is_bestseller}
+                                    onChange={e => setForm({ ...form, is_bestseller: e.target.checked })}
+                                    className="w-4 h-4 accent-gold"
+                                />
+                                <span className="text-[0.58rem] text-zinc-400 uppercase tracking-[0.2em] font-bold">Best Seller</span>
+                            </label>
+                            <label className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-xl border border-zinc-800">
+                                <input
+                                    type="checkbox"
+                                    checked={form.is_new_arrival}
+                                    onChange={e => setForm({ ...form, is_new_arrival: e.target.checked })}
+                                    className="w-4 h-4 accent-gold"
+                                />
+                                <span className="text-[0.58rem] text-zinc-400 uppercase tracking-[0.2em] font-bold">New Arrival</span>
+                            </label>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Popularity Score (0-100)</label>
+                            <input
+                                type="number"
+                                min={0}
+                                max={100}
+                                className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all font-mono"
+                                value={form.popularity}
+                                onChange={e => setForm({ ...form, popularity: parseInt(e.target.value) || 0 })}
+                            />
                         </div>
                     </div>
 

@@ -154,7 +154,7 @@ export default function CollectionArchivePage() {
           <p className="text-[0.65rem] text-cream/65 tracking-[0.22em] uppercase text-right">{filteredAndSorted.length} Articles</p>
         </header>
 
-        <section className="md:hidden mb-5 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
+        <section className="md:hidden mb-2 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
           <motion.div
             ref={collectionTrackRef}
             drag="x"
@@ -173,17 +173,17 @@ export default function CollectionArchivePage() {
                   }}
                   className="w-[98px] shrink-0"
                 >
-                  <div className={`relative aspect-[4/5] overflow-hidden rounded-xl shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
+                  <div className={`relative aspect-[4/5] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                   </div>
-                  <p className={`mt-2 text-[0.52rem] uppercase tracking-[0.16em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
+                  <p className={`mt-1 text-[0.5rem] uppercase tracking-[0.14em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
                 </button>
               );
             })}
           </motion.div>
         </section>
 
-        <section className="hidden md:grid mb-7 grid-cols-4 gap-5">
+        <section className="hidden md:grid mb-3 grid-cols-4 gap-5">
           {storefrontCollections.map((collection) => {
             const isActive = selectedType === collection.slug;
             return (
@@ -195,7 +195,7 @@ export default function CollectionArchivePage() {
                 }}
                 className="w-full"
               >
-                <div className={`relative aspect-[4/5] overflow-hidden rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.4),0_0_18px_rgba(184,149,106,0.15)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
+                <div className={`relative aspect-[4/5] overflow-hidden rounded-lg shadow-[0_12px_30px_rgba(0,0,0,0.4),0_0_18px_rgba(184,149,106,0.15)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
                   <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                 </div>
                 <p className={`mt-2 text-[0.58rem] uppercase tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/80"}`}>{collection.name}</p>
@@ -204,7 +204,7 @@ export default function CollectionArchivePage() {
           })}
         </section>
 
-        <section className="mb-6 space-y-3 rounded-2xl bg-dark-card/25 p-3">
+        <section className="mb-6 space-y-3 rounded-xl bg-dark-card/25 p-3">
           <input
             value={search}
             onChange={(e) => {
@@ -249,13 +249,18 @@ export default function CollectionArchivePage() {
             </div>
 
             <div className="flex gap-1">
-              {[2, 3, 4].map((n, idx) => (
+              {[2, 3, 4].map((n) => (
                 <button
                   key={n}
                   onClick={() => setGridCols(n as 2 | 3 | 4)}
                   className={`rounded-full bg-dark-base/70 px-2.5 py-2 text-[0.58rem] ${gridCols === n ? "text-gold" : "text-cream/60"}`}
+                  aria-label={`${n} columns`}
                 >
-                  {idx === 0 ? "||" : idx === 1 ? "|||" : "4"}
+                  <span className={`inline-grid gap-[2px] ${n === 2 ? "grid-cols-2" : n === 3 ? "grid-cols-3" : "grid-cols-4"}`}>
+                    {Array.from({ length: n }).map((_, i) => (
+                      <span key={i} className="h-2 w-[3px] rounded-sm bg-current opacity-90" />
+                    ))}
+                  </span>
                 </button>
               ))}
             </div>
@@ -432,4 +437,3 @@ export default function CollectionArchivePage() {
     </div>
   );
 }
-

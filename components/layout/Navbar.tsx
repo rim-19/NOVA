@@ -3,10 +3,12 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { useCartStore } from "@/store/useCartStore";
 
 export function Navbar() {
+    const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
@@ -14,6 +16,7 @@ export function Navbar() {
     const mobileMenuRef = useRef<HTMLDivElement>(null);
     const { getTotalItems, toggleCart } = useCartStore();
     const totalItems = getTotalItems();
+    const isHeroPage = pathname === "/";
 
     useEffect(() => {
         setIsMounted(true);
@@ -125,7 +128,8 @@ export function Navbar() {
                     </div>
 
                     {/* Right side - Mobile compact */}
-                    <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 relative z-10">
+                    {!isHeroPage && (
+                        <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 relative z-10">
                         {/* Cart button (Desktop) */}
                         <button
                             onClick={toggleCart}
@@ -206,7 +210,8 @@ export function Navbar() {
                                 />
                             </div>
                         </button>
-                    </div>
+                        </div>
+                    )}
                 </div>
             </nav>
 

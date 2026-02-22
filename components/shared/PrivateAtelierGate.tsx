@@ -31,15 +31,15 @@ export function PrivateAtelierGate() {
     }, [isOpen]);
 
     const hintImages = [
-        { src: "/assets/blurred/private_1.jpeg", top: "15%", left: "10%", delay: 0.1 },
-        { src: "/assets/blurred/private_2.jpeg", top: "65%", left: "12%", delay: 0.3 },
-        { src: "/assets/blurred/private_3.jpeg", top: "8%", right: "10%", delay: 0.5 },
-        { src: "/assets/blurred/private_4.jpeg", bottom: "12%", right: "10%", delay: 0.2 },
-        { src: "/assets/blurred/private_5.jpeg", top: "40%", right: "5%", delay: 0.4 },
-        { src: "/assets/blurred/private_6.jpeg", bottom: "15%", left: "25%", delay: 0.6 },
-        { src: "/assets/blurred/private_png_1.png", top: "30%", left: "5%", delay: 0.7 },
-        { src: "/assets/blurred/private_png_2.png", bottom: "35%", right: "15%", delay: 0.8 },
-        { src: "/assets/blurred/private_png_3.png", top: "50%", left: "15%", delay: 0.9 },
+        { src: "/assets/blurred/private_1.jpeg", delay: 0.1 },
+        { src: "/assets/blurred/private_2.jpeg", delay: 0.2 },
+        { src: "/assets/blurred/private_3.jpeg", delay: 0.3 },
+        { src: "/assets/blurred/private_4.jpeg", delay: 0.4 },
+        { src: "/assets/blurred/private_5.jpeg", delay: 0.5 },
+        { src: "/assets/blurred/private_6.jpeg", delay: 0.6 },
+        { src: "/assets/blurred/private_png_1.png", delay: 0.7 },
+        { src: "/assets/blurred/private_png_2.png", delay: 0.8 },
+        { src: "/assets/blurred/private_png_3.png", delay: 0.9 },
     ];
 
     return (
@@ -79,32 +79,29 @@ export function PrivateAtelierGate() {
                             />
                         </div>
 
-                        {/* Smaller Floating Miniatures */}
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                        {/* Evenly distributed miniatures */}
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden p-4 md:p-6">
+                            <div className="grid h-full w-full grid-cols-3 grid-rows-3 place-items-center gap-2 md:gap-3">
                             {hintImages.map((img, i) => (
                                 <motion.div
                                     key={i}
-                                    initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
+                                    initial={{ opacity: 0, scale: 0.8, y: 8 }}
                                     animate={{
-                                        opacity: 0.65,
+                                        opacity: 0.55,
                                         scale: 1,
-                                        x: [0, (i % 2 === 0 ? 15 : -15), 0],
-                                        y: [0, (i % 3 === 0 ? -20 : 20), 0],
-                                        rotate: [0, (i % 2 === 0 ? 10 : -10), 0]
+                                        y: [0, i % 2 === 0 ? -6 : 6, 0],
+                                        rotate: [0, i % 2 === 0 ? 3 : -3, 0]
                                     }}
                                     transition={{
-                                        opacity: { delay: 0.5 + img.delay, duration: 1 },
+                                        opacity: { delay: 0.45 + img.delay, duration: 0.9 },
                                         scale: { delay: 0.5 + img.delay, type: "spring" },
-                                        x: { duration: 10 + i * 2, repeat: Infinity, ease: "easeInOut" },
-                                        y: { duration: 12 + i * 2, repeat: Infinity, ease: "easeInOut" },
-                                        rotate: { duration: 15 + i * 3, repeat: Infinity, ease: "easeInOut" }
+                                        y: { duration: 8 + i * 0.4, repeat: Infinity, ease: "easeInOut" },
+                                        rotate: { duration: 10 + i * 0.6, repeat: Infinity, ease: "easeInOut" }
                                     }}
-                                    className="absolute w-16 md:w-24 aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border border-white/5"
+                                    className="w-14 md:w-20 aspect-[4/5] overflow-hidden shadow-2xl border border-white/5"
                                     style={{
-                                        top: img.top,
-                                        bottom: img.bottom,
-                                        left: img.left,
-                                        right: img.right,
+                                        clipPath:
+                                            "polygon(50% 96%, 18% 68%, 8% 45%, 13% 24%, 30% 10%, 50% 22%, 70% 10%, 87% 24%, 92% 45%, 82% 68%)",
                                     }}
                                 >
                                     <Image
@@ -117,6 +114,7 @@ export function PrivateAtelierGate() {
                                     <div className="absolute inset-0 bg-burgundy/10 mix-blend-overlay" />
                                 </motion.div>
                             ))}
+                            </div>
                         </div>
 
                         {/* Content Container - Scrollable on mobile if needed */}

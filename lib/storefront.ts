@@ -178,7 +178,8 @@ export const pickedForYouProducts: StorefrontProduct[] = featuredCatalogProducts
   .slice(0, 6);
 
 export function toStorefrontProduct(product: Product, fallbackIndex = 0): StorefrontProduct {
-  const type = inferType(product.name);
+  const type = product.product_type || inferType(product.name);
+  const colors = product.colors && product.colors.length ? product.colors : inferColors(product.name);
   return {
     ...product,
     collection_slug: type,
@@ -186,11 +187,11 @@ export function toStorefrontProduct(product: Product, fallbackIndex = 0): Storef
     product_type: type,
     price: product.price > 0 ? product.price : estimatePrice(product.slug),
     images: (product.images || []).map(toAssetUrl),
-    colors: inferColors(product.name),
+    colors,
     sizes: ensureSizes(type, product.sizes),
-    is_bestseller: false,
-    is_new_arrival: true,
-    popularity: 50 - fallbackIndex,
+    is_bestseller: product.is_bestseller ?? false,
+    is_new_arrival: product.is_new_arrival ?? true,
+    popularity: product.popularity ?? (50 - fallbackIndex),
     created_at: product.created_at ?? new Date().toISOString(),
   };
 }
@@ -204,4 +205,3 @@ export function mergeStorefrontWithLive(liveProducts: Product[]): StorefrontProd
 export function findStorefrontProductBySlug(slug: string): StorefrontProduct | undefined {
   return storefrontProducts.find((p) => p.slug === slug);
 }
-

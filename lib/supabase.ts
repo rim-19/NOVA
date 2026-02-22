@@ -18,6 +18,11 @@ export type Product = {
     description?: string;
     short_description?: string;
     sizes: string[];
+    product_type?: "set" | "bodysuit" | "bodysocks" | "accessories";
+    colors?: string[];
+    is_bestseller?: boolean;
+    is_new_arrival?: boolean;
+    popularity?: number;
     category?: string;
     materials?: string;
     care_instructions?: string;
@@ -43,10 +48,11 @@ export type Order = {
     customer_name: string;
     phone: string;
     city: string;
-    address: string;
-    items: CartItem[];
-    total_price: number;
-    status: 'new' | 'processing' | 'completed';
+    address?: string | null;
+    message?: string | null;
+    items?: CartItem[] | null;
+    total_price?: number | null;
+    status: 'new' | 'processing' | 'completed' | 'cancelled';
     created_at: string;
 };
 
