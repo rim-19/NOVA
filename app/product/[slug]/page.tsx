@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
+import { useFavoriteStore } from "@/store/useFavoriteStore";
 import { supabase, type Product } from "@/lib/supabase";
 import {
   findStorefrontProductBySlug,
@@ -18,14 +19,20 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
   const { slug } = React.use(params);
   const [product, setProduct] = useState<StorefrontProduct | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeImage, setActiveImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [addedToCart, setAddedToCart] = useState(false);
-  const [liked, setLiked] = useState(false);
+
+  const imageWrapRef = useRef<HTMLDivElement>(null);
+  const imageTrackRef = useRef<HTMLDivElement>(null);
+  const [imageDragWidth, setImageDragWidth] = useState(0);
+  const [imageWidth, setImageWidth] = useState(320);
+
   const recWrapRef = useRef<HTMLDivElement>(null);
   const recTrackRef = useRef<HTMLDivElement>(null);
   const [recWidth, setRecWidth] = useState(0);
+
   const { addItem } = useCartStore();
+  const { isFavorite, toggle } = useFavoriteStore();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -46,16 +53,6 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     fetchProduct();
   }, [slug]);
 
-  useEffect(() => {
-    if (!product || product.images.length < 2) return;
-    const isTouch = window.matchMedia("(hover: none)").matches;
-    if (!isTouch) return;
-    const timer = setInterval(() => {
-      setActiveImage((prev) => (prev + 1) % product.images.length);
-    }, 2800);
-    return () => clearInterval(timer);
-  }, [product]);
-
   const recommendations = useMemo(() => {
     if (!product) return [];
     return storefrontProducts.filter((p) => p.slug !== product.slug && p.product_type === product.product_type).slice(0, 5);
@@ -63,6 +60,11 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
 
   useEffect(() => {
     const update = () => {
+      if (imageWrapRef.current && imageTrackRef.current) {
+        const wrapW = imageWrapRef.current.offsetWidth;
+        setImageWidth(wrapW);
+        setImageDragWidth(Math.max(0, imageTrackRef.current.scrollWidth - wrapW));
+      }
       if (recWrapRef.current && recTrackRef.current) {
         setRecWidth(Math.max(0, recTrackRef.current.scrollWidth - recWrapRef.current.offsetWidth));
       }
@@ -70,7 +72,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     update();
     window.addEventListener("resize", update);
     return () => window.removeEventListener("resize", update);
-  }, [recommendations.length]);
+  }, [recommendations.length, product?.images.length]);
 
   const onAddToCart = () => {
     if (!product) return;
@@ -110,49 +112,40 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     );
   }
 
-  const shortDescription = ((product.description || "").split(".").slice(0, 1).join(".") || product.poetic_description || "").trim() + ".";
+  const shortDescription = ((product.description || "").split(".").slice(0, 1).join(".") || "").trim() + ".";
+  const liked = isFavorite(product.slug);
 
   return (
-    <div className="min-h-screen pt-20 pb-16 px-3 md:px-10" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
+    <div className="min-h-screen pt-20 pb-14 px-3 md:px-10" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 items-start">
-          <div className="space-y-3">
-            <div className="relative aspect-[3/4] overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_25px_rgba(184,149,106,0.12)]">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeImage}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.55 }}
-                  className="absolute inset-0"
-                >
-                  <Image src={product.images[activeImage]} alt={product.name} fill priority className="object-cover" />
-                </motion.div>
-              </AnimatePresence>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
-            </div>
-
-            <div className="flex gap-2 overflow-x-auto">
-              {product.images.map((img, idx) => (
-                <button
-                  key={`${img}-${idx}`}
-                  onClick={() => setActiveImage(idx)}
-                  className={`relative h-16 w-12 overflow-hidden rounded-lg ${idx === activeImage ? "ring-1 ring-gold" : "opacity-65"}`}
-                >
-                  <Image src={img} alt={`${product.name} thumb ${idx + 1}`} fill className="object-cover" />
-                </button>
-              ))}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-10 items-start">
+          <div className="space-y-2">
+            <div ref={imageWrapRef} className="overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_25px_rgba(184,149,106,0.12)]">
+              <motion.div
+                ref={imageTrackRef}
+                drag={product.images.length > 1 ? "x" : false}
+                dragConstraints={{ left: -imageDragWidth, right: 0 }}
+                dragElastic={0.08}
+                className="flex w-max cursor-grab active:cursor-grabbing"
+              >
+                {product.images.map((img, idx) => (
+                  <div key={`${img}-${idx}`} className="relative aspect-[3/4]" style={{ width: `${imageWidth}px` }}>
+                    <Image src={img} alt={`${product.name} ${idx + 1}`} fill priority={idx === 0} className="object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+                  </div>
+                ))}
+              </motion.div>
             </div>
           </div>
 
-          <div className="space-y-3">
-            <Link href="/collection" className="text-[0.62rem] uppercase tracking-[0.25em] text-gold/60 hover:text-gold">
-              Back to all products
+          <div className="space-y-2">
+            <Link href="/collection" aria-label="Back to all products" className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-dark-base/60 text-gold/80 hover:text-gold">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6" />
+              </svg>
             </Link>
             <p className="text-[0.58rem] uppercase tracking-[0.32em] text-gold/50">{product.collection}</p>
             <h1 className="font-cormorant text-3xl md:text-4xl italic font-bold text-[#b8956a] leading-tight">{product.name}</h1>
-            <p className="font-montecarlo text-2xl text-gold/80">{product.poetic_description}</p>
             <p className="text-xs leading-6 text-cream/60">{shortDescription}</p>
 
             <p className="font-cormorant text-2xl text-gold">{product.price.toLocaleString("fr-MA")} MAD</p>
@@ -179,13 +172,13 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <div className="flex items-center gap-3">
               <button
                 onClick={onAddToCart}
-                className="flex-1 rounded-full bg-burgundy/50 px-4 py-2.5 text-[0.6rem] uppercase tracking-[0.28em] text-cream"
+                className="flex-1 rounded-full bg-burgundy/70 px-4 py-2.5 text-[0.6rem] uppercase tracking-[0.28em] text-cream shadow-[0_0_20px_rgba(125,23,54,0.55),0_0_36px_rgba(154,31,68,0.35)]"
               >
                 {addedToCart ? "Added" : "Add Ritual"}
               </button>
               <button
                 aria-label="Favorite product"
-                onClick={() => setLiked((prev) => !prev)}
+                onClick={() => toggle(product.slug)}
                 className={`rounded-full p-2.5 ${liked ? "text-gold" : "text-cream/70"}`}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
@@ -198,7 +191,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
           </div>
         </div>
 
-        <section className="mt-16 border-t border-gold/10 pt-10">
+        <section className="mt-12 border-t border-gold/10 pt-8">
           <h2 className="text-center font-cormorant text-4xl italic text-cream mb-6">You Might Also Like</h2>
           <div ref={recWrapRef} className="overflow-hidden">
             <motion.div
@@ -220,3 +213,4 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     </div>
   );
 }
+

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
+import { useFavoriteStore } from "@/store/useFavoriteStore";
 import type { StorefrontProduct } from "@/lib/storefront";
 
 type Props = {
@@ -17,7 +18,8 @@ export function ShopProductCard({ product }: Props) {
   const [openQuickAdd, setOpenQuickAdd] = useState(false);
   const [size, setSize] = useState(product.sizes?.[0] || "M");
   const [qty, setQty] = useState(1);
-  const [liked, setLiked] = useState(false);
+  const { isFavorite, toggle } = useFavoriteStore();
+  const liked = isFavorite(product.slug);
   const hasTwoImages = (product.images?.length || 0) > 1;
 
   const displayPrice = useMemo(() => `${product.price.toLocaleString("fr-MA")} MAD`, [product.price]);
@@ -95,7 +97,7 @@ export function ShopProductCard({ product }: Props) {
         </svg>
       </button>
 
-      <div className="p-4">
+      <div className="p-3">
         <div className="mb-1 flex items-center justify-between gap-2">
           <p className="text-[0.52rem] uppercase tracking-[0.33em] text-gold/50">{product.collection}</p>
           <button
@@ -104,7 +106,7 @@ export function ShopProductCard({ product }: Props) {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              setLiked((prev) => !prev);
+              toggle(product.slug);
             }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
@@ -113,19 +115,19 @@ export function ShopProductCard({ product }: Props) {
           </button>
         </div>
         <Link href={`/product/${product.slug}`} className="block">
-          <h3 className="mt-0.5 font-cormorant text-base italic font-bold text-[#b8956a] leading-tight text-right">
+          <h3 className="mt-0.5 font-cormorant text-[0.95rem] italic font-bold text-[#b8956a] leading-tight text-left">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-1 text-[0.63rem] text-cream/50 line-clamp-2 text-right">{product.poetic_description}</p>
-        <p className="mt-1 text-xs font-medium text-gold text-right">{displayPrice}</p>
+        <p className="mt-1 text-[0.58rem] text-cream/50 line-clamp-1 text-left">{product.poetic_description}</p>
+        <p className="mt-1 text-[0.72rem] font-medium text-gold text-left">{displayPrice}</p>
       </div>
       <div className="mx-3 mb-3 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
       {openQuickAdd && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 p-4" onClick={() => setOpenQuickAdd(false)}>
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-[radial-gradient(circle_at_center,rgba(184,149,106,0.18),rgba(0,0,0,0.7))] p-4" onClick={() => setOpenQuickAdd(false)}>
           <div
-            className="w-full max-w-xs rounded-2xl bg-dark-card p-4 shadow-[0_20px_40px_rgba(0,0,0,0.55),0_0_30px_rgba(184,149,106,0.18)]"
+            className="w-full max-w-xs rounded-2xl bg-[linear-gradient(180deg,rgba(57,10,22,0.95),rgba(26,2,2,0.98))] p-4 shadow-[0_30px_50px_rgba(0,0,0,0.7),0_0_40px_rgba(184,149,106,0.24)]"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-[0.55rem] uppercase tracking-[0.28em] text-gold/60">Quick Add</p>

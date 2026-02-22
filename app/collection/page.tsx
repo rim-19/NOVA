@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import {
   mergeStorefrontWithLive,
@@ -16,6 +16,7 @@ import { Footer } from "@/components/layout/Footer";
 
 const ITEMS_PER_PAGE = 15;
 type SortKey = "featured" | "best-sellers" | "price-low" | "price-high" | "newest";
+type PanelKey = "sort" | "size" | "filter" | null;
 
 const sortOptions: { id: SortKey; label: string }[] = [
   { id: "featured", label: "Featured" },
@@ -27,21 +28,22 @@ const sortOptions: { id: SortKey; label: string }[] = [
 
 const sizeOptions = ["all", "S", "M", "L", "XL"] as const;
 const filterOptions = [
-  { value: "all", label: "Filter" },
-  { value: "type:set", label: "Type: Set" },
-  { value: "type:bodysuit", label: "Type: Bodysuit" },
-  { value: "type:bodysocks", label: "Type: Bodysocks" },
-  { value: "type:accessories", label: "Type: Accessories" },
-  { value: "color:black", label: "Color: Black" },
-  { value: "color:red", label: "Color: Red" },
-  { value: "color:brown", label: "Color: Brown" },
-  { value: "color:blue", label: "Color: Blue" },
-  { value: "color:purple", label: "Color: Purple" },
+  { value: "all", label: "All Filters" },
+  { value: "type:set", label: "Set" },
+  { value: "type:bodysuit", label: "Bodysuit" },
+  { value: "type:bodysocks", label: "Bodysocks" },
+  { value: "type:accessories", label: "Accessories" },
+  { value: "color:black", label: "Black" },
+  { value: "color:red", label: "Red" },
+  { value: "color:brown", label: "Brown" },
+  { value: "color:blue", label: "Blue" },
+  { value: "color:purple", label: "Purple" },
 ];
 
 export default function CollectionArchivePage() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "212781563070";
   const whatsappHref = `https://wa.me/${whatsappNumber}`;
+
   const [allProducts, setAllProducts] = useState<StorefrontProduct[]>(storefrontProducts);
   const [loading, setLoading] = useState(true);
 
@@ -57,8 +59,10 @@ export default function CollectionArchivePage() {
   const [sortBy, setSortBy] = useState<SortKey>("featured");
   const [selectedSize, setSelectedSize] = useState<(typeof sizeOptions)[number]>("all");
   const [selectedFilter, setSelectedFilter] = useState("all");
-  const [gridCols, setGridCols] = useState<2 | 3 | 4>(4);
+  const [gridCols, setGridCols] = useState<2 | 3 | 4>(2);
   const [page, setPage] = useState(1);
+  const [activePanel, setActivePanel] = useState<PanelKey>(null);
+
   const collectionTrackRef = useRef<HTMLDivElement>(null);
   const collectionWrapRef = useRef<HTMLDivElement>(null);
   const pickedTrackRef = useRef<HTMLDivElement>(null);
@@ -87,9 +91,7 @@ export default function CollectionArchivePage() {
   useEffect(() => {
     const updateDragWidths = () => {
       if (collectionTrackRef.current && collectionWrapRef.current) {
-        setCollectionDragWidth(
-          Math.max(0, collectionTrackRef.current.scrollWidth - collectionWrapRef.current.offsetWidth)
-        );
+        setCollectionDragWidth(Math.max(0, collectionTrackRef.current.scrollWidth - collectionWrapRef.current.offsetWidth));
       }
       if (pickedTrackRef.current && pickedWrapRef.current) {
         setPickedDragWidth(Math.max(0, pickedTrackRef.current.scrollWidth - pickedWrapRef.current.offsetWidth));
@@ -152,29 +154,54 @@ export default function CollectionArchivePage() {
           <p className="text-[0.65rem] text-cream/65 tracking-[0.22em] uppercase text-right">{filteredAndSorted.length} Articles</p>
         </header>
 
-        <section ref={collectionWrapRef} className="mb-5 overflow-hidden p-1 no-scrollbar">
+        <section className="md:hidden mb-5 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
           <motion.div
             ref={collectionTrackRef}
             drag="x"
             dragConstraints={{ left: -collectionDragWidth, right: 0 }}
             dragElastic={0.06}
-            className="flex w-max gap-2 cursor-grab active:cursor-grabbing"
+            className="flex w-max gap-3 cursor-grab active:cursor-grabbing px-0.5"
           >
-            {storefrontCollections.map((collection) => (
+            {storefrontCollections.map((collection) => {
+              const isActive = selectedType === collection.slug;
+              return (
+                <button
+                  key={collection.slug}
+                  onClick={() => {
+                    setSelectedType((prev) => (prev === collection.slug ? "all" : collection.slug));
+                    setPage(1);
+                  }}
+                  className="w-[98px] shrink-0"
+                >
+                  <div className={`relative aspect-[4/5] overflow-hidden rounded-xl shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
+                    <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
+                  </div>
+                  <p className={`mt-2 text-[0.52rem] uppercase tracking-[0.16em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
+                </button>
+              );
+            })}
+          </motion.div>
+        </section>
+
+        <section className="hidden md:grid mb-7 grid-cols-4 gap-5">
+          {storefrontCollections.map((collection) => {
+            const isActive = selectedType === collection.slug;
+            return (
               <button
                 key={collection.slug}
                 onClick={() => {
                   setSelectedType((prev) => (prev === collection.slug ? "all" : collection.slug));
                   setPage(1);
                 }}
-                className={`group relative w-[92px] overflow-hidden rounded-xl ${selectedType === collection.slug ? "ring-1 ring-gold/70" : "ring-1 ring-transparent"} shadow-[0_8px_25px_rgba(0,0,0,0.35),0_0_16px_rgba(184,149,106,0.13)]`}
+                className="w-full"
               >
-                <img src={collection.image} alt={collection.name} className="h-[78px] w-full object-contain bg-black/25 px-1 transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                <span className="absolute bottom-1.5 left-1.5 right-1.5 text-[0.5rem] uppercase tracking-[0.16em] text-cream">{collection.name}</span>
+                <div className={`relative aspect-[4/5] overflow-hidden rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.4),0_0_18px_rgba(184,149,106,0.15)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
+                  <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
+                </div>
+                <p className={`mt-2 text-[0.58rem] uppercase tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/80"}`}>{collection.name}</p>
               </button>
-            ))}
-          </motion.div>
+            );
+          })}
         </section>
 
         <section className="mb-6 space-y-3 rounded-2xl bg-dark-card/25 p-3">
@@ -188,61 +215,45 @@ export default function CollectionArchivePage() {
             className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35"
           />
 
-          <div className="flex items-center gap-1 overflow-x-auto whitespace-nowrap no-scrollbar">
-            <select
-              value={sortBy}
-              onChange={(e) => {
-                setSortBy(e.target.value as SortKey);
-                setPage(1);
-              }}
-              className="appearance-none rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/80 outline-none"
-            >
-              {sortOptions.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setActivePanel("sort")}
+                className="rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
+              >
+                Sort ▼
+              </button>
+              <button
+                onClick={() => setActivePanel("size")}
+                className="rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
+              >
+                Size ▼
+              </button>
+              <button
+                onClick={() => setActivePanel("filter")}
+                className="flex items-center gap-1 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="4" y1="21" x2="4" y2="14" />
+                  <line x1="4" y1="10" x2="4" y2="3" />
+                  <line x1="12" y1="21" x2="12" y2="12" />
+                  <line x1="12" y1="8" x2="12" y2="3" />
+                  <line x1="20" y1="21" x2="20" y2="16" />
+                  <line x1="20" y1="12" x2="20" y2="3" />
+                  <line x1="1" y1="14" x2="7" y2="14" />
+                  <line x1="9" y1="8" x2="15" y2="8" />
+                  <line x1="17" y1="16" x2="23" y2="16" />
+                </svg>
+                Filter
+              </button>
+            </div>
 
-            <select
-              value={selectedSize}
-              onChange={(e) => {
-                setSelectedSize(e.target.value as (typeof sizeOptions)[number]);
-                setPage(1);
-              }}
-              className="appearance-none rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/80 outline-none"
-            >
-              <option value="all">Size</option>
-              {sizeOptions.filter((x) => x !== "all").map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedFilter}
-              onChange={(e) => {
-                setSelectedFilter(e.target.value);
-                setPage(1);
-              }}
-              className="appearance-none rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/80 outline-none"
-            >
-              {filterOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-
-            <div className="ml-auto flex gap-1">
+            <div className="flex gap-1">
               {[2, 3, 4].map((n, idx) => (
                 <button
                   key={n}
                   onClick={() => setGridCols(n as 2 | 3 | 4)}
-                  className={`rounded-full bg-dark-base/70 px-2.5 py-2 text-[0.58rem] ${
-                    gridCols === n ? "text-gold" : "text-cream/60"
-                  }`}
+                  className={`rounded-full bg-dark-base/70 px-2.5 py-2 text-[0.58rem] ${gridCols === n ? "text-gold" : "text-cream/60"}`}
                 >
                   {idx === 0 ? "||" : idx === 1 ? "|||" : "4"}
                 </button>
@@ -283,7 +294,7 @@ export default function CollectionArchivePage() {
           </button>
         </div>
 
-        <section className="mt-16 rounded-3xl border border-gold/10 bg-dark-card/30 px-6 py-10 text-center">
+        <section className="mt-16 rounded-3xl bg-dark-card/30 px-6 py-10 text-center">
           <p className="font-montecarlo text-4xl text-gold/80">A story woven for skin and silence.</p>
           <p className="mx-auto mt-3 max-w-3xl text-sm leading-8 text-cream/55">
             Keep exploring. The right piece is never loud, it simply meets your body like it has always belonged there.
@@ -318,6 +329,94 @@ export default function CollectionArchivePage() {
           </div>
         </section>
       </div>
+
+      <AnimatePresence>
+        {activePanel && (
+          <motion.div
+            className="fixed inset-0 z-[110] bg-black/45"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActivePanel(null)}
+          >
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", damping: 24, stiffness: 260 }}
+              className="absolute bottom-0 left-0 right-0 rounded-t-3xl bg-[linear-gradient(180deg,#390a16,#1a0202)] p-5 shadow-[0_-20px_45px_rgba(0,0,0,0.55)]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-gold/35" />
+              {activePanel === "sort" && (
+                <div className="space-y-2">
+                  <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60">Sort</p>
+                  {sortOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      className={`block w-full rounded-xl px-3 py-2 text-left text-xs uppercase tracking-[0.14em] ${
+                        sortBy === option.id ? "bg-gold/20 text-gold" : "bg-black/25 text-cream/75"
+                      }`}
+                      onClick={() => {
+                        setSortBy(option.id);
+                        setPage(1);
+                        setActivePanel(null);
+                      }}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {activePanel === "size" && (
+                <div className="space-y-2">
+                  <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60">Size</p>
+                  <div className="flex flex-wrap gap-2">
+                    {sizeOptions.map((size) => (
+                      <button
+                        key={size}
+                        className={`rounded-xl px-3 py-2 text-xs uppercase tracking-[0.14em] ${
+                          selectedSize === size ? "bg-gold/20 text-gold" : "bg-black/25 text-cream/75"
+                        }`}
+                        onClick={() => {
+                          setSelectedSize(size);
+                          setPage(1);
+                          setActivePanel(null);
+                        }}
+                      >
+                        {size === "all" ? "All" : size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {activePanel === "filter" && (
+                <div className="space-y-2">
+                  <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60">Filter</p>
+                  <div className="max-h-[42vh] overflow-y-auto no-scrollbar space-y-2">
+                    {filterOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        className={`block w-full rounded-xl px-3 py-2 text-left text-xs uppercase tracking-[0.14em] ${
+                          selectedFilter === option.value ? "bg-gold/20 text-gold" : "bg-black/25 text-cream/75"
+                        }`}
+                        onClick={() => {
+                          setSelectedFilter(option.value);
+                          setPage(1);
+                          setActivePanel(null);
+                        }}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <a
         href={whatsappHref}
         target="_blank"
@@ -333,3 +432,4 @@ export default function CollectionArchivePage() {
     </div>
   );
 }
+
