@@ -31,15 +31,15 @@ export function PrivateAtelierGate() {
     }, [isOpen]);
 
     const hintImages = [
-        { src: "/assets/blurred/private_1.jpeg", delay: 0.1 },
-        { src: "/assets/blurred/private_2.jpeg", delay: 0.2 },
-        { src: "/assets/blurred/private_3.jpeg", delay: 0.3 },
-        { src: "/assets/blurred/private_4.jpeg", delay: 0.4 },
-        { src: "/assets/blurred/private_5.jpeg", delay: 0.5 },
-        { src: "/assets/blurred/private_6.jpeg", delay: 0.6 },
-        { src: "/assets/blurred/private_png_1.png", delay: 0.7 },
-        { src: "/assets/blurred/private_png_2.png", delay: 0.8 },
-        { src: "/assets/blurred/private_png_3.png", delay: 0.9 },
+        { src: "/assets/blurred/private_1.jpeg", top: "8%", left: "7%", delay: 0.1 },
+        { src: "/assets/blurred/private_2.jpeg", top: "28%", left: "2%", delay: 0.2 },
+        { src: "/assets/blurred/private_3.jpeg", top: "56%", left: "8%", delay: 0.3 },
+        { src: "/assets/blurred/private_4.jpeg", top: "14%", left: "38%", delay: 0.4 },
+        { src: "/assets/blurred/private_5.jpeg", top: "64%", left: "40%", delay: 0.5 },
+        { src: "/assets/blurred/private_6.jpeg", top: "36%", left: "72%", delay: 0.6 },
+        { src: "/assets/blurred/private_png_1.png", top: "7%", left: "74%", delay: 0.7 },
+        { src: "/assets/blurred/private_png_2.png", top: "62%", left: "74%", delay: 0.8 },
+        { src: "/assets/blurred/private_png_3.png", top: "82%", left: "30%", delay: 0.9 },
     ];
 
     return (
@@ -79,29 +79,32 @@ export function PrivateAtelierGate() {
                             />
                         </div>
 
-                        {/* Evenly distributed miniatures */}
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden p-4 md:p-6">
-                            <div className="grid h-full w-full grid-cols-3 grid-rows-3 place-items-center gap-2 md:gap-3">
+                        {/* Random floating miniatures */}
+                        <div className="absolute inset-0 pointer-events-none overflow-hidden p-2 md:p-4">
                             {hintImages.map((img, i) => (
                                 <motion.div
                                     key={i}
-                                    initial={{ opacity: 0, scale: 0.8, y: 8 }}
+                                    initial={{ opacity: 0, scale: 0.84, y: 10 }}
                                     animate={{
-                                        opacity: 0.55,
+                                        opacity: 0.62,
                                         scale: 1,
-                                        y: [0, i % 2 === 0 ? -6 : 6, 0],
-                                        rotate: [0, i % 2 === 0 ? 3 : -3, 0]
+                                        x: [0, i % 2 === 0 ? 8 : -8, 0],
+                                        y: [0, i % 3 === 0 ? -10 : 10, 0],
+                                        rotate: [0, i % 2 === 0 ? 4 : -4, 0]
                                     }}
                                     transition={{
                                         opacity: { delay: 0.45 + img.delay, duration: 0.9 },
                                         scale: { delay: 0.5 + img.delay, type: "spring" },
-                                        y: { duration: 8 + i * 0.4, repeat: Infinity, ease: "easeInOut" },
-                                        rotate: { duration: 10 + i * 0.6, repeat: Infinity, ease: "easeInOut" }
+                                        x: { duration: 10 + i * 0.5, repeat: Infinity, ease: "easeInOut" },
+                                        y: { duration: 8 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
+                                        rotate: { duration: 11 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
                                     }}
-                                    className="w-14 md:w-20 aspect-[4/5] overflow-hidden shadow-2xl border border-white/5"
+                                    className="absolute w-16 md:w-24 aspect-[5/6] overflow-hidden shadow-2xl border border-white/5"
                                     style={{
+                                        top: img.top,
+                                        left: img.left,
                                         clipPath:
-                                            "polygon(50% 96%, 18% 68%, 8% 45%, 13% 24%, 30% 10%, 50% 22%, 70% 10%, 87% 24%, 92% 45%, 82% 68%)",
+                                            "polygon(50% 96%, 20% 72%, 9% 52%, 9% 31%, 24% 16%, 40% 15%, 50% 26%, 60% 15%, 76% 16%, 91% 31%, 91% 52%, 80% 72%)",
                                     }}
                                 >
                                     <Image
@@ -109,12 +112,11 @@ export function PrivateAtelierGate() {
                                         alt=""
                                         fill
                                         className="object-cover"
-                                        style={{ filter: "blur(1px) brightness(0.7) contrast(1.1)" }}
+                                        style={{ filter: "blur(0.55px) brightness(0.78) contrast(1.08)" }}
                                     />
                                     <div className="absolute inset-0 bg-burgundy/10 mix-blend-overlay" />
                                 </motion.div>
                             ))}
-                            </div>
                         </div>
 
                         {/* Content Container - Scrollable on mobile if needed */}

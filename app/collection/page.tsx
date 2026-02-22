@@ -274,7 +274,10 @@ export default function CollectionArchivePage() {
             ))}
           </div>
         ) : (
-          <section className={`grid gap-3 md:gap-5 ${gridCols === 2 ? "grid-cols-2" : gridCols === 3 ? "grid-cols-2 md:grid-cols-3" : "grid-cols-2 md:grid-cols-3 xl:grid-cols-4"}`}>
+          <section
+            className="grid gap-3 md:gap-5"
+            style={{ gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))` }}
+          >
             {paginated.map((product) => (
               <ShopProductCard key={product.slug} product={product} />
             ))}
