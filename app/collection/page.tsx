@@ -280,21 +280,33 @@ export default function CollectionArchivePage() {
                 className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 2 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
                 aria-label="2 columns"
               >
-                2
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+                  <rect x="1" y="1" width="7" height="10" rx="1" className="fill-current" />
+                  <rect x="10" y="1" width="7" height="10" rx="1" className="fill-current" />
+                </svg>
               </button>
               <button
                 onClick={() => setMobileGridCols(3)}
                 className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 3 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
                 aria-label="3 columns"
               >
-                3
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+                  <rect x="1" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                  <rect x="6.65" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                  <rect x="12.3" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                </svg>
               </button>
               <button
                 onClick={() => setMobileGridCols(4)}
                 className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 4 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
                 aria-label="4 columns"
               >
-                4
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+                  <rect x="1" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                  <rect x="5.3" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                  <rect x="9.6" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                  <rect x="13.9" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                </svg>
               </button>
             </div>
           </div>

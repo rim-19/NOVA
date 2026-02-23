@@ -409,7 +409,7 @@ export function Navbar() {
                             animate={{ y: 0, opacity: 1, scale: 1 }}
                             exit={{ y: 20, opacity: 0, scale: 0.98 }}
                             transition={{ duration: 0.2 }}
-                            className="w-full max-w-xl rounded-2xl border border-gold/20 bg-[linear-gradient(180deg,rgba(57,10,22,0.95),rgba(26,2,2,0.98))] p-4 md:p-6 shadow-[0_30px_60px_rgba(0,0,0,0.55)]"
+                            className="w-full max-w-xl rounded-2xl bg-[linear-gradient(180deg,rgba(57,10,22,0.95),rgba(26,2,2,0.98))] p-4 md:p-6 shadow-[0_30px_60px_rgba(0,0,0,0.55),0_0_28px_rgba(184,149,106,0.22)]"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="mb-4 flex items-center justify-between">
@@ -439,7 +439,7 @@ export function Navbar() {
                                             key={item.slug}
                                             href={`/product/${item.slug}`}
                                             onClick={() => setFavoritesOpen(false)}
-                                            className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 p-2 hover:border-gold/35 transition-colors"
+                                            className="flex items-center gap-3 rounded-xl bg-black/25 p-2 shadow-[0_10px_24px_rgba(0,0,0,0.38),0_0_16px_rgba(184,149,106,0.1)] hover:shadow-[0_14px_28px_rgba(0,0,0,0.46),0_0_22px_rgba(184,149,106,0.2)] transition-shadow"
                                         >
                                             <img src={item.images?.[0]} alt={item.name} className="h-14 w-12 rounded-md object-cover" />
                                             <div className="min-w-0">
