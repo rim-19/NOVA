@@ -29,6 +29,21 @@ insert into site_content (id, content)
 values (1, '{}'::jsonb)
 on conflict (id) do nothing;
 
+-- Ensure canonical storefront collections exist
+insert into collections (name, slug, tagline, image, count, hero_phrase)
+values
+('Set', 'set', 'Curated sets for complete looks.', '/new_assets/sultry_suspcius_collection/sultry2.jpeg', '0 pieces', 'Complete silhouettes designed to flow as one.'),
+('Bodysuit', 'bodysuit', 'Second-skin one-pieces with sculpted lines.', '/new_assets/dentelle_sensual_collection/dentelle4.jpeg', '0 pieces', 'One piece. Pure intention.'),
+('Bodysocks', 'bodysocks', 'Mesh and net textures with daring structure.', '/new_assets/dark_mystrouis_collection/dark8.jpeg', '0 pieces', 'Sheer textures that contour every move.'),
+('Accessories', 'accessories', 'Harnesses, chains, chokers and finishing details.', '/new_assets/dark_mystrouis_collection/dark3.jpeg', '0 pieces', 'Details that complete the ritual.')
+on conflict (slug) do update
+set
+  name = excluded.name,
+  tagline = excluded.tagline,
+  image = excluded.image,
+  count = excluded.count,
+  hero_phrase = excluded.hero_phrase;
+
 -- Performance indexes
 create index if not exists idx_products_visible on products(is_visible);
 create index if not exists idx_products_featured on products(is_featured);
@@ -45,12 +60,15 @@ alter table if exists site_content enable row level security;
 
 -- Drop old policies safely
 drop policy if exists "public read products" on products;
+drop policy if exists "public read visible products" on products;
 drop policy if exists "auth manage products" on products;
 drop policy if exists "public read collections" on collections;
 drop policy if exists "auth manage collections" on collections;
 drop policy if exists "auth manage orders" on orders;
 drop policy if exists "public read site_content" on site_content;
+drop policy if exists "public read site content" on site_content;
 drop policy if exists "auth manage site_content" on site_content;
+drop policy if exists "auth manage site content" on site_content;
 
 -- Storefront public reads
 create policy "public read visible products"
@@ -134,4 +152,3 @@ on storage.objects
 for delete
 to authenticated
 using (bucket_id = 'product-images');
-

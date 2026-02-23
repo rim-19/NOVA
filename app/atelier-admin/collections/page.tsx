@@ -4,9 +4,42 @@ import { useEffect, useState, useRef } from "react";
 import { supabase, Collection } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { catalogCollections } from "@/lib/catalog";
 
 const STORAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "product-images";
+const REAL_COLLECTIONS = [
+    {
+        name: "Set",
+        tagline: "Curated sets for complete looks.",
+        slug: "set",
+        image: "/new_assets/sultry_suspcius_collection/sultry2.jpeg",
+        count: "0 pieces",
+        hero_phrase: "Complete silhouettes designed to flow as one.",
+    },
+    {
+        name: "Bodysuit",
+        tagline: "Second-skin one-pieces with sculpted lines.",
+        slug: "bodysuit",
+        image: "/new_assets/dentelle_sensual_collection/dentelle4.jpeg",
+        count: "0 pieces",
+        hero_phrase: "One piece. Pure intention.",
+    },
+    {
+        name: "Bodysocks",
+        tagline: "Mesh and net textures with daring structure.",
+        slug: "bodysocks",
+        image: "/new_assets/dark_mystrouis_collection/dark8.jpeg",
+        count: "0 pieces",
+        hero_phrase: "Sheer textures that contour every move.",
+    },
+    {
+        name: "Accessories",
+        tagline: "Harnesses, chains, chokers and finishing details.",
+        slug: "accessories",
+        image: "/new_assets/dark_mystrouis_collection/dark3.jpeg",
+        count: "0 pieces",
+        hero_phrase: "Details that complete the ritual.",
+    },
+];
 
 export default function CollectionsAdminPage() {
     const [collections, setCollections] = useState<Collection[]>([]);
@@ -45,15 +78,7 @@ export default function CollectionsAdminPage() {
                 <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                     <button
                         onClick={async () => {
-                            if (!confirm("Replace all current collections with the new catalog collections?")) return;
-                            const demoCols = catalogCollections.map((collection) => ({
-                                name: collection.name,
-                                tagline: collection.tagline,
-                                slug: collection.slug,
-                                image: collection.image,
-                                count: collection.count,
-                                hero_phrase: collection.description,
-                            }));
+                            if (!confirm("Replace all current collections with the real storefront collections (Set, Bodysuit, Bodysocks, Accessories)?")) return;
                             const { error: deleteError } = await supabase
                                 .from("collections")
                                 .delete()
@@ -62,7 +87,7 @@ export default function CollectionsAdminPage() {
                                 alert(`Ritual failed: ${deleteError.message}`);
                                 return;
                             }
-                            const { error } = await supabase.from("collections").insert(demoCols);
+                            const { error } = await supabase.from("collections").insert(REAL_COLLECTIONS);
                             if (!error) {
                                 alert("Collections replaced successfully.");
                                 fetchCollections();

@@ -7,6 +7,12 @@ import Image from "next/image";
 import { catalogProducts } from "@/lib/catalog";
 
 const STORAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "product-images";
+const REAL_COLLECTION_OPTIONS = [
+    { slug: "set", name: "Set" },
+    { slug: "bodysuit", name: "Bodysuit" },
+    { slug: "bodysocks", name: "Bodysocks" },
+    { slug: "accessories", name: "Accessories" },
+] as const;
 
 export default function ProductsAdminPage() {
     const [products, setProducts] = useState<Product[]>([]);
@@ -205,7 +211,6 @@ export default function ProductsAdminPage() {
                             fetchInitialData();
                         }}
                         initialData={editingProduct}
-                        collections={collections}
                     />
                 )}
             </AnimatePresence>
@@ -213,15 +218,14 @@ export default function ProductsAdminPage() {
     );
 }
 
-function ProductForm({ onClose, onSuccess, initialData, collections }: {
+function ProductForm({ onClose, onSuccess, initialData }: {
     onClose: () => void,
     onSuccess: () => void,
-    initialData: Product | null,
-    collections: Collection[]
+    initialData: Product | null
 }) {
     const [form, setForm] = useState({
         name: initialData?.name || "",
-        collection_slug: initialData?.collection_slug || collections[0]?.slug || "set",
+        collection_slug: initialData?.collection_slug || "set",
         price: initialData?.price || 0,
         poetic_description: initialData?.poetic_description || "",
         description: initialData?.description || "",
@@ -237,12 +241,11 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        if (!collections.length) return;
-        const exists = collections.some((collection) => collection.slug === form.collection_slug);
+        const exists = REAL_COLLECTION_OPTIONS.some((collection) => collection.slug === form.collection_slug);
         if (!exists) {
-            setForm((prev) => ({ ...prev, collection_slug: collections[0].slug }));
+            setForm((prev) => ({ ...prev, collection_slug: "set" }));
         }
-    }, [collections, form.collection_slug]);
+    }, [form.collection_slug]);
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -307,7 +310,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
 
         setUploading(true);
         const slug = form.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-        const selectedCollection = collections.find((c) => c.slug === form.collection_slug);
+        const selectedCollection = REAL_COLLECTION_OPTIONS.find((c) => c.slug === form.collection_slug);
         const productData: any = {
             name: form.name,
             slug,
@@ -399,7 +402,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                     onChange={e => setForm({ ...form, collection_slug: e.target.value })}
                                     required
                                 >
-                                    {collections.map((collection) => (
+                                    {REAL_COLLECTION_OPTIONS.map((collection) => (
                                         <option key={collection.slug} value={collection.slug}>
                                             {collection.name}
                                         </option>

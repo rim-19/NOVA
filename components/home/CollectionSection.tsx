@@ -13,6 +13,8 @@ if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
 }
 
+const REAL_COLLECTION_SLUGS = ["set", "bodysuit", "bodysocks", "accessories"];
+
 export function CollectionSection() {
     const [collectionsList, setCollectionsList] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(true);
@@ -28,6 +30,7 @@ export function CollectionSection() {
             const { data, error } = await supabase
                 .from("collections")
                 .select("*")
+                .in("slug", REAL_COLLECTION_SLUGS)
                 .order("created_at", { ascending: true });
 
             if (!error && data && data.length > 0) {
