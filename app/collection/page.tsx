@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { useFavoriteStore } from "@/store/useFavoriteStore";
 import {
   storefrontCollections,
   storefrontProducts,
@@ -25,17 +26,22 @@ const sortOptions: { id: SortKey; label: string }[] = [
 ];
 
 const sizeOptions = ["all", "S", "M", "L", "XL"] as const;
-const filterOptions = [
-  { value: "all", label: "All Filters" },
-  { value: "type:set", label: "Set" },
-  { value: "type:bodysuit", label: "Bodysuit" },
-  { value: "type:bodysocks", label: "Bodysocks" },
-  { value: "type:accessories", label: "Accessories" },
-  { value: "color:black", label: "Black" },
-  { value: "color:red", label: "Red" },
-  { value: "color:brown", label: "Brown" },
-  { value: "color:blue", label: "Blue" },
-  { value: "color:purple", label: "Purple" },
+const COLOR_FILTERS = [
+  "Black",
+  "White",
+  "Red",
+  "Burgundy",
+  "Pink",
+  "Rose",
+  "Purple",
+  "Blue",
+  "Navy",
+  "Green",
+  "Emerald",
+  "Brown",
+  "Beige",
+  "Gold",
+  "Silver",
 ];
 
 export default function CollectionArchivePage() {
@@ -60,6 +66,11 @@ export default function CollectionArchivePage() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [activePanel, setActivePanel] = useState<PanelKey>(null);
+  const [favoritesOnly] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return new URLSearchParams(window.location.search).get("favorites") === "1";
+  });
+  const favoriteSlugs = useFavoriteStore((state) => state.slugs);
 
   const collectionTrackRef = useRef<HTMLDivElement>(null);
   const collectionWrapRef = useRef<HTMLDivElement>(null);
@@ -97,6 +108,21 @@ export default function CollectionArchivePage() {
     fetchLive();
   }, []);
 
+  const filterOptions = useMemo(
+    () => [
+      { value: "all", label: "All Filters" },
+      ...collectionsList.map((collection) => ({
+        value: `collection:${collection.slug}`,
+        label: `Collection: ${collection.name}`,
+      })),
+      ...COLOR_FILTERS.map((color) => ({
+        value: `color:${color.toLowerCase()}`,
+        label: `Color: ${color}`,
+      })),
+    ],
+    [collectionsList]
+  );
+
   useEffect(() => {
     const updateDragWidths = () => {
       if (collectionTrackRef.current && collectionWrapRef.current) {
@@ -109,14 +135,13 @@ export default function CollectionArchivePage() {
     updateDragWidths();
     window.addEventListener("resize", updateDragWidths);
     return () => window.removeEventListener("resize", updateDragWidths);
-  }, [allProducts]);
+  }, [allProducts, collectionsList]);
 
   const filteredAndSorted = useMemo(() => {
     let base = allProducts.filter((product) => {
       const typeOk =
         selectedType === "all" ||
-        product.collection_slug === selectedType ||
-        product.product_type === selectedType;
+        product.collection_slug === selectedType;
       const searchOk = !search || product.name.toLowerCase().includes(search.toLowerCase());
       const sizeOk = selectedSize === "all" || product.sizes.includes(selectedSize);
       const filterOk =
@@ -124,10 +149,11 @@ export default function CollectionArchivePage() {
           ? true
           : selectedFilter.startsWith("color:")
             ? (product.colors || []).includes(selectedFilter.replace("color:", ""))
-            : selectedFilter.startsWith("type:")
-              ? product.product_type === selectedFilter.replace("type:", "")
+            : selectedFilter.startsWith("collection:")
+              ? product.collection_slug === selectedFilter.replace("collection:", "")
               : true;
-      return typeOk && searchOk && sizeOk && filterOk;
+      const favoritesOk = !favoritesOnly || favoriteSlugs.includes(product.slug);
+      return typeOk && searchOk && sizeOk && filterOk && favoritesOk;
     });
 
     const byDate = (a: StorefrontProduct, b: StorefrontProduct) =>
@@ -150,7 +176,7 @@ export default function CollectionArchivePage() {
     });
 
     return base;
-  }, [allProducts, search, selectedType, selectedSize, selectedFilter, sortBy]);
+  }, [allProducts, search, selectedType, selectedSize, selectedFilter, sortBy, favoritesOnly, favoriteSlugs]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / ITEMS_PER_PAGE));
   const paginated = filteredAndSorted.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
@@ -173,13 +199,13 @@ export default function CollectionArchivePage() {
           <p className="text-[0.65rem] text-cream/65 tracking-[0.22em] uppercase text-right">{filteredAndSorted.length} Articles</p>
         </header>
 
-        <section className="md:hidden mb-2 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
+        <section className="mb-2 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
           <motion.div
             ref={collectionTrackRef}
             drag="x"
             dragConstraints={{ left: -collectionDragWidth, right: 0 }}
             dragElastic={0.06}
-            className="flex w-max gap-3 cursor-grab active:cursor-grabbing px-0.5"
+            className="flex w-max gap-3 md:gap-4 cursor-grab active:cursor-grabbing px-0.5"
           >
             {collectionsList.map((collection) => {
               const isActive = selectedType === collection.slug;
@@ -190,37 +216,16 @@ export default function CollectionArchivePage() {
                     setSelectedType((prev) => (prev === collection.slug ? "all" : collection.slug));
                     setPage(1);
                   }}
-                  className="w-[98px] shrink-0"
+                  className="w-[98px] md:w-[132px] shrink-0"
                 >
                   <div className={`relative aspect-[4/5] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                   </div>
-                  <p className={`mt-1 text-[0.5rem] uppercase tracking-[0.14em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
+                  <p className={`mt-1 md:mt-2 text-[0.5rem] md:text-[0.56rem] uppercase tracking-[0.14em] md:tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
                 </button>
               );
             })}
           </motion.div>
-        </section>
-
-        <section className="hidden md:grid mb-3 grid-cols-4 gap-5">
-          {collectionsList.map((collection) => {
-            const isActive = selectedType === collection.slug;
-            return (
-              <button
-                key={collection.slug}
-                onClick={() => {
-                  setSelectedType((prev) => (prev === collection.slug ? "all" : collection.slug));
-                  setPage(1);
-                }}
-                className="w-full"
-              >
-                <div className={`relative aspect-[4/5] overflow-hidden rounded-lg shadow-[0_12px_30px_rgba(0,0,0,0.4),0_0_18px_rgba(184,149,106,0.15)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
-                  <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
-                </div>
-                <p className={`mt-2 text-[0.58rem] uppercase tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/80"}`}>{collection.name}</p>
-              </button>
-            );
-          })}
         </section>
 
         <section className="mb-6 space-y-3 rounded-xl bg-dark-card/25 p-3">

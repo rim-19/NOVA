@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { useCartStore } from "@/store/useCartStore";
+import { useFavoriteStore } from "@/store/useFavoriteStore";
 
 export function Navbar() {
     const pathname = usePathname();
@@ -15,6 +16,7 @@ export function Navbar() {
     const navRef = useRef<HTMLElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
     const { getTotalItems, toggleCart } = useCartStore();
+    const favoriteCount = useFavoriteStore((state) => state.slugs.length);
     const totalItems = getTotalItems();
 
     useEffect(() => {
@@ -139,6 +141,24 @@ export function Navbar() {
                     {/* Right side - Mobile compact */}
                     {!hideHeroActions && (
                         <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 relative z-10">
+                        <Link
+                            href="/collection?favorites=1"
+                            className="relative text-label text-cream/60 hover:text-cream transition-colors duration-500 hidden md:flex items-center gap-2 btn-click-effect"
+                            aria-label="View favorites"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
+                            </svg>
+                            {isMounted && favoriteCount > 0 && (
+                                <span
+                                    className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-light text-cream"
+                                    style={{ background: "#7D1736" }}
+                                >
+                                    {favoriteCount}
+                                </span>
+                            )}
+                        </Link>
+
                         {/* Cart button (Desktop) */}
                         <button
                             onClick={toggleCart}
@@ -166,6 +186,24 @@ export function Navbar() {
                                 </span>
                             )}
                         </button>
+
+                        <Link
+                            href="/collection?favorites=1"
+                            className="relative flex md:hidden items-center justify-center w-10 h-10 text-cream/80 btn-click-effect flex-shrink-0"
+                            aria-label="View favorites"
+                        >
+                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
+                            </svg>
+                            {isMounted && favoriteCount > 0 && (
+                                <span
+                                    className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] text-cream"
+                                    style={{ background: "#7D1736" }}
+                                >
+                                    {favoriteCount}
+                                </span>
+                            )}
+                        </Link>
 
                         {/* Mobile cart */}
                         <button
