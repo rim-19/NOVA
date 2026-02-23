@@ -13,7 +13,7 @@ import {
 import { ShopProductCard } from "@/components/shared/ShopProductCard";
 import { Footer } from "@/components/layout/Footer";
 
-const ITEMS_PER_PAGE = 15;
+const ITEMS_PER_PAGE = 16;
 type SortKey = "featured" | "best-sellers" | "price-low" | "price-high" | "newest";
 type PanelKey = "sort" | "size" | "filter" | null;
 type MobileGridColumns = 2 | 3 | 4;

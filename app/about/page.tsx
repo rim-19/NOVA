@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 const paragraphs = [
@@ -28,10 +28,20 @@ export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const desktopCandidates = ["/new_assets/about1.jpg", "/new_assets/about1.jpeg", "/new_assets/about2.jpg"];
   const mobileCandidates = ["/new_assets/about2.jpg", "/new_assets/about2.jpeg", "/new_assets/about1.jpg"];
+  const [isDesktop, setIsDesktop] = useState(false);
   const [desktopImageIndex, setDesktopImageIndex] = useState(0);
   const [mobileImageIndex, setMobileImageIndex] = useState(0);
+  const activeCandidates = useMemo(
+    () => (isDesktop ? desktopCandidates : mobileCandidates),
+    [isDesktop]
+  );
+  const activeIndex = isDesktop ? desktopImageIndex : mobileImageIndex;
 
   useEffect(() => {
+    const syncViewport = () => setIsDesktop(window.innerWidth >= 1024);
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+
     const ctx = gsap.context(() => {
       gsap.fromTo(
         ".reveal-text",
@@ -45,7 +55,10 @@ export default function AboutPage() {
       );
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      window.removeEventListener("resize", syncViewport);
+      ctx.revert();
+    };
   }, []);
 
   return (
@@ -74,7 +87,7 @@ export default function AboutPage() {
           Desire, Redefined.
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] gap-8 md:gap-12 lg:gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,520px)] gap-8 md:gap-12 lg:gap-16 items-start">
           <div className="order-2 lg:order-1 flex flex-col gap-5 md:gap-6 text-center lg:text-center lg:max-w-[48ch] lg:justify-center lg:min-h-full">
             {paragraphs.map((text) => (
               <p
@@ -119,24 +132,23 @@ export default function AboutPage() {
             </div>
           </div>
 
-          <div className="order-1 lg:order-2 reveal-image lg:justify-self-end">
+          <div className="order-1 lg:order-2 reveal-image lg:justify-self-end lg:sticky lg:top-28">
             <div
               className="relative w-full max-w-[520px] mx-auto lg:mx-0 h-[520px] sm:h-[620px] lg:h-[700px] rounded-3xl overflow-hidden shadow-2xl"
               style={{ boxShadow: "0 28px 85px rgba(0,0,0,0.52), 0 0 0 1px rgba(184,149,106,0.14)" }}
             >
               <img
-                src={desktopCandidates[desktopImageIndex]}
+                src={activeCandidates[activeIndex]}
                 alt="NovaLingerie model"
-                className="absolute inset-0 hidden h-full w-full object-cover lg:block"
+                className="absolute inset-0 h-full w-full object-cover"
                 style={{ filter: "brightness(0.85) contrast(1.05) saturate(0.9)" }}
-                onError={() => setDesktopImageIndex((prev) => Math.min(prev + 1, desktopCandidates.length - 1))}
-              />
-              <img
-                src={mobileCandidates[mobileImageIndex]}
-                alt="NovaLingerie model"
-                className="absolute inset-0 h-full w-full object-cover lg:hidden"
-                style={{ filter: "brightness(0.85) contrast(1.05) saturate(0.9)" }}
-                onError={() => setMobileImageIndex((prev) => Math.min(prev + 1, mobileCandidates.length - 1))}
+                onError={() => {
+                  if (isDesktop) {
+                    setDesktopImageIndex((prev) => Math.min(prev + 1, desktopCandidates.length - 1));
+                  } else {
+                    setMobileImageIndex((prev) => Math.min(prev + 1, mobileCandidates.length - 1));
+                  }
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-dark-base/35" />
             </div>
