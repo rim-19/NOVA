@@ -32,11 +32,11 @@ const TYPE_LABEL: Record<StoreCollectionType, string> = {
 };
 
 function toAssetUrl(path: string): string {
-  return path
-    .split("/")
-    .map((chunk) => encodeURIComponent(chunk))
-    .join("/")
-    .replace(/^%2F/, "/");
+  if (!path) return path;
+  if (/^https?:\/\//i.test(path) || path.startsWith("data:") || path.startsWith("blob:")) {
+    return path;
+  }
+  return path.startsWith("/") ? path : `/${path}`;
 }
 
 function hash(input: string): number {

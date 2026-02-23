@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { useCartStore } from "@/store/useCartStore";
@@ -12,15 +11,23 @@ export function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const [hideHeroActions, setHideHeroActions] = useState(true);
     const navRef = useRef<HTMLElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
     const { getTotalItems, toggleCart } = useCartStore();
     const totalItems = getTotalItems();
-    const isHeroPage = pathname === "/";
 
     useEffect(() => {
         setIsMounted(true);
     }, []);
+
+    useEffect(() => {
+        setHideHeroActions(pathname === "/");
+    }, [pathname]);
+
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [pathname]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -91,44 +98,46 @@ export function Navbar() {
                     </Link>
 
                     {/* Desktop Links - Hidden on mobile */}
-                    <div className="hidden md:flex items-center gap-12">
-                        {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="text-label text-cream/60 hover:text-cream/100 transition-colors duration-500 relative group btn-click-effect nav-link-hover"
-                            >
-                                {link.label}
-                                <span className="absolute -bottom-1 left-0 w-0 h-px bg-gold/60 group-hover:w-full transition-all duration-500" />
-                            </Link>
-                        ))}
-
-                        {/* Private Collection Teaser Trigger */}
-                        <button
-                            onClick={() => window.dispatchEvent(new CustomEvent("open-atelier-gate"))}
-                            className="group relative flex items-center justify-center w-10 h-10 transition-all duration-700 btn-click-effect"
-                            aria-label="Atelier Entrance"
-                        >
-                            <div className="relative w-5 h-5 flex items-center justify-center">
-                                <svg
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="0.3"
-                                    className="w-full h-full text-gold/80 filter drop-shadow-[0_0_10px_rgba(184,149,106,0.6)] animate-pulse-glow"
+                    {!hideHeroActions && (
+                        <div className="hidden md:flex items-center gap-12">
+                            {navLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    className="text-label text-cream/60 hover:text-cream/100 transition-colors duration-500 relative group btn-click-effect nav-link-hover"
                                 >
-                                    <path
-                                        d="M12 4C12 4 12.5 11 20 12C12.5 13 12 20 12 20C12 20 11.5 13 4 12C11.5 11 12 4 12 4Z"
-                                        fill="currentColor"
-                                    />
-                                    <path d="M12 0V24M0 12H24" stroke="currentColor" strokeWidth="0.2" className="opacity-10" />
-                                </svg>
-                            </div>
-                        </button>
-                    </div>
+                                    {link.label}
+                                    <span className="absolute -bottom-1 left-0 w-0 h-px bg-gold/60 group-hover:w-full transition-all duration-500" />
+                                </Link>
+                            ))}
+
+                            {/* Private Collection Teaser Trigger */}
+                            <button
+                                onClick={() => window.dispatchEvent(new CustomEvent("open-atelier-gate"))}
+                                className="group relative flex items-center justify-center w-10 h-10 transition-all duration-700 btn-click-effect"
+                                aria-label="Atelier Entrance"
+                            >
+                                <div className="relative w-5 h-5 flex items-center justify-center">
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="0.3"
+                                        className="w-full h-full text-gold/80 filter drop-shadow-[0_0_10px_rgba(184,149,106,0.6)] animate-pulse-glow"
+                                    >
+                                        <path
+                                            d="M12 4C12 4 12.5 11 20 12C12.5 13 12 20 12 20C12 20 11.5 13 4 12C11.5 11 12 4 12 4Z"
+                                            fill="currentColor"
+                                        />
+                                        <path d="M12 0V24M0 12H24" stroke="currentColor" strokeWidth="0.2" className="opacity-10" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+                    )}
 
                     {/* Right side - Mobile compact */}
-                    {!isHeroPage && (
+                    {!hideHeroActions && (
                         <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 relative z-10">
                         {/* Cart button (Desktop) */}
                         <button

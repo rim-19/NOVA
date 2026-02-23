@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 const paragraphs = [
@@ -26,6 +26,8 @@ const paragraphs = [
 
 export default function AboutPage() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [desktopAboutSrc, setDesktopAboutSrc] = useState("/new_assets/about1.jpg");
+  const [mobileAboutSrc, setMobileAboutSrc] = useState("/new_assets/about2.jpg");
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -120,15 +122,20 @@ export default function AboutPage() {
               className="relative w-full max-w-[520px] mx-auto lg:mx-0 h-[520px] sm:h-[620px] lg:h-[700px] rounded-3xl overflow-hidden shadow-2xl"
               style={{ boxShadow: "0 28px 85px rgba(0,0,0,0.52), 0 0 0 1px rgba(184,149,106,0.14)" }}
             >
-              <picture>
-                <source media="(min-width: 1024px)" srcSet="/new_assets/about1.jpg" />
-                <img
-                  src="/new_assets/about2.jpg"
-                  alt="NovaLingerie model"
-                  className="absolute inset-0 h-full w-full object-cover"
-                  style={{ filter: "brightness(0.85) contrast(1.05) saturate(0.9)" }}
-                />
-              </picture>
+              <img
+                src={desktopAboutSrc}
+                alt="NovaLingerie model"
+                className="absolute inset-0 hidden h-full w-full object-cover lg:block"
+                style={{ filter: "brightness(0.85) contrast(1.05) saturate(0.9)" }}
+                onError={() => setDesktopAboutSrc("/new_assets/about2.jpg")}
+              />
+              <img
+                src={mobileAboutSrc}
+                alt="NovaLingerie model"
+                className="absolute inset-0 h-full w-full object-cover lg:hidden"
+                style={{ filter: "brightness(0.85) contrast(1.05) saturate(0.9)" }}
+                onError={() => setMobileAboutSrc("/new_assets/about1.jpg")}
+              />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-dark-base/35" />
             </div>
           </div>

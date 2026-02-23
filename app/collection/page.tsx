@@ -25,7 +25,6 @@ const sortOptions: { id: SortKey; label: string }[] = [
 ];
 
 const sizeOptions = ["all", "S", "M", "L", "XL"] as const;
-const REAL_COLLECTION_SLUGS = ["set", "bodysuit", "bodysocks", "accessories"];
 const filterOptions = [
   { value: "all", label: "All Filters" },
   { value: "type:set", label: "Set" },
@@ -73,7 +72,7 @@ export default function CollectionArchivePage() {
     const fetchLive = async () => {
       const [productsRes, collectionsRes] = await Promise.all([
         supabase.from("products").select("*").eq("is_visible", true).order("created_at", { ascending: false }),
-        supabase.from("collections").select("slug,name,image").in("slug", REAL_COLLECTION_SLUGS).order("created_at", { ascending: true }),
+        supabase.from("collections").select("slug,name,image").order("created_at", { ascending: true }),
       ]);
 
       if (!productsRes.error && productsRes.data) {
