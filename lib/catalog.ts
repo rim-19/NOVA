@@ -11,31 +11,40 @@ export type NarrativeBlock = {
 
 export const catalogCollections = [
     {
-        id: "dark-mysterious",
-        name: "Dark Mysterious",
-        tagline: "Noir desire, controlled fire.",
-        slug: "dark-mysterious",
-        image: "/new_assets/dark_mystrouis_collection/dark3.jpeg",
-        count: "11 pieces",
-        description: "Noir silhouettes, sheer tension, and sharp lines that turn restraint into pure temptation.",
-    },
-    {
-        id: "dentelle-sensual",
-        name: "Dentelle Sensual",
-        tagline: "Lace that lingers on skin.",
-        slug: "dentelle-sensual",
-        image: "/new_assets/dentelle_sensual_collection/dentelle8.jpeg",
-        count: "12 pieces",
-        description: "Romantic lace and soft structure designed to glow on the body with quiet sensuality.",
-    },
-    {
-        id: "sultry-suspicious",
-        name: "Sultry Suspicious",
-        tagline: "Wild instinct, velvet gaze.",
-        slug: "sultry-suspicious",
+        id: "set",
+        name: "Set",
+        tagline: "Curated sets for complete looks.",
+        slug: "set",
         image: "/new_assets/sultry_suspcius_collection/sultry2.jpeg",
-        count: "12 pieces",
-        description: "Provocative cuts and daring details made for women who flirt with mystery and own the room.",
+        count: "0 pieces",
+        description: "Complete silhouettes designed to flow as one.",
+    },
+    {
+        id: "bodysuit",
+        name: "Bodysuit",
+        tagline: "Second-skin one-pieces with sculpted lines.",
+        slug: "bodysuit",
+        image: "/new_assets/dentelle_sensual_collection/dentelle4.jpeg",
+        count: "0 pieces",
+        description: "One piece. Pure intention.",
+    },
+    {
+        id: "bodysocks",
+        name: "Bodysocks",
+        tagline: "Mesh and net textures with daring structure.",
+        slug: "bodysocks",
+        image: "/new_assets/dark_mystrouis_collection/dark8.jpeg",
+        count: "0 pieces",
+        description: "Sheer textures that contour every move.",
+    },
+    {
+        id: "accessories",
+        name: "Accessories",
+        tagline: "Harnesses, chains, chokers and finishing details.",
+        slug: "accessories",
+        image: "/new_assets/dark_mystrouis_collection/dark3.jpeg",
+        count: "0 pieces",
+        description: "Details that complete the ritual.",
     },
 ];
 
@@ -66,7 +75,7 @@ export const homeNarrativeBlocks: NarrativeBlock[] = [
     },
 ];
 
-export const catalogProducts: Product[] = [
+const rawCatalogProducts: Product[] = [
     {
         id: "dark-midnight-command-corset-set",
         name: "Midnight Command Corset Set",
@@ -485,6 +494,100 @@ export const catalogProducts: Product[] = [
         description: "A sensual set with feline energy and a smooth finish that sits close to the skin.",
         sizes: ["S", "M", "L"],
     },
+];
+
+const CANONICAL_COLLECTIONS = [
+    { slug: "set", name: "Set" },
+    { slug: "bodysuit", name: "Bodysuit" },
+    { slug: "bodysocks", name: "Bodysocks" },
+    { slug: "accessories", name: "Accessories" },
+] as const;
+
+const WHATSAPP_ASSETS = [
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55 (1).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55 (2).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55.jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.56 (1).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.56.jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.57 (1).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.57.jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (1).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (2).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (3).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58.jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.59 (1).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.36.59.jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00 (1).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00 (2).jpeg",
+    "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00.jpeg",
+];
+
+function slugify(value: string): string {
+    return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+function estimatePrice(seed: string): number {
+    let hash = 0;
+    for (let i = 0; i < seed.length; i += 1) hash = (hash << 5) - hash + seed.charCodeAt(i);
+    const min = 220;
+    const max = 599;
+    return min + (Math.abs(hash) % (max - min + 1));
+}
+
+function chooseCollection(name: string, index: number) {
+    const lower = name.toLowerCase();
+    if (lower.includes("harness") || lower.includes("chain") || lower.includes("choker") || lower.includes("accessor")) {
+        return CANONICAL_COLLECTIONS[3];
+    }
+    if (lower.includes("sock") || lower.includes("mesh") || lower.includes("net")) {
+        return CANONICAL_COLLECTIONS[2];
+    }
+    if (lower.includes("set") || lower.includes("corset") || lower.includes("two-piece")) {
+        return CANONICAL_COLLECTIONS[0];
+    }
+    if (lower.includes("bodysuit") || lower.includes("teddy")) {
+        return CANONICAL_COLLECTIONS[1];
+    }
+    return CANONICAL_COLLECTIONS[index % CANONICAL_COLLECTIONS.length];
+}
+
+function normalizeProduct(product: Product, index: number): Product {
+    const collection = chooseCollection(product.name, index);
+    return {
+        ...product,
+        collection_slug: collection.slug,
+        collection: collection.name,
+        price: product.price && product.price > 0 ? product.price : estimatePrice(product.slug || product.name),
+        sizes: product.sizes?.length ? product.sizes : ["S", "M", "L"],
+    };
+}
+
+const whatsappNames = [
+    "Velvet Signal", "Noir Invitation", "Silk Voltage", "Secret Pulse",
+    "Midnight Spark", "Lace Current", "Crimson Orbit", "Moonlit Sway",
+];
+
+const generatedWhatsappProducts: Product[] = WHATSAPP_ASSETS.map((image, index) => {
+    const name = `${whatsappNames[index % whatsappNames.length]} ${index + 1}`;
+    const slug = slugify(`whatsapp-${name}`);
+    const collection = CANONICAL_COLLECTIONS[index % CANONICAL_COLLECTIONS.length];
+    return {
+        id: slug,
+        name,
+        slug,
+        collection_slug: collection.slug,
+        collection: collection.name,
+        price: estimatePrice(slug),
+        images: [image],
+        poetic_description: "A slow, sensual silhouette made to stay in memory.",
+        description: "A magnetic piece with confident lines and soft tension, curated for intimate elegance.",
+        sizes: ["S", "M", "L"],
+    };
+});
+
+export const catalogProducts: Product[] = [
+    ...rawCatalogProducts.map(normalizeProduct),
+    ...generatedWhatsappProducts,
 ];
 
 const featuredOrder = [

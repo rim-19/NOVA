@@ -24,25 +24,6 @@ const COLLECTIONS: StorefrontCollection[] = [
   { slug: "accessories", name: "Accessories", image: "/new_assets/dark_mystrouis_collection/dark3.jpeg" },
 ];
 
-const EXTRA_WHATSAPP_ASSETS = [
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55 (1).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55 (2).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.55.jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.56 (1).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.56.jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.57 (1).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.57.jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (1).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (2).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58 (3).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.58.jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.59 (1).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.36.59.jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00 (1).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00 (2).jpeg",
-  "/new_assets/WhatsApp Image 2026-02-22 at 01.37.00.jpeg",
-];
-
 const TYPE_LABEL: Record<StoreCollectionType, string> = {
   set: "Set",
   bodysuit: "Bodysuit",
@@ -117,53 +98,14 @@ function catalogToStorefront(product: Product, index: number): StorefrontProduct
   };
 }
 
-function titleFromWhatsapp(index: number): string {
-  const names = [
-    "Velvet Obsession",
-    "Midnight Caress",
-    "Lace Voltage",
-    "Secret Pulse",
-    "Noir Whisper",
-    "Silk Provocation",
-    "Ritual Glow",
-    "Desire Current",
-  ];
-  return `${names[index % names.length]} ${index + 1}`;
-}
-
-function whatsappToStorefront(path: string, index: number): StorefrontProduct {
-  const type: StoreCollectionType = COLLECTIONS[index % COLLECTIONS.length].slug;
-  const slug = `whatsapp-drop-${String(index + 1).padStart(2, "0")}`;
-  const name = titleFromWhatsapp(index);
-  return {
-    id: slug,
-    slug,
-    name,
-    collection_slug: type,
-    collection: TYPE_LABEL[type],
-    product_type: type,
-    price: estimatePrice(slug),
-    images: [toAssetUrl(path)],
-    poetic_description: "A slow-burning silhouette meant to stay in memory.",
-    description: "A sensual statement cut to frame the body with confidence, softness, and magnetic presence.",
-    sizes: ensureSizes(type),
-    colors: ["black", "red"],
-    is_featured: index < 3,
-    is_bestseller: index % 4 === 0,
-    is_new_arrival: true,
-    popularity: 80 - index,
-    created_at: `2026-02-${String((index % 28) + 1).padStart(2, "0")}T00:00:00.000Z`,
-  };
-}
 
 function randomRank(slug: string): number {
   return hash(`nova-${slug}`) % 1000;
 }
 
 const CATALOG_STOREFRONT = catalogProducts.map(catalogToStorefront);
-const WHATSAPP_STOREFRONT = EXTRA_WHATSAPP_ASSETS.map(whatsappToStorefront);
 
-export const storefrontProducts: StorefrontProduct[] = [...CATALOG_STOREFRONT, ...WHATSAPP_STOREFRONT].sort(
+export const storefrontProducts: StorefrontProduct[] = [...CATALOG_STOREFRONT].sort(
   (a, b) => randomRank(a.slug) - randomRank(b.slug)
 );
 
