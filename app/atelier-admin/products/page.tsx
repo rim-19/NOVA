@@ -496,7 +496,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
 
                         <div className="space-y-6 md:space-y-8">
                         <div className="space-y-4">
-                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold block">Visual Proof ({form.images.length}/4)</label>
+                            <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold block">Visual Proof ({form.images.length}/10)</label>
                             <div className="grid grid-cols-2 gap-4">
                                 {form.images.map((img, i) => (
                                     <div key={i} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 container-zoom group">
@@ -512,7 +512,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                         </div>
                                     </div>
                                 ))}
-                                {form.images.length < 4 && (
+                                {form.images.length < 10 && (
                                     <button
                                         type="button"
                                         onClick={() => fileInputRef.current?.click()}

@@ -127,7 +127,7 @@ export default function AboutPage() {
                 alt="NovaLingerie model"
                 className="absolute inset-0 h-full w-full object-cover lg:block"
                 style={{ filter: "brightness(0.85) contrast(1.05) saturate(0.9)" }}
-                onError={() => setDesktopAboutSrc("/new_assets/about2.jpg")}
+                onError={() => setDesktopAboutSrc("/new_assets/hero.png")}
               />
               <img
                 src={mobileAboutSrc}

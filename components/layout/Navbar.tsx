@@ -4,8 +4,11 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
+import { AnimatePresence, motion } from "framer-motion";
 import { useCartStore } from "@/store/useCartStore";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
+import { supabase, type Product } from "@/lib/supabase";
+import { storefrontProducts, toStorefrontProduct, type StorefrontProduct } from "@/lib/storefront";
 
 export function Navbar() {
     const pathname = usePathname();
@@ -13,10 +16,14 @@ export function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
     const [hideHeroActions, setHideHeroActions] = useState(true);
+    const [favoritesOpen, setFavoritesOpen] = useState(false);
+    const [favoriteItems, setFavoriteItems] = useState<StorefrontProduct[]>([]);
+    const [loadingFavorites, setLoadingFavorites] = useState(false);
     const navRef = useRef<HTMLElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
     const { getTotalItems, toggleCart } = useCartStore();
-    const favoriteCount = useFavoriteStore((state) => state.slugs.length);
+    const favoriteSlugs = useFavoriteStore((state) => state.slugs);
+    const favoriteCount = favoriteSlugs.length;
     const totalItems = getTotalItems();
 
     useEffect(() => {
@@ -30,6 +37,46 @@ export function Navbar() {
     useEffect(() => {
         setMenuOpen(false);
     }, [pathname]);
+
+    useEffect(() => {
+        if (!favoritesOpen) return;
+        if (favoriteSlugs.length === 0) {
+            setFavoriteItems([]);
+            return;
+        }
+
+        let cancelled = false;
+        const loadFavorites = async () => {
+            setLoadingFavorites(true);
+            const { data, error } = await supabase
+                .from("products")
+                .select("*")
+                .in("slug", favoriteSlugs)
+                .eq("is_visible", true);
+
+            if (!cancelled) {
+                if (!error && data) {
+                    const mapped = (data as Product[]).map((product, i) => toStorefrontProduct(product, i));
+                    const bySlug = new Map(mapped.map((item) => [item.slug, item]));
+                    const ordered = favoriteSlugs
+                        .map((slug) => bySlug.get(slug) || storefrontProducts.find((item) => item.slug === slug))
+                        .filter((item): item is StorefrontProduct => Boolean(item));
+                    setFavoriteItems(ordered);
+                } else {
+                    const fallback = favoriteSlugs
+                        .map((slug) => storefrontProducts.find((item) => item.slug === slug))
+                        .filter((item): item is StorefrontProduct => Boolean(item));
+                    setFavoriteItems(fallback);
+                }
+                setLoadingFavorites(false);
+            }
+        };
+
+        loadFavorites();
+        return () => {
+            cancelled = true;
+        };
+    }, [favoritesOpen, favoriteSlugs]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -141,8 +188,9 @@ export function Navbar() {
                     {/* Right side - Mobile compact */}
                     {!hideHeroActions && (
                         <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 relative z-10">
-                        <Link
-                            href="/collection?favorites=1"
+                        <button
+                            type="button"
+                            onClick={() => setFavoritesOpen(true)}
                             className="relative text-label text-cream/60 hover:text-cream transition-colors duration-500 hidden md:flex items-center gap-2 btn-click-effect"
                             aria-label="View favorites"
                         >
@@ -157,7 +205,7 @@ export function Navbar() {
                                     {favoriteCount}
                                 </span>
                             )}
-                        </Link>
+                        </button>
 
                         {/* Cart button (Desktop) */}
                         <button
@@ -187,8 +235,9 @@ export function Navbar() {
                             )}
                         </button>
 
-                        <Link
-                            href="/collection?favorites=1"
+                        <button
+                            type="button"
+                            onClick={() => setFavoritesOpen(true)}
                             className="relative flex md:hidden items-center justify-center w-10 h-10 text-cream/80 btn-click-effect flex-shrink-0"
                             aria-label="View favorites"
                         >
@@ -203,7 +252,7 @@ export function Navbar() {
                                     {favoriteCount}
                                 </span>
                             )}
-                        </Link>
+                        </button>
 
                         {/* Mobile cart */}
                         <button
@@ -346,6 +395,65 @@ export function Navbar() {
                     </div>
                 </div>
             </div>
+            <AnimatePresence>
+                {favoritesOpen && (
+                    <motion.div
+                        className="fixed inset-0 z-[1300] bg-black/60 backdrop-blur-sm p-4 md:p-8 flex items-start md:items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setFavoritesOpen(false)}
+                    >
+                        <motion.div
+                            initial={{ y: 24, opacity: 0, scale: 0.98 }}
+                            animate={{ y: 0, opacity: 1, scale: 1 }}
+                            exit={{ y: 20, opacity: 0, scale: 0.98 }}
+                            transition={{ duration: 0.2 }}
+                            className="w-full max-w-xl rounded-2xl border border-gold/20 bg-[linear-gradient(180deg,rgba(57,10,22,0.95),rgba(26,2,2,0.98))] p-4 md:p-6 shadow-[0_30px_60px_rgba(0,0,0,0.55)]"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="mb-4 flex items-center justify-between">
+                                <div>
+                                    <p className="text-[0.55rem] uppercase tracking-[0.32em] text-gold/60">Favorites</p>
+                                    <h3 className="font-cormorant italic text-2xl text-cream">Saved Pieces</h3>
+                                </div>
+                                <button
+                                    onClick={() => setFavoritesOpen(false)}
+                                    className="rounded-full bg-black/30 p-2 text-cream/70 hover:text-cream"
+                                    aria-label="Close favorites"
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M18 6L6 18M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="max-h-[60vh] overflow-auto space-y-2 pr-1">
+                                {loadingFavorites ? (
+                                    <p className="py-8 text-center text-xs tracking-[0.18em] uppercase text-cream/55">Loading favorites...</p>
+                                ) : favoriteItems.length === 0 ? (
+                                    <p className="py-8 text-center text-xs tracking-[0.18em] uppercase text-cream/55">No favorites yet.</p>
+                                ) : (
+                                    favoriteItems.map((item) => (
+                                        <Link
+                                            key={item.slug}
+                                            href={`/product/${item.slug}`}
+                                            onClick={() => setFavoritesOpen(false)}
+                                            className="flex items-center gap-3 rounded-xl border border-white/10 bg-black/20 p-2 hover:border-gold/35 transition-colors"
+                                        >
+                                            <img src={item.images?.[0]} alt={item.name} className="h-14 w-12 rounded-md object-cover" />
+                                            <div className="min-w-0">
+                                                <p className="truncate text-[0.55rem] uppercase tracking-[0.22em] text-gold/55">{item.collection}</p>
+                                                <p className="truncate font-cormorant italic text-lg leading-tight text-[#b8956a]">{item.name}</p>
+                                            </div>
+                                        </Link>
+                                    ))
+                                )}
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </>
     );
 }

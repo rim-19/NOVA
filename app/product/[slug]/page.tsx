@@ -122,7 +122,17 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     );
   }
 
-  const shortDescription = ((product.description || "").split(".").slice(0, 1).join(".") || "").trim() + ".";
+  const rawDescription =
+    (product.short_description && product.short_description.trim()) ||
+    (product.description && product.description.trim()) ||
+    (product.poetic_description && product.poetic_description.trim()) ||
+    "";
+  const firstSentence = rawDescription
+    ? rawDescription.split(".").map((part) => part.trim()).find(Boolean) || rawDescription
+    : "";
+  const shortDescription = firstSentence
+    ? `${firstSentence.replace(/[.!?]+$/, "")}.`
+    : "A sensual piece curated to reveal your confidence.";
   const liked = isFavorite(product.slug);
 
   return (

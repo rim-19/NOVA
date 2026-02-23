@@ -16,6 +16,7 @@ import { Footer } from "@/components/layout/Footer";
 const ITEMS_PER_PAGE = 15;
 type SortKey = "featured" | "best-sellers" | "price-low" | "price-high" | "newest";
 type PanelKey = "sort" | "size" | "filter" | null;
+type MobileGridColumns = 2 | 3 | 4;
 
 const sortOptions: { id: SortKey; label: string }[] = [
   { id: "featured", label: "Featured" },
@@ -66,6 +67,7 @@ export default function CollectionArchivePage() {
   const [selectedFilter, setSelectedFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [activePanel, setActivePanel] = useState<PanelKey>(null);
+  const [mobileGridCols, setMobileGridCols] = useState<MobileGridColumns>(2);
   const [favoritesOnly] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return new URLSearchParams(window.location.search).get("favorites") === "1";
@@ -272,7 +274,29 @@ export default function CollectionArchivePage() {
               </button>
             </div>
 
-            <div />
+            <div className="flex items-center gap-1 md:hidden">
+              <button
+                onClick={() => setMobileGridCols(2)}
+                className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 2 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
+                aria-label="2 columns"
+              >
+                2
+              </button>
+              <button
+                onClick={() => setMobileGridCols(3)}
+                className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 3 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
+                aria-label="3 columns"
+              >
+                3
+              </button>
+              <button
+                onClick={() => setMobileGridCols(4)}
+                className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 4 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
+                aria-label="4 columns"
+              >
+                4
+              </button>
+            </div>
           </div>
         </section>
 
@@ -283,7 +307,7 @@ export default function CollectionArchivePage() {
             ))}
           </div>
         ) : (
-          <section className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-5">
+          <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2" : mobileGridCols === 3 ? "grid-cols-3" : "grid-cols-4"} md:grid-cols-3 gap-3 md:gap-5`}>
             {paginated.map((product) => (
               <div key={product.slug} className="w-full md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto">
                 <ShopProductCard product={product} />
