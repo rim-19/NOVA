@@ -37,12 +37,13 @@ export function CartDrawer() {
             gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
             gsap.fromTo(
                 drawer,
-                { x: "100%" },
-                { x: "0%", duration: 0.6, ease: "power4.out" }
+                { x: "100%", opacity: 0 },
+                { x: "0%", opacity: 1, duration: 0.6, ease: "power4.out" }
             );
         } else {
             gsap.to(drawer, {
                 x: "100%",
+                opacity: 0,
                 duration: 0.5,
                 ease: "power4.in",
             });
@@ -143,7 +144,7 @@ export function CartDrawer() {
                 </div>
 
                 {/* Items */}
-                <div className="flex-1 overflow-y-auto py-4 px-6 md:px-8">
+                <div className="flex-1 overflow-y-auto py-4 px-6 md:px-8" style={{ minHeight: "200px" }}>
                     {items.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full gap-6 py-20">
                             <p
@@ -167,7 +168,7 @@ export function CartDrawer() {
                             </p>
                         </div>
                     ) : (
-                        <div className="flex flex-col gap-6 py-2">
+                        <div className="flex flex-col gap-6 py-2" style={{ opacity: 1 }}>
                             {items.map((item) => (
                                 <div
                                     key={`${item.id}-${item.size}`}

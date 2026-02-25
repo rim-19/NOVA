@@ -241,7 +241,7 @@ export default function CollectionArchivePage() {
           <motion.div
             ref={collectionTrackRef}
             drag="x"
-            dragConstraints={{ left: -collectionDragWidth, right: 0 }}
+            dragConstraints={{ left: -(collectionDragWidth + 100), right: 0 }}
             dragElastic={0.06}
             className="flex w-max gap-3 md:gap-4 cursor-grab active:cursor-grabbing px-0.5 py-2"
           >
@@ -261,7 +261,7 @@ export default function CollectionArchivePage() {
                   }}
                   className="w-[98px] md:w-[132px] shrink-0"
                 >
-                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-sm" : ""}`}>
+                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-xs" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                     {collection.isPrivate && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40">
