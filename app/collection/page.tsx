@@ -201,7 +201,7 @@ export default function CollectionArchivePage() {
           <p className="text-[0.65rem] text-cream/65 tracking-[0.22em] uppercase text-right">{filteredAndSorted.length} Articles</p>
         </header>
 
-        <section className="mb-2 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
+        <section className="mb-4 md:mb-2 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
           <motion.div
             ref={collectionTrackRef}
             drag="x"
@@ -238,7 +238,7 @@ export default function CollectionArchivePage() {
               setPage(1);
             }}
             placeholder="Search by product name..."
-            className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35"
+            className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35 shadow-[0_4px_20px_rgba(0,0,0,0.3),0_0_15px_rgba(184,149,106,0.15)]"
           />
 
           <div className="flex items-center justify-between gap-2">

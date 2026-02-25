@@ -84,7 +84,7 @@ export function ShopProductCard({ product }: Props) {
 
       <button
         aria-label="Quick add"
-        className="absolute right-3 top-3 z-20 rounded-full bg-dark-base/75 p-2 text-gold shadow-[0_0_18px_rgba(184,149,106,0.22)] transition md:opacity-0 md:group-hover:opacity-100"
+        className="absolute right-3 top-3 z-20 rounded-full bg-dark-base/75 p-2 text-gold shadow-[0_4px_25px_rgba(0,0,0,0.4),0_0_20px_rgba(184,149,106,0.25)] transition md:opacity-0 md:group-hover:opacity-100"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -92,8 +92,9 @@ export function ShopProductCard({ product }: Props) {
         }}
       >
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M6 7h12l-1 13H7L6 7z" />
-          <path d="M9 7a3 3 0 016 0" />
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <path d="M16 10a4 4 0 01-8 0" />
         </svg>
       </button>
 
@@ -102,7 +103,7 @@ export function ShopProductCard({ product }: Props) {
           <p className="text-[0.52rem] uppercase tracking-[0.33em] text-gold/50">{product.collection}</p>
           <button
             aria-label="Favorite"
-            className={`rounded-full p-1.5 transition-colors ${liked ? "text-gold" : "text-cream/55 hover:text-gold"}`}
+            className={`rounded-full p-1.5 transition-colors border ${liked ? "text-gold border-gold/40" : "text-cream/55 hover:text-gold border-cream/20 hover:border-gold/40"}`}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

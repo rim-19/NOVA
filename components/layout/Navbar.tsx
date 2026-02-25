@@ -153,7 +153,7 @@ export function Navbar() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="text-label text-cream/60 hover:text-cream/100 transition-colors duration-500 relative group btn-click-effect nav-link-hover animate-pulse-glow"
+                                    className="text-label text-cream/60 hover:text-cream/100 transition-colors duration-500 relative group btn-click-effect nav-link-hover animate-pulse-glow rounded-lg px-3 py-2"
                                     style={{ textShadow: "0 0 15px rgba(184, 149, 106, 0.3)" }}
                                 >
                                     {link.label}
@@ -348,7 +348,7 @@ export function Navbar() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="text-xl md:text-2xl font-cormorant italic text-cream/70 hover:text-gold transition-colors duration-500 flex items-center gap-4 group animate-pulse-glow"
+                                className="text-xl md:text-2xl font-cormorant italic text-cream/70 hover:text-gold transition-colors duration-500 flex items-center gap-4 group animate-pulse-glow rounded-lg px-3 py-2"
                                 style={{ textShadow: "0 0 20px rgba(184, 149, 106, 0.4)" }}
                                 onClick={() => setMenuOpen(false)}
                             >
