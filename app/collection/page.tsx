@@ -65,6 +65,7 @@ export default function CollectionArchivePage() {
   const [sortBy, setSortBy] = useState<SortKey>("featured");
   const [selectedSize, setSelectedSize] = useState<(typeof sizeOptions)[number]>("all");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [activePanel, setActivePanel] = useState<PanelKey>(null);
   const [mobileGridCols, setMobileGridCols] = useState<MobileGridColumns>(2);
@@ -201,13 +202,13 @@ export default function CollectionArchivePage() {
           <p className="text-[0.65rem] text-cream/65 tracking-[0.22em] uppercase text-right">{filteredAndSorted.length} Articles</p>
         </header>
 
-        <section className="mb-6 md:mb-4 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
+        <section className="mb-6 md:mb-4 overflow-hidden no-scrollbar p-2" ref={collectionWrapRef}>
           <motion.div
             ref={collectionTrackRef}
             drag="x"
             dragConstraints={{ left: -collectionDragWidth, right: 0 }}
             dragElastic={0.06}
-            className="flex w-max gap-3 md:gap-4 cursor-grab active:cursor-grabbing px-0.5"
+            className="flex w-max gap-3 md:gap-4 cursor-grab active:cursor-grabbing px-0.5 py-2"
           >
             {collectionsList.map((collection) => {
               const isActive = selectedType === collection.slug;
@@ -443,25 +444,139 @@ export default function CollectionArchivePage() {
                 </div>
               )}
               {activePanel === "filter" && (
-                <div className="space-y-2">
-                  <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60">Filter</p>
-                  <div className="max-h-[42vh] overflow-y-auto no-scrollbar space-y-2">
-                    {filterOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        className={`block w-full rounded-xl px-3 py-2 text-left text-xs uppercase tracking-[0.14em] ${
-                          selectedFilter === option.value ? "bg-gold/20 text-gold" : "bg-black/25 text-cream/75"
-                        }`}
-                        onClick={() => {
-                          setSelectedFilter(option.value);
-                          setPage(1);
-                          setActivePanel(null);
-                        }}
-                      >
-                        {option.label}
-                      </button>
-                    ))}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60">Filter</p>
+                    <button
+                      onClick={() => {
+                        setSelectedFilter("all");
+                        setSelectedColors([]);
+                        setSelectedSize("all");
+                        setSortBy("featured");
+                        setPage(1);
+                        setActivePanel(null);
+                      }}
+                      className="text-[0.55rem] uppercase tracking-[0.2em] text-cream/50 hover:text-gold transition-colors"
+                    >
+                      Clear
+                    </button>
                   </div>
+                  
+                  {/* Collections */}
+                  <div className="space-y-2">
+                    <p className="text-[0.5rem] uppercase tracking-[0.25em] text-cream/40">Collections</p>
+                    <div className="flex flex-wrap gap-2">
+                      {collectionsList.map((collection) => (
+                        <button
+                          key={collection.slug}
+                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
+                            selectedType === collection.slug
+                              ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
+                              : "bg-black/30 text-cream/60 hover:bg-black/45"
+                          }`}
+                          onClick={() => {
+                            setSelectedType(collection.slug === selectedType ? "all" : collection.slug);
+                            setPage(1);
+                          }}
+                        >
+                          {collection.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Colors */}
+                  <div className="space-y-2">
+                    <p className="text-[0.5rem] uppercase tracking-[0.25em] text-cream/40">Colors</p>
+                    <div className="flex flex-wrap gap-2">
+                      {COLOR_FILTERS.map((color) => (
+                        <button
+                          key={color}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${
+                            selectedColors.includes(color.toLowerCase())
+                              ? "border-gold scale-110"
+                              : "border-cream/30 hover:border-cream/50"
+                          }`}
+                          style={{
+                            backgroundColor: color.toLowerCase() === "black" ? "#1A1A1A" :
+                                           color.toLowerCase() === "white" ? "#F5E9E2" :
+                                           color.toLowerCase() === "red" ? "#7D1736" :
+                                           color.toLowerCase() === "blue" ? "#1E3A8A" :
+                                           color.toLowerCase() === "green" ? "#166534" :
+                                           color.toLowerCase() === "yellow" ? "#B8956A" :
+                                           color.toLowerCase() === "pink" ? "#EC4899" :
+                                           color.toLowerCase() === "purple" ? "#7C3AED" :
+                                           color.toLowerCase() === "orange" ? "#EA580C" :
+                                           color.toLowerCase() === "gray" ? "#6B7280" :
+                                           "#B8956A"
+                          }}
+                          onClick={() => {
+                            const colorLower = color.toLowerCase();
+                            setSelectedColors(prev => 
+                              prev.includes(colorLower) 
+                                ? prev.filter(c => c !== colorLower)
+                                : [...prev, colorLower]
+                            );
+                            setPage(1);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Sizes */}
+                  <div className="space-y-2">
+                    <p className="text-[0.5rem] uppercase tracking-[0.25em] text-cream/40">Sizes</p>
+                    <div className="flex flex-wrap gap-2">
+                      {sizeOptions.map((size) => (
+                        <button
+                          key={size}
+                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
+                            selectedSize === size
+                              ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
+                              : "bg-black/30 text-cream/60 hover:bg-black/45"
+                          }`}
+                          onClick={() => {
+                            setSelectedSize(size);
+                            setPage(1);
+                          }}
+                        >
+                          {size === "all" ? "All" : size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Sort */}
+                  <div className="space-y-2">
+                    <p className="text-[0.5rem] uppercase tracking-[0.25em] text-cream/40">Sort</p>
+                    <div className="flex flex-wrap gap-2">
+                      {sortOptions.map((option) => (
+                        <button
+                          key={option.id}
+                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
+                            sortBy === option.id
+                              ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
+                              : "bg-black/30 text-cream/60 hover:bg-black/45"
+                          }`}
+                          onClick={() => {
+                            setSortBy(option.id);
+                            setPage(1);
+                          }}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Apply Button */}
+                  <button
+                    onClick={() => setActivePanel(null)}
+                    className="w-full rounded-full bg-gold/20 px-4 py-2.5 text-[0.6rem] uppercase tracking-[0.25em] text-gold border border-gold/30 hover:bg-gold/30 transition-colors"
+                  >
+                    Apply Filters
+                  </button>
                 </div>
               )}
             </motion.div>
