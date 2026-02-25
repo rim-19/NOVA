@@ -201,7 +201,7 @@ export default function CollectionArchivePage() {
           <p className="text-[0.65rem] text-cream/65 tracking-[0.22em] uppercase text-right">{filteredAndSorted.length} Articles</p>
         </header>
 
-        <section className="mb-4 md:mb-2 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
+        <section className="mb-6 md:mb-4 overflow-hidden no-scrollbar" ref={collectionWrapRef}>
           <motion.div
             ref={collectionTrackRef}
             drag="x"
@@ -220,7 +220,7 @@ export default function CollectionArchivePage() {
                   }}
                   className="w-[98px] md:w-[132px] shrink-0"
                 >
-                  <div className={`relative aspect-[3/4] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
+                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                   </div>
                   <p className={`mt-1 md:mt-2 text-[0.5rem] md:text-[0.56rem] uppercase tracking-[0.14em] md:tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
