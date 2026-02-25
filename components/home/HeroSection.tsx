@@ -200,8 +200,12 @@ export function HeroSection() {
                 >
                     <Link
                         href="/collection"
-                        className="btn-luxury rounded-none"
-                        style={{ minWidth: "180px" }}
+                        className="btn-luxury rounded-none animate-pulse-glow"
+                        style={{ 
+                            minWidth: "180px",
+                            boxShadow: "0 0 30px rgba(184, 149, 106, 0.4), 0 0 60px rgba(184, 149, 106, 0.2), inset 0 0 20px rgba(184, 149, 106, 0.1)",
+                            textShadow: "0 0 20px rgba(184, 149, 106, 0.3)"
+                        }}
                     >
                         Explore Collections
                     </Link>
