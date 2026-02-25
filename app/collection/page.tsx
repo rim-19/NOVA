@@ -220,7 +220,7 @@ export default function CollectionArchivePage() {
                   }}
                   className="w-[98px] md:w-[132px] shrink-0"
                 >
-                  <div className={`relative aspect-[4/5] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
+                  <div className={`relative aspect-[3/4] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                   </div>
                   <p className={`mt-1 md:mt-2 text-[0.5rem] md:text-[0.56rem] uppercase tracking-[0.14em] md:tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
@@ -238,7 +238,7 @@ export default function CollectionArchivePage() {
               setPage(1);
             }}
             placeholder="Search by product name..."
-            className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35 shadow-[0_4px_20px_rgba(0,0,0,0.3),0_0_15px_rgba(184,149,106,0.15)]"
+            className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35 shadow-[0_6px_30px_rgba(0,0,0,0.4),0_0_25px_rgba(184,149,106,0.25)]"
           />
 
           <div className="flex items-center justify-between gap-2">

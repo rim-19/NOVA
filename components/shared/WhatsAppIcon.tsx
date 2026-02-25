@@ -1,9 +1,17 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 const WHATSAPP_NUMBER = "212781563070";
 
 export function WhatsAppIcon() {
+    const pathname = usePathname();
     const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}`;
+    
+    // Hide WhatsApp icon on homepage only
+    if (pathname === "/") {
+        return null;
+    }
     
     return (
         <a
