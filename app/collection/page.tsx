@@ -50,7 +50,15 @@ export default function CollectionArchivePage() {
   const whatsappHref = `https://wa.me/${whatsappNumber}`;
 
   const [allProducts, setAllProducts] = useState<StorefrontProduct[]>(storefrontProducts);
-  const [collectionsList, setCollectionsList] = useState<Array<{ slug: string; name: string; image: string }>>(storefrontCollections);
+  const [collectionsList, setCollectionsList] = useState<Array<{ slug: string; name: string; image: string; isPrivate?: boolean }>>([
+  ...storefrontCollections,
+  {
+    slug: "private-wing",
+    name: "Private Wing",
+    image: "/new_assets/unspoken.jpeg",
+    isPrivate: true
+  }
+]);
   const [loading, setLoading] = useState(true);
 
   const [selectedType, setSelectedType] = useState<string | "all">(() => {
@@ -199,7 +207,20 @@ export default function CollectionArchivePage() {
             <p className="text-[0.52rem] uppercase tracking-[0.3em] text-gold/45">Curated Intimates</p>
             <h1 className="font-cormorant text-4xl md:text-6xl italic text-cream">Collections</h1>
           </div>
-          <p className="text-[0.65rem] text-cream/65 tracking-[0.22em] uppercase text-right">{filteredAndSorted.length} Articles</p>
+          <div className="flex items-center gap-3">
+            {selectedType !== "all" && (
+              <button
+                onClick={() => {
+                  setSelectedType("all");
+                  setPage(1);
+                }}
+                className="text-[0.55rem] uppercase tracking-[0.2em] text-cream/50 hover:text-gold transition-colors"
+              >
+                Clear
+              </button>
+            )}
+            <p className="text-[0.65rem] text-cream/65 tracking-[0.22em] uppercase text-right">{filteredAndSorted.length} Articles</p>
+          </div>
         </header>
 
         <section className="mb-6 md:mb-4 overflow-hidden no-scrollbar p-2" ref={collectionWrapRef}>
@@ -216,13 +237,25 @@ export default function CollectionArchivePage() {
                 <button
                   key={collection.slug}
                   onClick={() => {
-                    setSelectedType((prev) => (prev === collection.slug ? "all" : collection.slug));
-                    setPage(1);
+                    if (collection.isPrivate) {
+                      // Open private wing gate
+                      setTimeout(() => window.dispatchEvent(new CustomEvent("open-atelier-gate")), 100);
+                    } else {
+                      setSelectedType(collection.slug === selectedType ? "all" : collection.slug);
+                      setPage(1);
+                    }
                   }}
                   className="w-[98px] md:w-[132px] shrink-0"
                 >
-                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""}`}>
+                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-sm" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
+                    {collection.isPrivate && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold/80">
+                          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                      </div>
+                    )}
                   </div>
                   <p className={`mt-1 md:mt-2 text-[0.5rem] md:text-[0.56rem] uppercase tracking-[0.14em] md:tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
                 </button>
@@ -466,7 +499,20 @@ export default function CollectionArchivePage() {
                   <div className="space-y-2">
                     <p className="text-[0.5rem] uppercase tracking-[0.25em] text-cream/40">Collections</p>
                     <div className="flex flex-wrap gap-2">
-                      {collectionsList.map((collection) => (
+                      <button
+                        className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
+                          selectedType === "all"
+                            ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
+                            : "bg-black/30 text-cream/60 hover:bg-black/45"
+                        }`}
+                        onClick={() => {
+                          setSelectedType("all");
+                          setPage(1);
+                        }}
+                      >
+                        All Collections
+                      </button>
+                      {collectionsList.filter(collection => !collection.isPrivate).map((collection) => (
                         <button
                           key={collection.slug}
                           className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
@@ -489,29 +535,39 @@ export default function CollectionArchivePage() {
                   <div className="space-y-2">
                     <p className="text-[0.5rem] uppercase tracking-[0.25em] text-cream/40">Colors</p>
                     <div className="flex flex-wrap gap-2">
-                      {COLOR_FILTERS.map((color) => (
-                        <button
-                          key={color}
-                          className={`w-8 h-8 rounded-full border-2 transition-all ${
-                            selectedColors.includes(color.toLowerCase())
-                              ? "border-gold scale-110"
-                              : "border-cream/30 hover:border-cream/50"
-                          }`}
-                          style={{
-                            backgroundColor: color.toLowerCase() === "black" ? "#1A1A1A" :
-                                           color.toLowerCase() === "white" ? "#F5E9E2" :
-                                           color.toLowerCase() === "red" ? "#7D1736" :
-                                           color.toLowerCase() === "blue" ? "#1E3A8A" :
-                                           color.toLowerCase() === "green" ? "#166534" :
-                                           color.toLowerCase() === "yellow" ? "#B8956A" :
-                                           color.toLowerCase() === "pink" ? "#EC4899" :
-                                           color.toLowerCase() === "purple" ? "#7C3AED" :
-                                           color.toLowerCase() === "orange" ? "#EA580C" :
-                                           color.toLowerCase() === "gray" ? "#6B7280" :
-                                           "#B8956A"
-                          }}
+                      {COLOR_FILTERS.map((color) => {
+                        const colorLower = color.toLowerCase();
+                        const getColorHex = (colorName: string) => {
+                          switch(colorName) {
+                            case "black": return "#1A1A1A";
+                            case "white": return "#F5E9E2";
+                            case "red": return "#DC2626";
+                            case "burgundy": return "#7D1736";
+                            case "pink": return "#EC4899";
+                            case "rose": return "#F43F5E";
+                            case "purple": return "#7C3AED";
+                            case "blue": return "#3B82F6";
+                            case "navy": return "#1E3A8A";
+                            case "green": return "#10B981";
+                            case "emerald": return "#059669";
+                            case "brown": return "#92400E";
+                            case "beige": return "#F5F5DC";
+                            case "gold": return "#B8956A";
+                            case "silver": return "#9CA3AF";
+                            default: return "#B8956A";
+                          }
+                        };
+                        
+                        return (
+                          <button
+                            key={color}
+                            className={`w-8 h-8 rounded-full border-2 transition-all ${
+                              selectedColors.includes(colorLower)
+                                ? "border-gold scale-110"
+                                : "border-cream/30 hover:border-cream/50"
+                            }`}
+                            style={{ backgroundColor: getColorHex(colorLower) }}
                           onClick={() => {
-                            const colorLower = color.toLowerCase();
                             setSelectedColors(prev => 
                               prev.includes(colorLower) 
                                 ? prev.filter(c => c !== colorLower)
@@ -520,7 +576,8 @@ export default function CollectionArchivePage() {
                             setPage(1);
                           }}
                         />
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 

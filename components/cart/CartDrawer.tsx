@@ -11,6 +11,16 @@ export function CartDrawer() {
     const { items, isOpen, closeCart, removeItem, updateQuantity, getTotalPrice } =
         useCartStore();
 
+    // Prevent flash on initial load
+    useEffect(() => {
+        const drawer = drawerRef.current;
+        const overlay = overlayRef.current;
+        if (!drawer || !overlay) return;
+
+        // Ensure hidden state initially
+        gsap.set([drawer, overlay], { display: "none", opacity: 0 });
+    }, []);
+
     useEffect(() => {
         const drawer = drawerRef.current;
         const overlay = overlayRef.current;
@@ -18,7 +28,12 @@ export function CartDrawer() {
 
         if (isOpen) {
             // Make visible first
-            gsap.set([drawer, overlay], { display: "block" });
+            gsap.set([drawer, overlay], { 
+                display: "block", 
+                opacity: 0,
+                visibility: "visible",
+                pointerEvents: "auto"
+            });
             gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
             gsap.fromTo(
                 drawer,
@@ -36,7 +51,11 @@ export function CartDrawer() {
                 duration: 0.4,
                 ease: "power2.in",
                 onComplete: () => {
-                    gsap.set([drawer, overlay], { display: "none" });
+                    gsap.set([drawer, overlay], { 
+                        display: "none", 
+                        visibility: "hidden",
+                        pointerEvents: "none"
+                    });
                 },
             });
         }
@@ -54,21 +73,28 @@ export function CartDrawer() {
             {/* Overlay */}
             <div
                 ref={overlayRef}
-                className="fixed inset-0 z-[1300] hidden"
-                style={{ background: "rgba(43,3,3,0.7)", opacity: 0 }}
+                className="fixed inset-0 z-[1300]"
+                style={{ 
+                    background: "rgba(43,3,3,0.7)", 
+                    opacity: 0,
+                    visibility: "hidden",
+                    pointerEvents: "none"
+                }}
                 onClick={closeCart}
             />
 
             {/* Drawer */}
             <div
                 ref={drawerRef}
-                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm hidden flex-col"
+                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex-col"
                 style={{
                     background: "rgba(26,2,2,0.95)",
                     backdropFilter: "blur(20px)",
                     WebkitBackdropFilter: "blur(20px)",
                     borderLeft: "1px solid rgba(125,23,54,0.2)",
-                    display: "none",
+                    visibility: "hidden",
+                    pointerEvents: "none",
+                    transform: "translateX(100%)",
                 }}
             >
                 {/* Header */}

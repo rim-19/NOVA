@@ -144,7 +144,7 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
               <motion.div
                 ref={imageTrackRef}
                 drag={product.images.length > 1 ? "x" : false}
-                dragConstraints={{ left: -(imageDragWidth + imageWidth * 0.5), right: 0 }}
+                dragConstraints={{ left: -(imageDragWidth + imageWidth * 0.3), right: 0 }}
                 dragElastic={0.08}
                 className="flex w-max cursor-grab active:cursor-grabbing"
               >
