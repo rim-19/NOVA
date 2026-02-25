@@ -104,15 +104,29 @@ export default function CollectionArchivePage() {
       }
 
       if (!collectionsRes.error && collectionsRes.data && collectionsRes.data.length > 0) {
-        setCollectionsList(
-          collectionsRes.data.map((collection) => ({
+        setCollectionsList([
+          ...collectionsRes.data.map((collection) => ({
             slug: collection.slug,
             name: collection.name,
             image: collection.image || storefrontCollections[0]?.image || "/new_assets/dark_mystrouis_collection/dark3.jpeg",
-          }))
-        );
+          })),
+          {
+            slug: "private-wing",
+            name: "Private Wing",
+            image: "/new_assets/unspoken.jpeg",
+            isPrivate: true
+          }
+        ]);
       } else {
-        setCollectionsList(storefrontCollections);
+        setCollectionsList([
+          ...storefrontCollections,
+          {
+            slug: "private-wing",
+            name: "Private Wing",
+            image: "/new_assets/unspoken.jpeg",
+            isPrivate: true
+          }
+        ]);
       }
       setLoading(false);
     };
@@ -155,16 +169,16 @@ export default function CollectionArchivePage() {
         product.collection_slug === selectedType;
       const searchOk = !search || product.name.toLowerCase().includes(search.toLowerCase());
       const sizeOk = selectedSize === "all" || product.sizes.includes(selectedSize);
+      const colorsOk = selectedColors.length === 0 || 
+        (product.colors || []).some(color => selectedColors.includes(color.toLowerCase()));
       const filterOk =
         selectedFilter === "all"
           ? true
-          : selectedFilter.startsWith("color:")
-            ? (product.colors || []).includes(selectedFilter.replace("color:", ""))
-            : selectedFilter.startsWith("collection:")
+          : selectedFilter.startsWith("collection:")
               ? product.collection_slug === selectedFilter.replace("collection:", "")
               : true;
       const favoritesOk = !favoritesOnly || favoriteSlugs.includes(product.slug);
-      return typeOk && searchOk && sizeOk && filterOk && favoritesOk;
+      return typeOk && searchOk && sizeOk && colorsOk && filterOk && favoritesOk;
     });
 
     const byDate = (a: StorefrontProduct, b: StorefrontProduct) =>
@@ -187,7 +201,7 @@ export default function CollectionArchivePage() {
     });
 
     return base;
-  }, [allProducts, search, selectedType, selectedSize, selectedFilter, sortBy, favoritesOnly, favoriteSlugs]);
+  }, [allProducts, search, selectedType, selectedSize, selectedFilter, selectedColors, sortBy, favoritesOnly, favoriteSlugs]);
 
   const totalPages = Math.max(1, Math.ceil(filteredAndSorted.length / ITEMS_PER_PAGE));
   const paginated = filteredAndSorted.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);

@@ -86,7 +86,7 @@ export function CartDrawer() {
             {/* Drawer */}
             <div
                 ref={drawerRef}
-                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex-col"
+                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col"
                 style={{
                     background: "rgba(26,2,2,0.95)",
                     backdropFilter: "blur(20px)",
@@ -95,6 +95,7 @@ export function CartDrawer() {
                     visibility: "hidden",
                     pointerEvents: "none",
                     transform: "translateX(100%)",
+                    minHeight: "100vh",
                 }}
             >
                 {/* Header */}
