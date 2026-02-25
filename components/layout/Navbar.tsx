@@ -120,8 +120,8 @@ export function Navbar() {
 
     const navLinks = [
         { label: "Home", href: "/" },
-        { label: "Collection", href: "/collection" },
-        { label: "About", href: "/about" },
+        { label: "Collections", href: "/collection" },
+        { label: "About NOVALingerie", href: "/about" },
         { label: "Contact", href: "/contact" },
     ];
 
@@ -153,7 +153,8 @@ export function Navbar() {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="text-label text-cream/60 hover:text-cream/100 transition-colors duration-500 relative group btn-click-effect nav-link-hover"
+                                    className="text-label text-cream/60 hover:text-cream/100 transition-colors duration-500 relative group btn-click-effect nav-link-hover animate-pulse-glow"
+                                    style={{ textShadow: "0 0 15px rgba(184, 149, 106, 0.3)" }}
                                 >
                                     {link.label}
                                     <span className="absolute -bottom-1 left-0 w-0 h-px bg-gold/60 group-hover:w-full transition-all duration-500" />
@@ -342,13 +343,13 @@ export function Navbar() {
                 </div>
 
                 <div className="px-8 py-4 flex flex-col gap-8 flex-1 justify-center">
-                    <p className="text-label text-[0.55rem] text-gold/30 tracking-[0.4em] mb-4">Navigation</p>
                     <div className="flex flex-col gap-8">
                         {navLinks.map((link) => (
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="text-xl md:text-2xl font-cormorant italic text-cream/70 hover:text-gold transition-colors duration-500 flex items-center gap-4 group"
+                                className="text-xl md:text-2xl font-cormorant italic text-cream/70 hover:text-gold transition-colors duration-500 flex items-center gap-4 group animate-pulse-glow"
+                                style={{ textShadow: "0 0 20px rgba(184, 149, 106, 0.4)" }}
                                 onClick={() => setMenuOpen(false)}
                             >
                                 <span className="w-0 h-px bg-gold/40 group-hover:w-8 transition-all duration-500" />
@@ -388,10 +389,21 @@ export function Navbar() {
 
                 {/* Footer Info */}
                 <div className="p-8 border-t border-gold/5 opacity-40">
-                    <p className="text-[0.6rem] text-cream tracking-widest uppercase mb-2">Social</p>
-                    <div className="flex gap-4">
-                        <span className="text-[0.65rem] text-cream/60">Instagram</span>
-                        <span className="text-[0.65rem] text-cream/60">Vogue</span>
+                    <p className="text-[0.6rem] text-cream tracking-widest uppercase mb-2">Follow us on Instagram:</p>
+                    <div className="flex gap-4 items-center">
+                        <a 
+                            href="https://www.instagram.com/novalingerieby?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 text-[0.65rem] text-cream/60 hover:text-gold transition-colors duration-300"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2"/>
+                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="none" stroke="currentColor" strokeWidth="2"/>
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                            <span>@novalingerieby</span>
+                        </a>
                     </div>
                 </div>
             </div>

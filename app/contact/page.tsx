@@ -128,8 +128,8 @@ export default function ContactPage() {
                                 >
                                     <option value="Personal Inquiry">Personal Inquiry</option>
                                     <option value="Custom Fit">Custom Fit Request</option>
-                                    <option value="Press">Press & Media</option>
-                                    <option value="Gift">Gifting Service</option>
+                                    <option value="Gifting Service">Gifting Service</option>
+                                    <option value="Collaboration">Collaboration</option>
                                 </select>
                             </div>
 
