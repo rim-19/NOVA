@@ -50,31 +50,33 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         if (!error && data) {
           setProduct(toStorefrontProduct(data as Product));
         } else {
-          // Try to find the product by slug in storefront products
-          const foundProduct = findStorefrontProductBySlug(slug);
-          if (foundProduct) {
-            setProduct(foundProduct);
+          // Try to find the product by slug in live products (from database)
+          const liveProduct = liveProducts.find((p) => p.slug === slug);
+          if (liveProduct) {
+            setProduct(liveProduct);
           } else {
-            // Try to find by partial match or show first product as fallback
-            const fallbackProduct = storefrontProducts[0];
-            if (fallbackProduct) {
-              setProduct(fallbackProduct);
+            // Try to find the product by slug in catalog products
+            const foundProduct = findStorefrontProductBySlug(slug);
+            if (foundProduct) {
+              setProduct(foundProduct);
             } else {
+              // Product not found - show 404
               setProduct(null);
             }
           }
         }
-      } catch {
-        // Try to find product by slug in storefront products
-        const foundProduct = findStorefrontProductBySlug(slug);
-        if (foundProduct) {
-          setProduct(foundProduct);
+      } catch (error) {
+        // Try to find product by slug in live products (from database)
+        const liveProduct = liveProducts.find((p) => p.slug === slug);
+        if (liveProduct) {
+          setProduct(liveProduct);
         } else {
-          // Use fallback product
-          const fallbackProduct = storefrontProducts[0];
-          if (fallbackProduct) {
-            setProduct(fallbackProduct);
+          // Try to find the product by slug in catalog products
+          const foundProduct = findStorefrontProductBySlug(slug);
+          if (foundProduct) {
+            setProduct(foundProduct);
           } else {
+            // Product not found - show 404
             setProduct(null);
           }
         }
