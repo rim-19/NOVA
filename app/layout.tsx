@@ -47,7 +47,6 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@200;300;400&family=MonteCarlo&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
           rel="stylesheet"
-          strategy="afterInteractive"
         />
       </head>
       <body className="antialiased">

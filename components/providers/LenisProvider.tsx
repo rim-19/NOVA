@@ -8,6 +8,9 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
     const rafRef = useRef<number | null>(null);
 
     useEffect(() => {
+        // Ensure we're on client side
+        if (typeof window === 'undefined') return;
+
         // Disable Lenis on mobile for better performance
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
             navigator.userAgent

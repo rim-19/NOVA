@@ -9,23 +9,31 @@ interface PerformanceProviderProps {
 export function PerformanceProvider({ children }: PerformanceProviderProps) {
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const [isLowPerformance, setIsLowPerformance] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+    
     // Check for reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setIsReducedMotion(mediaQuery.matches);
 
     // Check for low performance device
     const checkPerformance = () => {
-      const connection = (navigator as any).connection;
-      const isSlowConnection = connection?.effectiveType === 'slow-2g' || 
-                              connection?.effectiveType === '2g' ||
-                              connection?.effectiveType === '3g';
-      
-      const isLowEndDevice = navigator.hardwareConcurrency <= 2 || 
-                            (navigator as any).deviceMemory <= 2;
+      try {
+        const connection = (navigator as any).connection;
+        const isSlowConnection = connection?.effectiveType === 'slow-2g' || 
+                                connection?.effectiveType === '2g' ||
+                                connection?.effectiveType === '3g';
+        
+        const isLowEndDevice = navigator.hardwareConcurrency <= 2 || 
+                              (navigator as any).deviceMemory <= 2;
 
-      setIsLowPerformance(isSlowConnection || isLowEndDevice);
+        setIsLowPerformance(isSlowConnection || isLowEndDevice);
+      } catch (error) {
+        // Fallback if APIs aren't available
+        setIsLowPerformance(false);
+      }
     };
 
     checkPerformance();
@@ -41,14 +49,16 @@ export function PerformanceProvider({ children }: PerformanceProviderProps) {
     };
   }, []);
 
-  // Add performance optimizations to body
+  // Add performance optimizations to body only on client side
   useEffect(() => {
+    if (!isClient) return;
+    
     if (isReducedMotion || isLowPerformance) {
       document.body.classList.add('reduced-motion');
     } else {
       document.body.classList.remove('reduced-motion');
     }
-  }, [isReducedMotion, isLowPerformance]);
+  }, [isReducedMotion, isLowPerformance, isClient]);
 
   return <>{children}</>;
 }
