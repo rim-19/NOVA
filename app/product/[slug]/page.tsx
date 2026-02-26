@@ -17,19 +17,21 @@ import { ShopProductCard } from "@/components/shared/ShopProductCard";
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
-  const { product, loading } = useProduct(slug);
-  const { onAddToCart, addedToCart } = useCart();
-  const { liked, toggle } = useWishlist();
+  const [product, setProduct] = useState<StorefrontProduct | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [liveProducts, setLiveProducts] = useState<StorefrontProduct[]>([]);
+  const { addItem, getTotalPrice } = useCartStore();
+  const { isFavorite, toggle } = useFavoriteStore();
   const [selectedSize, setSelectedSize] = useState("");
+  const [addedToCart, setAddedToCart] = useState(false);
   const [imageDragWidth, setImageDragWidth] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
   const [imageDimensions, setImageDimensions] = useState<{ [key: string]: { width: number; height: number } }>({});
   const imageTrackRef = useRef<HTMLDivElement>(null);
   const imageWrapRef = useRef<HTMLDivElement>(null);
+  const recTrackRef = useRef<HTMLDivElement>(null);
+  const recWrapRef = useRef<HTMLDivElement>(null);
   const [recWidth, setRecWidth] = useState(0);
-
-  const { addItem } = useCartStore();
-  const { isFavorite, toggle } = useFavoriteStore();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -67,28 +69,14 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   useEffect(() => {
     if (!product?.images) return;
 
-    const detectDimensions = async () => {
-      const dimensions: { [key: string]: { width: number; height: number } } = {};
-      
-      for (const imgSrc of product.images) {
-        try {
-          const img = new Image();
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-            img.src = imgSrc;
-          });
-          dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
-        } catch (error) {
-          // Fallback to 3:4 ratio if image fails to load
-          dimensions[imgSrc] = { width: 3, height: 4 };
-        }
-      }
-      
-      setImageDimensions(dimensions);
-    };
-
-    detectDimensions();
+    // For now, use a fixed aspect ratio for all images
+    // In a real implementation, you could use a service to get image dimensions
+    const dimensions: { [key: string]: { width: number; height: number } } = {};
+    product.images.forEach((imgSrc) => {
+      dimensions[imgSrc] = { width: 3, height: 4 }; // Default to 3:4 ratio
+    });
+    
+    setImageDimensions(dimensions);
   }, [product?.images]);
 
   const getAspectRatio = (imgSrc: string) => {
@@ -141,8 +129,10 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
       size: selectedSize,
     });
     setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 1800);
+    setTimeout(() => setAddedToCart(false), 2000);
   };
+
+  const liked = isFavorite(product?.slug || "");
 
   if (loading) {
     return (
@@ -174,7 +164,6 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const shortDescription = firstSentence
     ? `${firstSentence.replace(/[.!?]+$/, "")}.`
     : "A sensual piece curated to reveal your confidence.";
-  const liked = isFavorite(product.slug);
 
   return (
     <div className="min-h-screen pt-20 pb-14 px-3 md:px-10" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
