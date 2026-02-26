@@ -179,6 +179,11 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   }, [product?.images]);
 
   const getAspectRatio = (imgSrc: string) => {
+    // Use 1:1 aspect ratio for all products to match the perfect product
+    return "1/1";
+    
+    // Original code - commented out
+    /*
     const dim = imageDimensions[imgSrc];
     console.log('🔍 Getting aspect ratio for:', imgSrc, 'dimensions:', dim);
     if (!dim) {
@@ -201,6 +206,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     const customRatio = `${dim.width}/${dim.height}`;
     console.log('✅ Using custom ratio:', customRatio);
     return customRatio;
+    */
   };
 
   useEffect(() => {

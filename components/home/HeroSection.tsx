@@ -196,7 +196,7 @@ export function HeroSection() {
                 {/* CTA Buttons */}
                 <div
                     ref={ctaRef}
-                    className="opacity-0 flex flex-col sm:flex-row items-center gap-4"
+                    className="opacity-0 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
                 >
                     <Link
                         href="/collection"

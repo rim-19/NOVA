@@ -72,7 +72,6 @@ export function ReviewsCarousel() {
         <div className="text-center mb-12">
           <p className="text-[0.65rem] uppercase tracking-[0.35em] text-gold/60 mb-4">Customer Voices</p>
           <h2 className="font-cormorant text-4xl md:text-5xl italic text-cream mb-4">Real Experiences</h2>
-          <p className="font-montecarlo text-xl text-gold/70">What our clients say about NOVA</p>
         </div>
 
         {/* Main Review Display */}
@@ -91,12 +90,12 @@ export function ReviewsCarousel() {
             >
               <div className="relative max-w-4xl mx-auto">
                 {/* Phone Frame Mockup */}
-                <div className="relative mx-auto w-[280px] md:w-[320px] h-[560px] md:h-[640px] bg-black rounded-[3rem] p-3 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+                <div className="relative mx-auto w-[280px] md:w-[320px] h-[560px] md:h-[640px] bg-black/5 rounded-[3rem] p-3 shadow-[0_25px_50px_-12px_rgba(184,149,106,0.3),0_10px_25px_-5px_rgba(0,0,0,0.4)]">
                   {/* Phone Screen */}
-                  <div className="relative w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
+                  <div className="relative w-full h-full bg-white/95 rounded-[2.5rem] overflow-hidden">
                     {/* Status Bar */}
-                    <div className="absolute top-0 left-0 right-0 h-8 bg-black/10 z-10 flex items-center justify-center">
-                      <div className="w-16 h-1 bg-black/20 rounded-full"></div>
+                    <div className="absolute top-0 left-0 right-0 h-8 bg-black/5 z-10 flex items-center justify-center">
+                      <div className="w-16 h-1 bg-black/10 rounded-full"></div>
                     </div>
                     
                     {/* Review Image */}
@@ -105,7 +104,7 @@ export function ReviewsCarousel() {
                         src={reviews[currentIndex].image}
                         alt={`Review ${reviews[currentIndex].id}`}
                         fill
-                        className="object-cover"
+                        className="object-contain"
                         priority
                         onError={(e) => {
                           const randomIndex = Math.floor(Math.random() * reviewImages.length);
