@@ -123,11 +123,22 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
           console.log('🔍 Detecting dimensions for:', imgSrc);
           // Create a new image element to get dimensions
           const img = document.createElement('img');
-          await new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-            img.src = imgSrc;
+          img.crossOrigin = 'anonymous'; // Add this for Supabase URLs
+          
+          // Add timeout to prevent hanging
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Image load timeout')), 5000);
           });
+          
+          await Promise.race([
+            new Promise((resolve, reject) => {
+              img.onload = resolve;
+              img.onerror = reject;
+              img.src = imgSrc;
+            }),
+            timeoutPromise
+          ]);
+          
           dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
           console.log('✅ Detected dimensions:', imgSrc, dimensions[imgSrc]);
         } catch (error) {
@@ -251,13 +262,23 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                 className="flex w-max cursor-grab active:cursor-grabbing"
               >
                 {product.images.map((img, idx) => {
+                  // For Supabase images, use a simpler approach
                   const aspectRatio = getAspectRatio(img);
                   const [width, height] = aspectRatio.split('/').map(Number);
                   const paddingBottom = (height / width) * 100;
-                  console.log('🎨 Rendering image:', img, 'aspectRatio:', aspectRatio, 'paddingBottom:', paddingBottom, 'imageWidth:', imageWidth);
+                  const fallbackWidth = imageWidth > 0 ? imageWidth : 600;
+                  console.log('🎨 Rendering image:', img, 'aspectRatio:', aspectRatio, 'paddingBottom:', paddingBottom, 'imageWidth:', imageWidth, 'fallbackWidth:', fallbackWidth);
                   return (
-                    <div key={`${img}-${idx}`} className="relative" style={{ width: `${imageWidth}px`, paddingBottom: `${paddingBottom}%` }}>
-                      <Image src={img} alt={`${product.name} ${idx + 1}`} fill priority={idx === 0} className="object-contain" />
+                    <div key={`${img}-${idx}`} className="relative" style={{ width: `${fallbackWidth}px`, paddingBottom: `${paddingBottom}%` }}>
+                      <Image 
+                        src={img} 
+                        alt={`${product.name} ${idx + 1}`} 
+                        fill 
+                        priority={idx === 0} 
+                        className="object-contain"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        unoptimized={true} // Add this for Supabase URLs
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
                     </div>
                   );
