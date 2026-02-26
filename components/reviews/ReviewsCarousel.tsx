@@ -38,7 +38,7 @@ export function ReviewsCarousel() {
   const dragX = useMotionValue(0);
   const dragConstraints = { left: -(reviews.length - 1) * 400, right: 0 };
 
-  // Auto-play logic - faster with smoothness
+  // Auto-play logic - 1.5 seconds with smoothness
   useEffect(() => {
     if (!isDragging && autoPlayEnabled) {
       const interval = setInterval(() => {
@@ -49,7 +49,7 @@ export function ReviewsCarousel() {
           }
           return next;
         });
-      }, 800); // Less than 1 second (800ms)
+      }, 1500); // 1.5 seconds
 
       return () => clearInterval(interval);
     }
@@ -106,55 +106,53 @@ export function ReviewsCarousel() {
           <h2 className="font-cormorant text-3xl md:text-4xl italic text-cream">Real Reviews</h2>
         </div>
 
-        {/* Reviews Carousel */}
-        <div className="relative overflow-hidden rounded-2xl mx-auto max-w-4xl" style={{ 
+        {/* Reviews Carousel - Single Box */}
+        <div className="relative overflow-hidden rounded-2xl mx-auto max-w-4xl h-[280px] md:h-[320px] p-6" style={{ 
           background: "rgba(26,2,2,0.8)",
           border: "1px solid rgba(184,149,106,0.2)",
           boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 16px rgba(184,149,106,0.15)"
         }}>
-          <div className="relative h-[280px] md:h-[320px] p-6">
-            <motion.div
-              ref={carouselRef}
-              className="flex h-full items-center"
-              drag="x"
-              dragConstraints={dragConstraints}
-              dragElastic={0.2}
-              dragMomentum={true}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              animate={controls}
-              style={{ cursor: isDragging ? "grabbing" : "grab" }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            >
-              {reviews.map((review, index) => (
-                <motion.div
-                  key={review.id}
-                  className="flex-shrink-0 w-[350px] h-full flex flex-col items-center justify-center px-4"
-                >
-                  {/* Screenshot - Full display without cropping */}
-                  <div className="relative w-full h-[200px] md:h-[240px] rounded-xl overflow-hidden mb-4 shadow-[0_8px_24px_rgba(0,0,0,0.3),0_0_12px_rgba(184,149,106,0.1)]">
-                    <Image
-                      src={review.image}
-                      alt={`Review ${review.id}`}
-                      fill
-                      className="object-contain" // Changed from object-cover to object-contain
-                      onError={(e) => {
-                        // Try a random image if this one doesn't exist
-                        const randomIndex = Math.floor(Math.random() * reviewImages.length);
-                        const target = e.target as HTMLImageElement;
-                        target.src = reviewImages[randomIndex];
-                      }}
-                    />
-                  </div>
+          <motion.div
+            ref={carouselRef}
+            className="flex h-full items-center"
+            drag="x"
+            dragConstraints={dragConstraints}
+            dragElastic={0.2}
+            dragMomentum={true}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            animate={controls}
+            style={{ cursor: isDragging ? "grabbing" : "grab" }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+          >
+            {reviews.map((review, index) => (
+              <motion.div
+                key={review.id}
+                className="flex-shrink-0 w-[350px] h-full flex flex-col items-center justify-center px-4"
+              >
+                {/* Screenshot - Full display without cropping */}
+                <div className="relative w-full h-[200px] md:h-[240px] rounded-xl overflow-hidden mb-4 shadow-[0_8px_24px_rgba(0,0,0,0.3),0_0_12px rgba(184,149,106,0.1)]">
+                  <Image
+                    src={review.image}
+                    alt={`Review ${review.id}`}
+                    fill
+                    className="object-contain" // Changed from object-cover to object-contain
+                    onError={(e) => {
+                      // Try a random image if this one doesn't exist
+                      const randomIndex = Math.floor(Math.random() * reviewImages.length);
+                      const target = e.target as HTMLImageElement;
+                      target.src = reviewImages[randomIndex];
+                    }}
+                  />
+                </div>
 
-                  {/* Stars - Centered */}
-                  <div className="flex gap-1 justify-center">
-                    {renderStars(review.rating)}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
+                {/* Stars - Centered */}
+                <div className="flex gap-1 justify-center">
+                  {renderStars(review.rating)}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
 
           {/* Progress Indicator */}
           <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5">

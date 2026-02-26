@@ -27,29 +27,30 @@ export function CartDrawer() {
         if (!drawer || !overlay) return;
 
         if (isOpen) {
-            // Make visible first
+            // Make visible first - simplified for performance
             gsap.set([drawer, overlay], { 
                 display: "block", 
                 opacity: 0,
                 visibility: "visible",
                 pointerEvents: "auto"
             });
-            gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
+            // Simplified animations
+            gsap.to(overlay, { opacity: 1, duration: 0.3, ease: "power2.out" });
             gsap.fromTo(
                 drawer,
-                { x: "100%", opacity: 0 },
-                { x: "0%", opacity: 1, duration: 0.6, ease: "power4.out" }
+                { x: "100%" },
+                { x: "0%", duration: 0.4, ease: "power3.out" }
             );
         } else {
+            // Simplified close animation
             gsap.to(drawer, {
                 x: "100%",
-                opacity: 0,
-                duration: 0.5,
-                ease: "power4.in",
+                duration: 0.3,
+                ease: "power3.in",
             });
             gsap.to(overlay, {
                 opacity: 0,
-                duration: 0.4,
+                duration: 0.25,
                 ease: "power2.in",
                 onComplete: () => {
                     gsap.set([drawer, overlay], { 

@@ -49,6 +49,42 @@
     cursor: auto;
   }
 
+  /* Performance optimizations */
+  body.reduced-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  body.reduced-motion .animate-slow-zoom,
+  body.reduced-motion .animate-float,
+  body.reduced-motion .animate-pulse-glow,
+  body.reduced-motion .animate-shimmer {
+    animation: none !important;
+  }
+
+  /* Optimize rendering */
+  * {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Reduce paint operations */
+  img {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+
+  /* Optimize scrolling */
+  html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+    overflow-x: hidden;
+    width: 100%;
+    scroll-padding-top: 0;
+  }
+
   /* Custom cursor enabled state */
   body.has-custom-cursor,
   body.has-custom-cursor * {
@@ -251,122 +287,86 @@
 }
 
 /* ============================================================
-   ANIMATIONS
+   ANIMATIONS - Optimized for performance
    ============================================================ */
 
 @keyframes slowZoom {
-  0% {
-    transform: scale(1);
-  }
-
-  100% {
-    transform: scale(1.08);
-  }
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
 }
 
 @keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
 }
 
 @keyframes pulseGlow {
-
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(125, 23, 54, 0.3);
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(184, 149, 106, 0.3);
+    border-color: rgba(184, 149, 106, 0.5);
   }
-
-  50% {
-    box-shadow: 0 0 50px rgba(125, 23, 54, 0.7), 0 0 100px rgba(125, 23, 54, 0.2);
+  50% { 
+    box-shadow: 0 0 30px rgba(184, 149, 106, 0.5);
+    border-color: rgba(184, 149, 106, 0.7);
   }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-
-  100% {
-    background-position: 200% 0;
-  }
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
 }
 
 @keyframes fadeUp {
-  0% {
+  0% { 
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
-
-  100% {
+  100% { 
     opacity: 1;
     transform: translateY(0);
   }
 }
 
 @keyframes revealLine {
-  0% {
-    width: 0;
-  }
-
-  100% {
-    width: 100%;
-  }
+  0% { width: 0; }
+  100% { width: 100%; }
 }
 
 @keyframes cursorPulse {
-
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.8;
-  }
-
-  50% {
-    transform: translate(-50%, -50%) scale(1.5);
-    opacity: 0.4;
-  }
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
 }
 
 @keyframes loadingBar {
-  0% {
-    transform: scaleX(0);
-  }
-
-  50% {
-    transform: scaleX(0.7);
-  }
-
-  100% {
-    transform: scaleX(1);
-  }
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
+/* Optimized animation classes - reduced duration and complexity */
 .animate-loading-bar {
-  animation: loadingBar 2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  animation: loadingBar 1.5s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-slow-zoom {
-  animation: slowZoom 20s ease-in-out infinite alternate;
+  animation: slowZoom 15s ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 4s ease-in-out infinite;
+  will-change: transform;
 }
 
 .animate-pulse-glow {
-  animation: pulseGlow 3s ease-in-out infinite;
+  animation: pulseGlow 2s ease-in-out infinite;
+  will-change: box-shadow, border-color;
 }
 
 .animate-shimmer {
   background-size: 200% auto;
-  animation: shimmer 3s ease-in-out infinite;
+  animation: shimmer 2s ease-in-out infinite;
+  will-change: background-position;
 }
 
 /* ============================================================

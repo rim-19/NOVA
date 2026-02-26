@@ -5,6 +5,7 @@ import { PromoBanner } from "@/components/layout/PromoBanner";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { CursorControl } from "@/components/layout/CursorControl";
 import { LenisProvider } from "@/components/providers/LenisProvider";
+import { PerformanceProvider } from "@/components/providers/PerformanceProvider";
 import { PrivateAtelierGate } from "@/components/shared/PrivateAtelierGate";
 import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 
@@ -46,18 +47,21 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Inter:wght@200;300;400&family=MonteCarlo&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
           rel="stylesheet"
+          strategy="afterInteractive"
         />
       </head>
       <body className="antialiased">
-        <LenisProvider>
-          <PromoBanner />
-          <CursorControl />
-          <NavbarControl />
-          <CartDrawer />
-          <PrivateAtelierGate />
-          <WhatsAppIcon />
-          <main>{children}</main>
-        </LenisProvider>
+        <PerformanceProvider>
+          <LenisProvider>
+            <PromoBanner />
+            <CursorControl />
+            <NavbarControl />
+            <CartDrawer />
+            <PrivateAtelierGate />
+            <WhatsAppIcon />
+            <main>{children}</main>
+          </LenisProvider>
+        </PerformanceProvider>
       </body>
     </html>
   );
