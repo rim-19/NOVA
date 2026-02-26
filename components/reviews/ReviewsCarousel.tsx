@@ -98,9 +98,9 @@ export function ReviewsCarousel() {
   };
 
   return (
-    <section className="py-12 px-6 md:px-12" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
+    <section className="py-12 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
-        {/* Single Box - Everything Inside */}
+        {/* Single Burgundy Box - Everything Inside */}
         <div className="relative overflow-hidden rounded-2xl mx-auto max-w-4xl p-8" style={{ 
           background: "linear-gradient(135deg, #7d1736 0%, #5a0e26 100%)",
           border: "1px solid rgba(184,149,106,0.3)",

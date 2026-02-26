@@ -215,7 +215,7 @@ export default function CollectionArchivePage() {
   );
 
   return (
-    <div className="min-h-screen pt-20 md:pt-28 pb-20 px-3 md:px-8 lg:px-12" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
+    <div className="min-h-screen pt-20 md:pt-28 pb-20 px-3 md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         <header className="mb-4 flex items-end justify-between">
           <div>

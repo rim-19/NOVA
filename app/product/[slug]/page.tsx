@@ -15,21 +15,17 @@ import {
 } from "@/lib/storefront";
 import { ShopProductCard } from "@/components/shared/ShopProductCard";
 
-export default function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = React.use(params);
-  const [product, setProduct] = useState<StorefrontProduct | null>(null);
-  const [liveProducts, setLiveProducts] = useState<StorefrontProduct[]>(storefrontProducts);
-  const [loading, setLoading] = useState(true);
+export default function ProductPage({ params }: { params: { slug: string } }) {
+  const { slug } = params;
+  const { product, loading } = useProduct(slug);
+  const { onAddToCart, addedToCart } = useCart();
+  const { liked, toggle } = useWishlist();
   const [selectedSize, setSelectedSize] = useState("");
-  const [addedToCart, setAddedToCart] = useState(false);
-
-  const imageWrapRef = useRef<HTMLDivElement>(null);
-  const imageTrackRef = useRef<HTMLDivElement>(null);
   const [imageDragWidth, setImageDragWidth] = useState(0);
-  const [imageWidth, setImageWidth] = useState(320);
-
-  const recWrapRef = useRef<HTMLDivElement>(null);
-  const recTrackRef = useRef<HTMLDivElement>(null);
+  const [imageWidth, setImageWidth] = useState(0);
+  const [imageDimensions, setImageDimensions] = useState<{ [key: string]: { width: number; height: number } }>({});
+  const imageTrackRef = useRef<HTMLDivElement>(null);
+  const imageWrapRef = useRef<HTMLDivElement>(null);
   const [recWidth, setRecWidth] = useState(0);
 
   const { addItem } = useCartStore();
@@ -67,6 +63,51 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
     if (!product) return [];
     return liveProducts.filter((p) => p.slug !== product.slug && p.collection_slug === product.collection_slug).slice(0, 5);
   }, [product, liveProducts]);
+
+  useEffect(() => {
+    if (!product?.images) return;
+
+    const detectDimensions = async () => {
+      const dimensions: { [key: string]: { width: number; height: number } } = {};
+      
+      for (const imgSrc of product.images) {
+        try {
+          const img = new Image();
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = imgSrc;
+          });
+          dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
+        } catch (error) {
+          // Fallback to 3:4 ratio if image fails to load
+          dimensions[imgSrc] = { width: 3, height: 4 };
+        }
+      }
+      
+      setImageDimensions(dimensions);
+    };
+
+    detectDimensions();
+  }, [product?.images]);
+
+  const getAspectRatio = (imgSrc: string) => {
+    const dim = imageDimensions[imgSrc];
+    if (!dim) return "3/4"; // fallback
+    
+    const ratio = dim.width / dim.height;
+    
+    // Common aspect ratios
+    if (Math.abs(ratio - 2/3) < 0.1) return "2/3";
+    if (Math.abs(ratio - 3/4) < 0.1) return "3/4";
+    if (Math.abs(ratio - 4/5) < 0.1) return "4/5";
+    if (Math.abs(ratio - 1/1) < 0.1) return "1/1";
+    if (Math.abs(ratio - 9/16) < 0.1) return "9/16";
+    if (Math.abs(ratio - 16/9) < 0.1) return "16/9";
+    
+    // Custom aspect ratio
+    return `${dim.width}/${dim.height}`;
+  };
 
   useEffect(() => {
     const update = () => {
@@ -148,12 +189,17 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
                 dragElastic={0.08}
                 className="flex w-max cursor-grab active:cursor-grabbing"
               >
-                {product.images.map((img, idx) => (
-                  <div key={`${img}-${idx}`} className="relative aspect-[3/4]" style={{ width: `${imageWidth}px` }}>
-                    <Image src={img} alt={`${product.name} ${idx + 1}`} fill priority={idx === 0} className="object-contain" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
-                  </div>
-                ))}
+                {product.images.map((img, idx) => {
+                  const aspectRatio = getAspectRatio(img);
+                  const [width, height] = aspectRatio.split('/').map(Number);
+                  const paddingBottom = (height / width) * 100;
+                  return (
+                    <div key={`${img}-${idx}`} className="relative" style={{ width: `${imageWidth}px`, paddingBottom: `${paddingBottom}%` }}>
+                      <Image src={img} alt={`${product.name} ${idx + 1}`} fill priority={idx === 0} className="object-contain" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
+                    </div>
+                  );
+                })}
               </motion.div>
             </div>
           </div>
@@ -171,22 +217,31 @@ export default function ProductPage({ params }: { params: Promise<{ slug: string
             <p className="font-cormorant text-xl text-gold">{product.price.toLocaleString("fr-MA")} MAD</p>
 
             <div>
-              <p className="text-[0.55rem] uppercase tracking-[0.25em] text-cream/40 mb-1.5">Select Size</p>
-              <div className="flex flex-wrap gap-1">
+              <p className="text-[0.55rem] uppercase tracking-[0.25em] text-cream/40 mb-2">Select Size</p>
+              <div className="flex flex-wrap gap-2 relative z-10">
                 {product.sizes.map((size) => (
                   <button
                     key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`rounded-md px-2 py-1 text-[0.58rem] tracking-[0.2em] transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 ${
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      console.log('Size clicked:', size);
+                      setSelectedSize(size);
+                    }}
+                    className={`rounded-md px-3 py-1.5 text-[0.6rem] tracking-[0.2em] transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 cursor-pointer relative z-10 hover:scale-105 ${
                       selectedSize === size
-                        ? "bg-burgundy text-cream"
+                        ? "bg-burgundy text-cream shadow-lg"
                         : "bg-dark-base/40 text-cream/70 hover:bg-dark-base/60"
                     }`}
+                    style={{ pointerEvents: 'auto' }}
                   >
                     {size}
                   </button>
                 ))}
               </div>
+              {selectedSize && (
+                <p className="text-[0.5rem] text-gold/60 mt-1">Selected: {selectedSize}</p>
+              )}
             </div>
 
             <div className="flex items-center gap-2">
