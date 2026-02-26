@@ -120,6 +120,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
       
       for (const imgSrc of product.images) {
         try {
+          console.log('🔍 Detecting dimensions for:', imgSrc);
           // Create a new image element to get dimensions
           const img = document.createElement('img');
           await new Promise((resolve, reject) => {
@@ -128,12 +129,15 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
             img.src = imgSrc;
           });
           dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
+          console.log('✅ Detected dimensions:', imgSrc, dimensions[imgSrc]);
         } catch (error) {
+          console.log('❌ Error detecting dimensions for:', imgSrc, error);
           // Fallback to 3:4 ratio if image fails to load
           dimensions[imgSrc] = { width: 3, height: 4 };
         }
       }
       
+      console.log('📦 Final dimensions object:', dimensions);
       setImageDimensions(dimensions);
     };
 
@@ -142,9 +146,14 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
 
   const getAspectRatio = (imgSrc: string) => {
     const dim = imageDimensions[imgSrc];
-    if (!dim) return "3/4"; // fallback
+    console.log('🔍 Getting aspect ratio for:', imgSrc, 'dimensions:', dim);
+    if (!dim) {
+      console.log('❌ No dimensions found, using fallback 3/4');
+      return "3/4"; // fallback
+    }
     
     const ratio = dim.width / dim.height;
+    console.log('📐 Calculated ratio:', ratio);
     
     // Common aspect ratios
     if (Math.abs(ratio - 2/3) < 0.1) return "2/3";
@@ -155,7 +164,9 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     if (Math.abs(ratio - 16/9) < 0.1) return "16/9";
     
     // Custom aspect ratio
-    return `${dim.width}/${dim.height}`;
+    const customRatio = `${dim.width}/${dim.height}`;
+    console.log('✅ Using custom ratio:', customRatio);
+    return customRatio;
   };
 
   useEffect(() => {
@@ -243,6 +254,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                   const aspectRatio = getAspectRatio(img);
                   const [width, height] = aspectRatio.split('/').map(Number);
                   const paddingBottom = (height / width) * 100;
+                  console.log('🎨 Rendering image:', img, 'aspectRatio:', aspectRatio, 'paddingBottom:', paddingBottom, 'imageWidth:', imageWidth);
                   return (
                     <div key={`${img}-${idx}`} className="relative" style={{ width: `${imageWidth}px`, paddingBottom: `${paddingBottom}%` }}>
                       <Image src={img} alt={`${product.name} ${idx + 1}`} fill priority={idx === 0} className="object-contain" />
