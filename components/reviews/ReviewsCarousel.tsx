@@ -44,11 +44,14 @@ export function ReviewsCarousel() {
     };
   }, [isAutoPlaying]);
 
+  // Stop auto-play when user interacts
+  const handleDragStart = () => {
+    setIsAutoPlaying(false);
+  };
+
   const handleDotClick = (index: number) => {
     setCurrentIndex(index);
     setIsAutoPlaying(false);
-    // Resume auto-play after 10 seconds
-    setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
   const renderStars = () => {
@@ -81,17 +84,20 @@ export function ReviewsCarousel() {
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
-            animate={{ x: -currentIndex * 100 + "%" }}
+            onDragStart={handleDragStart}
+            animate={{ x: -currentIndex * (100 / reviews.length) + "%" }}
             transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
             className="flex gap-4 cursor-grab active:cursor-grabbing"
+            style={{ width: `${reviews.length * 100}%` }}
           >
             {reviews.map((review, index) => (
               <motion.div
                 key={review.id}
-                className="flex-shrink-0 w-[200px] md:w-[240px]"
+                className="flex-shrink-0"
+                style={{ width: `${100 / reviews.length}%` }}
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="relative w-full h-[350px] md:h-[400px] bg-white/90 rounded-2xl overflow-hidden">
+                <div className="relative w-full max-w-[200px] md:max-w-[240px] mx-auto h-[350px] md:h-[400px] bg-white/90 rounded-2xl overflow-hidden">
                   {/* Review Image */}
                   <div className="relative w-full h-full">
                     <Image
@@ -122,7 +128,7 @@ export function ReviewsCarousel() {
         </div>
 
         {/* Navigation Dots */}
-        <div className="flex justify-center gap-3 mb-8">
+        <div className="flex justify-center gap-3">
           {reviews.map((_, index) => (
             <button
               key={index}
@@ -135,16 +141,6 @@ export function ReviewsCarousel() {
               aria-label={`Go to review ${index + 1}`}
             />
           ))}
-        </div>
-
-        {/* Auto-play Indicator */}
-        <div className="text-center">
-          <button
-            onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-            className="text-gold/60 hover:text-gold transition-colors text-xs uppercase tracking-[0.2em]"
-          >
-            {isAutoPlaying ? "Pause" : "Play"} Slideshow
-          </button>
         </div>
       </div>
     </section>

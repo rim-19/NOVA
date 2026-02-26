@@ -291,13 +291,10 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                 className="flex w-max cursor-grab active:cursor-grabbing"
               >
                 {product.images.map((img, idx) => {
-                  const aspectRatio = getAspectRatio(img);
-                  const [width, height] = aspectRatio.split('/').map(Number);
-                  const paddingBottom = (height / width) * 100;
                   const fallbackWidth = imageWidth > 0 ? imageWidth : 600;
-                  console.log('🎨 Rendering image:', img, 'aspectRatio:', aspectRatio, 'paddingBottom:', paddingBottom, 'imageWidth:', imageWidth, 'fallbackWidth:', fallbackWidth);
+                  console.log('🎨 Rendering image:', img, 'imageWidth:', imageWidth, 'fallbackWidth:', fallbackWidth);
                   return (
-                    <div key={`${img}-${idx}`} className="relative" style={{ width: `${fallbackWidth}px`, paddingBottom: `${paddingBottom}%` }}>
+                    <div key={`${img}-${idx}`} className="relative" style={{ width: `${fallbackWidth}px`, height: `${fallbackWidth}px` }}>
                       <Image 
                         src={img} 
                         alt={`${product.name} ${idx + 1}`} 
