@@ -20,7 +20,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   const [product, setProduct] = useState<StorefrontProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [liveProducts, setLiveProducts] = useState<StorefrontProduct[]>([]);
-  const { addItem, getTotalPrice } = useCartStore();
+  const { addItem, getTotalPrice, openCart, toggleCart } = useCartStore();
   const { isFavorite, toggle } = useFavoriteStore();
   const [selectedSize, setSelectedSize] = useState("");
   const [addedToCart, setAddedToCart] = useState(false);
@@ -50,10 +50,24 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         if (!error && data) {
           setProduct(toStorefrontProduct(data as Product));
         } else {
-          setProduct(findStorefrontProductBySlug(slug) || storefrontProducts[0]);
+          // Try to find the product by slug in storefront products
+          const foundProduct = findStorefrontProductBySlug(slug);
+          if (foundProduct) {
+            setProduct(foundProduct);
+          } else {
+            // Only use the first product as last resort
+            setProduct(storefrontProducts[0]);
+          }
         }
       } catch {
-        setProduct(findStorefrontProductBySlug(slug) || storefrontProducts[0]);
+        // Try to find product by slug in storefront products
+        const foundProduct = findStorefrontProductBySlug(slug);
+        if (foundProduct) {
+          setProduct(foundProduct);
+        } else {
+          // Only use first product as last resort
+          setProduct(storefrontProducts[0]);
+        }
       } finally {
         setLoading(false);
       }
@@ -66,17 +80,33 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
     return liveProducts.filter((p) => p.slug !== product.slug && p.collection_slug === product.collection_slug).slice(0, 5);
   }, [product, liveProducts]);
 
+  // Detect image dimensions - use actual image ratios
   useEffect(() => {
     if (!product?.images) return;
 
-    // For now, use a fixed aspect ratio for all images
-    // In a real implementation, you could use a service to get image dimensions
-    const dimensions: { [key: string]: { width: number; height: number } } = {};
-    product.images.forEach((imgSrc) => {
-      dimensions[imgSrc] = { width: 3, height: 4 }; // Default to 3:4 ratio
-    });
-    
-    setImageDimensions(dimensions);
+    const detectDimensions = async () => {
+      const dimensions: { [key: string]: { width: number; height: number } } = {};
+      
+      for (const imgSrc of product.images) {
+        try {
+          // Create a new image element to get dimensions
+          const img = document.createElement('img');
+          await new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+            img.src = imgSrc;
+          });
+          dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
+        } catch (error) {
+          // Fallback to 3:4 ratio if image fails to load
+          dimensions[imgSrc] = { width: 3, height: 4 };
+        }
+      }
+      
+      setImageDimensions(dimensions);
+    };
+
+    detectDimensions();
   }, [product?.images]);
 
   const getAspectRatio = (imgSrc: string) => {
