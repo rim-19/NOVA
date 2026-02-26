@@ -36,35 +36,48 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   useEffect(() => {
     async function fetchProduct() {
       setLoading(true);
+      console.log('🔍 Fetching product for slug:', slug);
+      
       try {
         const [oneRes, allRes] = await Promise.all([
           supabase.from("products").select("*").eq("slug", slug).single(),
           supabase.from("products").select("*").eq("is_visible", true),
         ]);
 
+        console.log('📦 Single product result:', { data: oneRes.data, error: oneRes.error });
+        console.log('📦 All products result:', { data: allRes.data?.length, error: allRes.error });
+
         if (!allRes.error && allRes.data) {
           setLiveProducts(allRes.data.map((item, index) => toStorefrontProduct(item as Product, index)));
+          console.log('✅ Live products set:', allRes.data.length);
         }
 
         const { data, error } = oneRes;
         if (!error && data) {
+          console.log('✅ Product found in database:', data.name);
           setProduct(toStorefrontProduct(data as Product));
         } else {
+          console.log('❌ Database query failed, trying catalog...');
           // Database query failed, try catalog products first
           const foundProduct = findStorefrontProductBySlug(slug);
           if (foundProduct) {
+            console.log('✅ Product found in catalog:', foundProduct.name);
             setProduct(foundProduct);
           } else {
+            console.log('❌ Product not found anywhere');
             // Product not found in catalog either - show 404
             setProduct(null);
           }
         }
       } catch (error) {
+        console.log('💥 Error in fetchProduct:', error);
         // Try catalog products first when there's an error
         const foundProduct = findStorefrontProductBySlug(slug);
         if (foundProduct) {
+          console.log('✅ Product found in catalog after error:', foundProduct.name);
           setProduct(foundProduct);
         } else {
+          console.log('❌ Product not found anywhere after error');
           // Product not found - show 404
           setProduct(null);
         }
