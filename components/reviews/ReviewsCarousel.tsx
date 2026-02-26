@@ -19,8 +19,8 @@ const reviewImages = [
   
 ];
 
-// Randomly assign ratings
-const getRandomRating = () => Math.random() > 0.2 ? 5 : 4; // 80% chance of 5 stars
+// Randomly assign ratings - all 5 stars now
+const getRandomRating = () => 5; // All 5 stars
 
 const reviews = reviewImages.map((image, index) => ({
   id: index + 1,
@@ -38,7 +38,7 @@ export function ReviewsCarousel() {
   const dragX = useMotionValue(0);
   const dragConstraints = { left: -(reviews.length - 1) * 400, right: 0 };
 
-  // Auto-play logic
+  // Auto-play logic - faster with smoothness
   useEffect(() => {
     if (!isDragging && autoPlayEnabled) {
       const interval = setInterval(() => {
@@ -49,7 +49,7 @@ export function ReviewsCarousel() {
           }
           return next;
         });
-      }, 4000);
+      }, 800); // Less than 1 second (800ms)
 
       return () => clearInterval(interval);
     }
@@ -107,11 +107,15 @@ export function ReviewsCarousel() {
         </div>
 
         {/* Reviews Carousel */}
-        <div className="relative overflow-hidden rounded-2xl" style={{ background: "rgba(26,2,2,0.6)" }}>
-          <div className="relative h-[350px] md:h-[400px]">
+        <div className="relative overflow-hidden rounded-2xl mx-auto max-w-4xl" style={{ 
+          background: "rgba(26,2,2,0.8)",
+          border: "1px solid rgba(184,149,106,0.2)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 16px rgba(184,149,106,0.15)"
+        }}>
+          <div className="relative h-[280px] md:h-[320px] p-6">
             <motion.div
               ref={carouselRef}
-              className="flex h-full"
+              className="flex h-full items-center"
               drag="x"
               dragConstraints={dragConstraints}
               dragElastic={0.2}
@@ -120,24 +124,20 @@ export function ReviewsCarousel() {
               onDragEnd={handleDragEnd}
               animate={controls}
               style={{ cursor: isDragging ? "grabbing" : "grab" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
               {reviews.map((review, index) => (
                 <motion.div
                   key={review.id}
-                  className="flex-shrink-0 w-[400px] h-full flex flex-col items-center justify-center p-8"
-                  style={{ 
-                    borderLeft: index === 0 ? "none" : "1px solid rgba(184,149,106,0.1)",
-                    borderRight: index === reviews.length - 1 ? "none" : "1px solid rgba(184,149,106,0.1)"
-                  }}
+                  className="flex-shrink-0 w-[350px] h-full flex flex-col items-center justify-center px-4"
                 >
-                  {/* Screenshot */}
-                  <div className="relative w-full max-w-[320px] h-[240px] md:h-[280px] rounded-xl overflow-hidden mb-6 shadow-[0_12px_32px_rgba(0,0,0,0.4),0_0_20px_rgba(184,149,106,0.15)]">
+                  {/* Screenshot - Full display without cropping */}
+                  <div className="relative w-full h-[200px] md:h-[240px] rounded-xl overflow-hidden mb-4 shadow-[0_8px_24px_rgba(0,0,0,0.3),0_0_12px_rgba(184,149,106,0.1)]">
                     <Image
                       src={review.image}
                       alt={`Review ${review.id}`}
                       fill
-                      className="object-cover"
+                      className="object-contain" // Changed from object-cover to object-contain
                       onError={(e) => {
                         // Try a random image if this one doesn't exist
                         const randomIndex = Math.floor(Math.random() * reviewImages.length);
@@ -147,8 +147,8 @@ export function ReviewsCarousel() {
                     />
                   </div>
 
-                  {/* Stars */}
-                  <div className="flex gap-1">
+                  {/* Stars - Centered */}
+                  <div className="flex gap-1 justify-center">
                     {renderStars(review.rating)}
                   </div>
                 </motion.div>
@@ -157,25 +157,18 @@ export function ReviewsCarousel() {
           </div>
 
           {/* Progress Indicator */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5">
             {reviews.map((_, index) => (
               <div
                 key={index}
-                className={`h-1 w-8 rounded-full transition-all duration-300 ${
+                className={`h-0.5 w-6 rounded-full transition-all duration-300 ${
                   index === currentIndex 
-                    ? "bg-gold/80" 
-                    : "bg-cream/20"
+                    ? "bg-gold/90" 
+                    : "bg-cream/30"
                 }`}
               />
             ))}
           </div>
-        </div>
-
-        {/* Subtle hint text */}
-        <div className="text-center mt-6">
-          <p className="text-[0.55rem] uppercase tracking-[0.2em] text-cream/40">
-            Drag to explore • Auto-playing
-          </p>
         </div>
       </div>
     </section>

@@ -242,7 +242,7 @@ export default function CollectionArchivePage() {
           <motion.div
             ref={collectionTrackRef}
             drag="x"
-            dragConstraints={{ left: -(collectionDragWidth + 60), right: 0 }}
+            dragConstraints={{ left: -(collectionDragWidth + 10), right: 0 }}
             dragElastic={0.06}
             className="flex w-max gap-3 md:gap-4 cursor-grab active:cursor-grabbing px-0.5 py-2"
           >
