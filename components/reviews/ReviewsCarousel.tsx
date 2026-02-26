@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, useAnimation, useMotionValue } from "framer-motion";
+import { motion, useAnimation, useMotionValue, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
 // Get all review images from the folder
@@ -14,82 +14,50 @@ const reviewImages = [
   "/new_assets/reviews/review6.jpeg",
   "/new_assets/reviews/review7.jpeg",
   "/new_assets/reviews/review8.jpeg",
- 
- 
-  
 ];
 
-// Randomly assign ratings - all 5 stars now
-const getRandomRating = () => 5; // All 5 stars
-
+// All 5 stars
 const reviews = reviewImages.map((image, index) => ({
   id: index + 1,
   image: image,
-  rating: getRandomRating(),
+  rating: 5,
 }));
 
 export function ReviewsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [autoPlayEnabled, setAutoPlayEnabled] = useState(true);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const controls = useAnimation();
-  
-  const dragX = useMotionValue(0);
-  const dragConstraints = { left: -(reviews.length - 1) * 320, right: 0 };
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Auto-play logic - smoother transitions
+  // Auto-play with smooth timing
   useEffect(() => {
-    if (!isDragging && autoPlayEnabled) {
-      const interval = setInterval(() => {
-        setCurrentIndex((prev) => {
-          const next = prev + 1;
-          if (next >= reviews.length) {
-            return 0;
-          }
-          return next;
-        });
-      }, 3000); // 3 seconds for smoother experience
-
-      return () => clearInterval(interval);
+    if (isAutoPlaying) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % reviews.length);
+      }, 4000); // 4 seconds for smooth viewing
     }
-  }, [isDragging, autoPlayEnabled]);
-
-  // Sync drag position with current index
-  useEffect(() => {
-    if (!isDragging) {
-      controls.start({ x: -currentIndex * 320 });
-    }
-  }, [currentIndex, controls, isDragging]);
-
-  const handleDragStart = () => {
-    setIsDragging(true);
-    setAutoPlayEnabled(false);
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-    const dragOffset = dragX.get();
-    const newIndex = Math.round(-dragOffset / 320);
-    const clampedIndex = Math.max(0, Math.min(newIndex, reviews.length - 1));
-    setCurrentIndex(clampedIndex);
     
-    // Resume auto-play after 5 seconds
-    setTimeout(() => {
-      setAutoPlayEnabled(true);
-    }, 5000);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isAutoPlaying]);
+
+  const handleDotClick = (index: number) => {
+    setCurrentIndex(index);
+    setIsAutoPlaying(false);
+    // Resume auto-play after 10 seconds
+    setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
-  const renderStars = (rating: number) => {
+  const renderStars = () => {
     return Array.from({ length: 5 }, (_, i) => (
       <svg
         key={i}
-        width="16"
-        height="16"
+        width="20"
+        height="20"
         viewBox="0 0 24 24"
-        fill={i < rating ? "#B8956A" : "none"}
-        stroke={i < rating ? "#B8956A" : "rgba(184,149,106,0.3)"}
-        strokeWidth="1"
+        fill="#B8956A"
         className="inline-block"
       >
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -98,79 +66,93 @@ export function ReviewsCarousel() {
   };
 
   return (
-    <section className="py-12 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto">
-        {/* Dark Box - Everything Inside */}
-        <div className="relative overflow-hidden rounded-2xl mx-auto max-w-6xl p-6 md:p-8" style={{ 
-          background: "rgba(26,2,2,0.95)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(184,149,106,0.1)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 16px rgba(125,23,54,0.2)"
-        }}>
-          {/* Header Inside Box */}
-          <div className="text-center mb-8">
-            <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60 mb-3">Customer Experiences</p>
-            <h2 className="font-cormorant text-3xl md:text-4xl italic text-cream">Real Reviews</h2>
-          </div>
+    <section className="py-16 px-6 md:px-12 bg-gradient-to-b from-[#1a0202] to-[#2a0508]">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <p className="text-[0.65rem] uppercase tracking-[0.35em] text-gold/60 mb-4">Customer Voices</p>
+          <h2 className="font-cormorant text-4xl md:text-5xl italic text-cream mb-4">Real Experiences</h2>
+          <p className="font-montecarlo text-xl text-gold/70">What our clients say about NOVA</p>
+        </div>
 
-          {/* Reviews Display */}
-          <div className="relative h-[240px] md:h-[280px]">
+        {/* Main Review Display */}
+        <div className="relative h-[500px] md:h-[600px] mb-8">
+          <AnimatePresence mode="wait">
             <motion.div
-              ref={carouselRef}
-              className="flex h-full items-center"
-              drag="x"
-              dragConstraints={dragConstraints}
-              dragElastic={0.2}
-              dragMomentum={true}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              animate={controls}
-              style={{ cursor: isDragging ? "grabbing" : "grab" }}
-              transition={{ type: "tween", ease: "easeInOut", duration: 0.8 }}
+              key={currentIndex}
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 1.05, y: -20 }}
+              transition={{ 
+                duration: 0.8, 
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+              className="absolute inset-0 flex items-center justify-center"
             >
-              {reviews.map((review, index) => (
-                <motion.div
-                  key={review.id}
-                  className="flex-shrink-0 w-[280px] h-full flex flex-col items-center justify-center px-2"
-                >
-                  {/* Screenshot - Full display */}
-                  <div className="relative w-full h-[180px] md:h-[200px] rounded-xl overflow-hidden shadow-[0_8px_24px rgba(0,0,0,0.3),0_0_12px rgba(184,149,106,0.1)]">
-                    <Image
-                      src={review.image}
-                      alt={`Review ${review.id}`}
-                      fill
-                      className="object-contain"
-                      onError={(e) => {
-                        const randomIndex = Math.floor(Math.random() * reviewImages.length);
-                        const target = e.target as HTMLImageElement;
-                        target.src = reviewImages[randomIndex];
-                      }}
-                    />
+              <div className="relative max-w-4xl mx-auto">
+                {/* Phone Frame Mockup */}
+                <div className="relative mx-auto w-[280px] md:w-[320px] h-[560px] md:h-[640px] bg-black rounded-[3rem] p-3 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)]">
+                  {/* Phone Screen */}
+                  <div className="relative w-full h-full bg-white rounded-[2.5rem] overflow-hidden">
+                    {/* Status Bar */}
+                    <div className="absolute top-0 left-0 right-0 h-8 bg-black/10 z-10 flex items-center justify-center">
+                      <div className="w-16 h-1 bg-black/20 rounded-full"></div>
+                    </div>
+                    
+                    {/* Review Image */}
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={reviews[currentIndex].image}
+                        alt={`Review ${reviews[currentIndex].id}`}
+                        fill
+                        className="object-cover"
+                        priority
+                        onError={(e) => {
+                          const randomIndex = Math.floor(Math.random() * reviewImages.length);
+                          const target = e.target as HTMLImageElement;
+                          target.src = reviewImages[randomIndex];
+                        }}
+                      />
+                    </div>
                   </div>
+                </div>
 
-                  {/* Stars - Centered */}
-                  <div className="flex gap-1 justify-center">
-                    {renderStars(review.rating)}
+                {/* Review Details */}
+                <div className="text-center mt-8">
+                  <div className="flex justify-center gap-1 mb-4">
+                    {renderStars()}
                   </div>
-                </motion.div>
-              ))}
+                  <p className="text-cream/60 text-sm">Verified Customer</p>
+                </div>
+              </div>
             </motion.div>
+          </AnimatePresence>
+        </div>
 
-            {/* Progress Indicator */}
-            <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5">
-              {reviews.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-0.5 w-6 rounded-full transition-all duration-300 ${
-                    index === currentIndex 
-                      ? "bg-gold/90" 
-                      : "bg-cream/30"
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
+        {/* Navigation Dots */}
+        <div className="flex justify-center gap-3 mb-8">
+          {reviews.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => handleDotClick(index)}
+              className={`transition-all duration-300 ${
+                index === currentIndex
+                  ? "w-12 h-1 bg-gold shadow-[0_0_10px_rgba(184,149,106,0.5)]"
+                  : "w-8 h-0.5 bg-cream/30 hover:bg-cream/50"
+              }`}
+              aria-label={`Go to review ${index + 1}`}
+            />
+          ))}
+        </div>
+
+        {/* Auto-play Indicator */}
+        <div className="text-center">
+          <button
+            onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+            className="text-gold/60 hover:text-gold transition-colors text-xs uppercase tracking-[0.2em]"
+          >
+            {isAutoPlaying ? "Pause" : "Play"} Slideshow
+          </button>
         </div>
       </div>
     </section>

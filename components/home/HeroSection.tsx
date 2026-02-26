@@ -17,7 +17,7 @@ export function HeroSection() {
 
     useEffect(() => {
         async function fetchHero() {
-            const { data } = await supabase.from("site_content").select("content").single();
+            const { data, error } = await supabase.from("site_content").select("content").single();
             if (data?.content) setContent(data.content);
         }
         fetchHero();

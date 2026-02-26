@@ -93,32 +93,46 @@ export default function CollectionArchivePage() {
 
   useEffect(() => {
     const fetchLive = async () => {
-      const [productsRes, collectionsRes] = await Promise.all([
-        supabase.from("products").select("*").eq("is_visible", true).order("created_at", { ascending: false }),
-        supabase.from("collections").select("slug,name,image").order("created_at", { ascending: true }),
-      ]);
-
-      if (!productsRes.error && productsRes.data) {
-        setAllProducts(productsRes.data.map((product, i) => toStorefrontProduct(product, i)));
-      } else if (productsRes.error) {
-        setAllProducts(storefrontProducts);
-      }
-
-      if (!collectionsRes.error && collectionsRes.data && collectionsRes.data.length > 0) {
-        setCollectionsList([
-          ...collectionsRes.data.map((collection) => ({
-            slug: collection.slug,
-            name: collection.name,
-            image: collection.image || storefrontCollections[0]?.image || "/new_assets/dark_mystrouis_collection/dark3.jpeg",
-          })),
-          {
-            slug: "private-wing",
-            name: "Private Wing",
-            image: "/new_assets/unspoken.jpeg",
-            isPrivate: true
-          }
+      try {
+        const [productsRes, collectionsRes] = await Promise.all([
+          supabase.from("products").select("*").eq("is_visible", true).order("created_at", { ascending: false }),
+          supabase.from("collections").select("slug,name,image").order("created_at", { ascending: true }),
         ]);
-      } else {
+
+        if (!productsRes.error && productsRes.data) {
+          setAllProducts(productsRes.data.map((product, i) => toStorefrontProduct(product, i)));
+        } else {
+          setAllProducts(storefrontProducts);
+        }
+
+        if (!collectionsRes.error && collectionsRes.data && collectionsRes.data.length > 0) {
+          setCollectionsList([
+            ...collectionsRes.data.map((collection) => ({
+              slug: collection.slug,
+              name: collection.name,
+              image: collection.image || storefrontCollections[0]?.image || "/new_assets/dark_mystrouis_collection/dark3.jpeg",
+            })),
+            {
+              slug: "private-wing",
+              name: "Private Wing",
+              image: "/new_assets/unspoken.jpeg",
+              isPrivate: true
+            }
+          ]);
+        } else {
+          setCollectionsList([
+            ...storefrontCollections,
+            {
+              slug: "private-wing",
+              name: "Private Wing",
+              image: "/new_assets/unspoken.jpeg",
+              isPrivate: true
+            }
+          ]);
+        }
+      } catch (error) {
+        // Fallback to catalog products
+        setAllProducts(storefrontProducts);
         setCollectionsList([
           ...storefrontCollections,
           {
@@ -128,8 +142,9 @@ export default function CollectionArchivePage() {
             isPrivate: true
           }
         ]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchLive();
   }, []);

@@ -55,7 +55,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           if (foundProduct) {
             setProduct(foundProduct);
           } else {
-            // Product not found - don't show fallback product
+            // Product not found - show 404
             setProduct(null);
           }
         }
