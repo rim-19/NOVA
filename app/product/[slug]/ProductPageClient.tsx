@@ -158,6 +158,13 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const getAspectRatio = (imgSrc: string) => {
     const dim = imageDimensions[imgSrc];
     console.log('🔍 Getting aspect ratio for:', imgSrc, 'dimensions:', dim);
+    
+    // For now, use a standard portrait ratio for all images to ensure consistency
+    // You can customize this per product later if needed
+    return "2/3"; // Standard portrait ratio (width:height)
+    
+    // Original code - commented out for now
+    /*
     if (!dim) {
       console.log('❌ No dimensions found, using fallback 3/4');
       return "3/4"; // fallback
@@ -178,6 +185,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     const customRatio = `${dim.width}/${dim.height}`;
     console.log('✅ Using custom ratio:', customRatio);
     return customRatio;
+    */
   };
 
   useEffect(() => {
@@ -262,8 +270,8 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                 className="flex w-max cursor-grab active:cursor-grabbing"
               >
                 {product.images.map((img, idx) => {
-                  // For Supabase images, use a simpler approach
-                  const aspectRatio = getAspectRatio(img);
+                  // Use consistent 2:3 aspect ratio for all images
+                  const aspectRatio = "2/3";
                   const [width, height] = aspectRatio.split('/').map(Number);
                   const paddingBottom = (height / width) * 100;
                   const fallbackWidth = imageWidth > 0 ? imageWidth : 600;
@@ -277,7 +285,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                         priority={idx === 0} 
                         className="object-contain"
                         sizes="(max-width: 768px) 100vw, 50vw"
-                        unoptimized={true} // Add this for Supabase URLs
+                        unoptimized={true}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
                     </div>
