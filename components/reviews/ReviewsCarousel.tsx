@@ -71,7 +71,7 @@ export function ReviewsCarousel() {
 
   return (
     <section className="py-16 px-6 md:px-12 bg-gradient-to-b from-[#1a0202] to-[#2a0508]">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto rounded-3xl">
         {/* Header */}
         <div className="text-center mb-12">
           <p className="text-[0.65rem] uppercase tracking-[0.35em] text-gold/60 mb-4">Customer Voices</p>
@@ -85,19 +85,17 @@ export function ReviewsCarousel() {
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
             onDragStart={handleDragStart}
-            animate={{ x: -currentIndex * (100 / reviews.length) + "%" }}
+            animate={{ x: -currentIndex * 244 + "px" }}
             transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
             className="flex gap-4 cursor-grab active:cursor-grabbing"
-            style={{ width: `${reviews.length * 100}%` }}
           >
             {reviews.map((review, index) => (
               <motion.div
                 key={review.id}
-                className="flex-shrink-0"
-                style={{ width: `${100 / reviews.length}%` }}
+                className="flex-shrink-0 w-[220px] md:w-[240px]"
                 whileTap={{ scale: 0.98 }}
               >
-                <div className="relative w-full max-w-[200px] md:max-w-[240px] mx-auto h-[350px] md:h-[400px] bg-white/90 rounded-2xl overflow-hidden">
+                <div className="relative w-full h-[350px] md:h-[400px] bg-white/90 rounded-2xl overflow-hidden">
                   {/* Review Image */}
                   <div className="relative w-full h-full">
                     <Image
@@ -128,7 +126,7 @@ export function ReviewsCarousel() {
         </div>
 
         {/* Navigation Dots */}
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-3 pb-8">
           {reviews.map((_, index) => (
             <button
               key={index}
