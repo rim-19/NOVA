@@ -121,30 +121,53 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
       for (const imgSrc of product.images) {
         try {
           console.log('🔍 Detecting dimensions for:', imgSrc);
-          // Create a new image element to get dimensions
-          const img = document.createElement('img');
-          img.crossOrigin = 'anonymous'; // Add this for Supabase URLs
           
-          // Add timeout to prevent hanging
-          const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('Image load timeout')), 5000);
-          });
-          
-          await Promise.race([
-            new Promise((resolve, reject) => {
+          // For Supabase URLs, try a different approach
+          if (imgSrc.includes('supabase.co')) {
+            // Try to fetch image headers first to get dimensions
+            const response = await fetch(imgSrc, { method: 'HEAD' });
+            if (response.ok) {
+              // Create image element with proper CORS handling
+              const img = document.createElement('img');
+              img.crossOrigin = 'anonymous';
+              
+              await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => reject(new Error('Timeout')), 3000);
+                img.onload = () => {
+                  clearTimeout(timeout);
+                  resolve(img);
+                };
+                img.onerror = () => {
+                  clearTimeout(timeout);
+                  reject(new Error('Load failed'));
+                };
+                img.src = imgSrc;
+              });
+              
+              dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
+              console.log('✅ Detected dimensions for Supabase image:', imgSrc, dimensions[imgSrc]);
+            } else {
+              throw new Error('Failed to fetch image');
+            }
+          } else {
+            // Original approach for local images
+            const img = document.createElement('img');
+            await new Promise((resolve, reject) => {
               img.onload = resolve;
               img.onerror = reject;
               img.src = imgSrc;
-            }),
-            timeoutPromise
-          ]);
-          
-          dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
-          console.log('✅ Detected dimensions:', imgSrc, dimensions[imgSrc]);
+            });
+            dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
+            console.log('✅ Detected dimensions for local image:', imgSrc, dimensions[imgSrc]);
+          }
         } catch (error) {
           console.log('❌ Error detecting dimensions for:', imgSrc, error);
-          // Fallback to 3:4 ratio if image fails to load
-          dimensions[imgSrc] = { width: 3, height: 4 };
+          // For Supabase images that fail, use a reasonable portrait fallback
+          if (imgSrc.includes('supabase.co')) {
+            dimensions[imgSrc] = { width: 2, height: 3 }; // Portrait fallback
+          } else {
+            dimensions[imgSrc] = { width: 3, height: 4 }; // Standard fallback
+          }
         }
       }
       
@@ -158,13 +181,6 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const getAspectRatio = (imgSrc: string) => {
     const dim = imageDimensions[imgSrc];
     console.log('🔍 Getting aspect ratio for:', imgSrc, 'dimensions:', dim);
-    
-    // For now, use a standard portrait ratio for all images to ensure consistency
-    // You can customize this per product later if needed
-    return "2/3"; // Standard portrait ratio (width:height)
-    
-    // Original code - commented out for now
-    /*
     if (!dim) {
       console.log('❌ No dimensions found, using fallback 3/4');
       return "3/4"; // fallback
@@ -185,7 +201,6 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     const customRatio = `${dim.width}/${dim.height}`;
     console.log('✅ Using custom ratio:', customRatio);
     return customRatio;
-    */
   };
 
   useEffect(() => {
@@ -270,8 +285,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                 className="flex w-max cursor-grab active:cursor-grabbing"
               >
                 {product.images.map((img, idx) => {
-                  // Use consistent 2:3 aspect ratio for all images
-                  const aspectRatio = "2/3";
+                  const aspectRatio = getAspectRatio(img);
                   const [width, height] = aspectRatio.split('/').map(Number);
                   const paddingBottom = (height / width) * 100;
                   const fallbackWidth = imageWidth > 0 ? imageWidth : 600;
