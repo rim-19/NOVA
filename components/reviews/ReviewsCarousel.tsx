@@ -27,13 +27,14 @@ export function ReviewsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const dragConstraintsRef = useRef(null);
 
-  // Auto-play with smooth timing
+  // Auto-play with smooth horizontal scrolling
   useEffect(() => {
     if (isAutoPlaying) {
       intervalRef.current = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % reviews.length);
-      }, 4000); // 4 seconds for smooth viewing
+      }, 3000); // 3 seconds for auto-scroll
     }
     
     return () => {
@@ -71,27 +72,26 @@ export function ReviewsCarousel() {
         {/* Header */}
         <div className="text-center mb-12">
           <p className="text-[0.65rem] uppercase tracking-[0.35em] text-gold/60 mb-4">Customer Voices</p>
-          <h2 className="font-cormorant text-4xl md:text-5xl italic text-cream mb-4">Real Experiences</h2>
         </div>
 
-        {/* Main Review Display */}
-        <div className="relative h-[500px] md:h-[600px] mb-8">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 1.05, y: -20 }}
-              transition={{ 
-                duration: 0.8, 
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              <div className="relative max-w-4xl mx-auto">
-                {/* Phone Frame Mockup */}
-                <div className="relative mx-auto w-[280px] md:w-[320px] h-[560px] md:h-[640px] bg-black/5 rounded-[3rem] p-3 shadow-[0_25px_50px_-12px_rgba(184,149,106,0.3),0_10px_25px_-5px_rgba(0,0,0,0.4)]">
-                  {/* Phone Screen */}
+        {/* Horizontal Auto-Dragging Carousel */}
+        <div className="relative overflow-hidden mb-8">
+          <motion.div
+            ref={dragConstraintsRef}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            animate={{ x: -currentIndex * 100 + "%" }}
+            transition={{ type: "tween", ease: "easeInOut", duration: 0.8 }}
+            className="flex gap-6 cursor-grab active:cursor-grabbing"
+          >
+            {reviews.map((review, index) => (
+              <motion.div
+                key={review.id}
+                className="flex-shrink-0 w-[280px] md:w-[320px]"
+                whileTap={{ scale: 0.98 }}
+              >
+                <div className="relative w-full h-[560px] md:h-[640px] bg-black/5 rounded-[3rem] p-3 shadow-[0_25px_50px_-12px_rgba(184,149,106,0.3),0_10px_25px_-5px_rgba(0,0,0,0.4)]">
                   <div className="relative w-full h-full bg-white/95 rounded-[2.5rem] overflow-hidden">
                     {/* Status Bar */}
                     <div className="absolute top-0 left-0 right-0 h-8 bg-black/5 z-10 flex items-center justify-center">
@@ -101,11 +101,11 @@ export function ReviewsCarousel() {
                     {/* Review Image */}
                     <div className="relative w-full h-full">
                       <Image
-                        src={reviews[currentIndex].image}
-                        alt={`Review ${reviews[currentIndex].id}`}
+                        src={review.image}
+                        alt={`Review ${review.id}`}
                         fill
                         className="object-contain"
-                        priority
+                        priority={index === 0}
                         onError={(e) => {
                           const randomIndex = Math.floor(Math.random() * reviewImages.length);
                           const target = e.target as HTMLImageElement;
@@ -123,9 +123,9 @@ export function ReviewsCarousel() {
                   </div>
                   <p className="text-cream/60 text-sm">Verified Customer</p>
                 </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
 
         {/* Navigation Dots */}

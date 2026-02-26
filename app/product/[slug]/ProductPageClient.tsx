@@ -303,7 +303,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                         alt={`${product.name} ${idx + 1}`} 
                         fill 
                         priority={idx === 0} 
-                        className="object-contain"
+                        className="object-cover"
                         sizes="(max-width: 768px) 100vw, 50vw"
                         unoptimized={true}
                       />
