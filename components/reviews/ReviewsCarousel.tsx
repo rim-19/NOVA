@@ -36,7 +36,7 @@ export function ReviewsCarousel() {
   const controls = useAnimation();
   
   const dragX = useMotionValue(0);
-  const dragConstraints = { left: -(reviews.length - 1) * 400, right: 0 };
+  const dragConstraints = { left: -(reviews.length - 1) * 320, right: 0 };
 
   // Auto-play logic - smoother transitions
   useEffect(() => {
@@ -49,7 +49,7 @@ export function ReviewsCarousel() {
           }
           return next;
         });
-      }, 2000); // 2 seconds for smoother experience
+      }, 3000); // 3 seconds for smoother experience
 
       return () => clearInterval(interval);
     }
@@ -58,7 +58,7 @@ export function ReviewsCarousel() {
   // Sync drag position with current index
   useEffect(() => {
     if (!isDragging) {
-      controls.start({ x: -currentIndex * 400 });
+      controls.start({ x: -currentIndex * 320 });
     }
   }, [currentIndex, controls, isDragging]);
 
@@ -70,7 +70,7 @@ export function ReviewsCarousel() {
   const handleDragEnd = () => {
     setIsDragging(false);
     const dragOffset = dragX.get();
-    const newIndex = Math.round(-dragOffset / 400);
+    const newIndex = Math.round(-dragOffset / 320);
     const clampedIndex = Math.max(0, Math.min(newIndex, reviews.length - 1));
     setCurrentIndex(clampedIndex);
     
@@ -100,11 +100,13 @@ export function ReviewsCarousel() {
   return (
     <section className="py-12 px-6 md:px-12">
       <div className="max-w-7xl mx-auto">
-        {/* Single Burgundy Box - Everything Inside */}
-        <div className="relative overflow-hidden rounded-2xl mx-auto max-w-4xl p-8" style={{ 
-          background: "linear-gradient(135deg, #7d1736 0%, #5a0e26 100%)",
-          border: "1px solid rgba(184,149,106,0.3)",
-          boxShadow: "0 12px 40px rgba(0,0,0,0.4), 0 0 20px rgba(125,23,54,0.3)"
+        {/* Dark Box - Everything Inside */}
+        <div className="relative overflow-hidden rounded-2xl mx-auto max-w-6xl p-6 md:p-8" style={{ 
+          background: "rgba(26,2,2,0.95)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(184,149,106,0.1)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.6), 0 0 16px rgba(125,23,54,0.2)"
         }}>
           {/* Header Inside Box */}
           <div className="text-center mb-8">
@@ -125,15 +127,15 @@ export function ReviewsCarousel() {
               onDragEnd={handleDragEnd}
               animate={controls}
               style={{ cursor: isDragging ? "grabbing" : "grab" }}
-              transition={{ type: "tween", ease: "easeInOut", duration: 1.2 }}
+              transition={{ type: "tween", ease: "easeInOut", duration: 0.8 }}
             >
               {reviews.map((review, index) => (
                 <motion.div
                   key={review.id}
-                  className="flex-shrink-0 w-[300px] h-full flex flex-col items-center justify-center px-3"
+                  className="flex-shrink-0 w-[280px] h-full flex flex-col items-center justify-center px-2"
                 >
                   {/* Screenshot - Full display */}
-                  <div className="relative w-full h-[180px] md:h-[200px] rounded-xl overflow-hidden mb-4 shadow-[0_8px_24px rgba(0,0,0,0.3),0_0_12px rgba(184,149,106,0.1)]">
+                  <div className="relative w-full h-[180px] md:h-[200px] rounded-xl overflow-hidden shadow-[0_8px_24px rgba(0,0,0,0.3),0_0_12px rgba(184,149,106,0.1)]">
                     <Image
                       src={review.image}
                       alt={`Review ${review.id}`}

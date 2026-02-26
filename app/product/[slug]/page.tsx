@@ -55,8 +55,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           if (foundProduct) {
             setProduct(foundProduct);
           } else {
-            // Only use the first product as last resort
-            setProduct(storefrontProducts[0]);
+            // Product not found - don't show fallback product
+            setProduct(null);
           }
         }
       } catch {
@@ -65,8 +65,8 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         if (foundProduct) {
           setProduct(foundProduct);
         } else {
-          // Only use first product as last resort
-          setProduct(storefrontProducts[0]);
+          // Product not found - don't show fallback product
+          setProduct(null);
         }
       } finally {
         setLoading(false);

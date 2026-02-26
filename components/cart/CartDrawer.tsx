@@ -18,7 +18,14 @@ export function CartDrawer() {
         if (!drawer || !overlay) return;
 
         // Ensure hidden state initially
-        gsap.set([drawer, overlay], { display: "none", opacity: 0 });
+        gsap.set(overlay, { display: "none", opacity: 0 });
+        gsap.set(drawer, { 
+            display: "none", 
+            opacity: 0,
+            visibility: "hidden",
+            pointerEvents: "none",
+            x: "100%"
+        });
     }, []);
 
     useEffect(() => {
@@ -27,20 +34,28 @@ export function CartDrawer() {
         if (!drawer || !overlay) return;
 
         if (isOpen) {
-            // Make visible first - simplified for performance
-            gsap.set([drawer, overlay], { 
+            // Make visible first
+            gsap.set(overlay, { 
                 display: "block", 
                 opacity: 0,
                 visibility: "visible",
                 pointerEvents: "auto"
             });
-            // Simplified animations
+            gsap.set(drawer, { 
+                display: "block", 
+                opacity: 1,
+                visibility: "visible",
+                pointerEvents: "auto",
+                x: "100%"
+            });
+            
+            // Animate in
             gsap.to(overlay, { opacity: 1, duration: 0.3, ease: "power2.out" });
-            gsap.fromTo(
-                drawer,
-                { x: "100%" },
-                { x: "0%", duration: 0.4, ease: "power3.out" }
-            );
+            gsap.to(drawer, {
+                x: "0%",
+                duration: 0.4,
+                ease: "power3.out"
+            });
         } else {
             // Simplified close animation
             gsap.to(drawer, {
