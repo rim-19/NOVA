@@ -38,7 +38,7 @@ export function ReviewsCarousel() {
   const dragX = useMotionValue(0);
   const dragConstraints = { left: -(reviews.length - 1) * 400, right: 0 };
 
-  // Auto-play logic - 1.5 seconds with smoothness
+  // Auto-play logic - smoother transitions
   useEffect(() => {
     if (!isDragging && autoPlayEnabled) {
       const interval = setInterval(() => {
@@ -49,7 +49,7 @@ export function ReviewsCarousel() {
           }
           return next;
         });
-      }, 1500); // 1.5 seconds
+      }, 2000); // 2 seconds for smoother experience
 
       return () => clearInterval(interval);
     }
@@ -106,11 +106,11 @@ export function ReviewsCarousel() {
           <h2 className="font-cormorant text-3xl md:text-4xl italic text-cream">Real Reviews</h2>
         </div>
 
-        {/* Reviews Carousel - Single Box */}
+        {/* Reviews Carousel - Single Burgundy Box */}
         <div className="relative overflow-hidden rounded-2xl mx-auto max-w-4xl h-[280px] md:h-[320px] p-6" style={{ 
-          background: "rgba(26,2,2,0.8)",
-          border: "1px solid rgba(184,149,106,0.2)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 16px rgba(184,149,106,0.15)"
+          background: "linear-gradient(135deg, #7d1736 0%, #5a0e26 100%)",
+          border: "1px solid rgba(184,149,106,0.3)",
+          boxShadow: "0 12px 40px rgba(0,0,0,0.4), 0 0 20px rgba(125,23,54,0.3)"
         }}>
           <motion.div
             ref={carouselRef}
@@ -123,7 +123,7 @@ export function ReviewsCarousel() {
             onDragEnd={handleDragEnd}
             animate={controls}
             style={{ cursor: isDragging ? "grabbing" : "grab" }}
-            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            transition={{ type: "tween", ease: "easeInOut", duration: 1.2 }}
           >
             {reviews.map((review, index) => (
               <motion.div
