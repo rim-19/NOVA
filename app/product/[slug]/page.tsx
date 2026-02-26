@@ -50,35 +50,23 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         if (!error && data) {
           setProduct(toStorefrontProduct(data as Product));
         } else {
-          // Try to find the product by slug in live products (from database)
-          const liveProduct = liveProducts.find((p) => p.slug === slug);
-          if (liveProduct) {
-            setProduct(liveProduct);
-          } else {
-            // Try to find the product by slug in catalog products
-            const foundProduct = findStorefrontProductBySlug(slug);
-            if (foundProduct) {
-              setProduct(foundProduct);
-            } else {
-              // Product not found - show 404
-              setProduct(null);
-            }
-          }
-        }
-      } catch (error) {
-        // Try to find product by slug in live products (from database)
-        const liveProduct = liveProducts.find((p) => p.slug === slug);
-        if (liveProduct) {
-          setProduct(liveProduct);
-        } else {
-          // Try to find the product by slug in catalog products
+          // Database query failed, try catalog products first
           const foundProduct = findStorefrontProductBySlug(slug);
           if (foundProduct) {
             setProduct(foundProduct);
           } else {
-            // Product not found - show 404
+            // Product not found in catalog either - show 404
             setProduct(null);
           }
+        }
+      } catch (error) {
+        // Try catalog products first when there's an error
+        const foundProduct = findStorefrontProductBySlug(slug);
+        if (foundProduct) {
+          setProduct(foundProduct);
+        } else {
+          // Product not found - show 404
+          setProduct(null);
         }
       } finally {
         setLoading(false);
