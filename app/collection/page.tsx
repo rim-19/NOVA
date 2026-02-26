@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useFavoriteStore } from "@/store/useFavoriteStore";
+import { ReviewsCarousel } from "@/components/reviews/ReviewsCarousel";
 import {
   storefrontCollections,
   storefrontProducts,
@@ -241,7 +242,7 @@ export default function CollectionArchivePage() {
           <motion.div
             ref={collectionTrackRef}
             drag="x"
-            dragConstraints={{ left: -(collectionDragWidth + 100), right: 0 }}
+            dragConstraints={{ left: -(collectionDragWidth + 60), right: 0 }}
             dragElastic={0.06}
             className="flex w-max gap-3 md:gap-4 cursor-grab active:cursor-grabbing px-0.5 py-2"
           >
@@ -264,8 +265,8 @@ export default function CollectionArchivePage() {
                   <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-xs" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                     {collection.isPrivate && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold/80">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gold/60">
                           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                         </svg>
                       </div>
@@ -400,6 +401,9 @@ export default function CollectionArchivePage() {
             Keep exploring. The right piece is never loud, it simply meets your body like it has always belonged there.
           </p>
         </section>
+
+        {/* Reviews Carousel */}
+        <ReviewsCarousel />
 
         <section className="mt-16">
           <div className="mb-8 text-center">
