@@ -100,72 +100,74 @@ export function ReviewsCarousel() {
   return (
     <section className="py-12 px-6 md:px-12" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60 mb-3">Customer Experiences</p>
-          <h2 className="font-cormorant text-3xl md:text-4xl italic text-cream">Real Reviews</h2>
-        </div>
-
-        {/* Reviews Carousel - Single Burgundy Box */}
-        <div className="relative overflow-hidden rounded-2xl mx-auto max-w-4xl h-[280px] md:h-[320px] p-6" style={{ 
+        {/* Single Box - Everything Inside */}
+        <div className="relative overflow-hidden rounded-2xl mx-auto max-w-4xl p-8" style={{ 
           background: "linear-gradient(135deg, #7d1736 0%, #5a0e26 100%)",
           border: "1px solid rgba(184,149,106,0.3)",
           boxShadow: "0 12px 40px rgba(0,0,0,0.4), 0 0 20px rgba(125,23,54,0.3)"
         }}>
-          <motion.div
-            ref={carouselRef}
-            className="flex h-full items-center"
-            drag="x"
-            dragConstraints={dragConstraints}
-            dragElastic={0.2}
-            dragMomentum={true}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-            animate={controls}
-            style={{ cursor: isDragging ? "grabbing" : "grab" }}
-            transition={{ type: "tween", ease: "easeInOut", duration: 1.2 }}
-          >
-            {reviews.map((review, index) => (
-              <motion.div
-                key={review.id}
-                className="flex-shrink-0 w-[350px] h-full flex flex-col items-center justify-center px-4"
-              >
-                {/* Screenshot - Full display without cropping */}
-                <div className="relative w-full h-[200px] md:h-[240px] rounded-xl overflow-hidden mb-4 shadow-[0_8px_24px_rgba(0,0,0,0.3),0_0_12px rgba(184,149,106,0.1)]">
-                  <Image
-                    src={review.image}
-                    alt={`Review ${review.id}`}
-                    fill
-                    className="object-contain" // Changed from object-cover to object-contain
-                    onError={(e) => {
-                      // Try a random image if this one doesn't exist
-                      const randomIndex = Math.floor(Math.random() * reviewImages.length);
-                      const target = e.target as HTMLImageElement;
-                      target.src = reviewImages[randomIndex];
-                    }}
-                  />
-                </div>
+          {/* Header Inside Box */}
+          <div className="text-center mb-8">
+            <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60 mb-3">Customer Experiences</p>
+            <h2 className="font-cormorant text-3xl md:text-4xl italic text-cream">Real Reviews</h2>
+          </div>
 
-                {/* Stars - Centered */}
-                <div className="flex gap-1 justify-center">
-                  {renderStars(review.rating)}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Reviews Display */}
+          <div className="relative h-[240px] md:h-[280px]">
+            <motion.div
+              ref={carouselRef}
+              className="flex h-full items-center"
+              drag="x"
+              dragConstraints={dragConstraints}
+              dragElastic={0.2}
+              dragMomentum={true}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              animate={controls}
+              style={{ cursor: isDragging ? "grabbing" : "grab" }}
+              transition={{ type: "tween", ease: "easeInOut", duration: 1.2 }}
+            >
+              {reviews.map((review, index) => (
+                <motion.div
+                  key={review.id}
+                  className="flex-shrink-0 w-[300px] h-full flex flex-col items-center justify-center px-3"
+                >
+                  {/* Screenshot - Full display */}
+                  <div className="relative w-full h-[180px] md:h-[200px] rounded-xl overflow-hidden mb-4 shadow-[0_8px_24px rgba(0,0,0,0.3),0_0_12px rgba(184,149,106,0.1)]">
+                    <Image
+                      src={review.image}
+                      alt={`Review ${review.id}`}
+                      fill
+                      className="object-contain"
+                      onError={(e) => {
+                        const randomIndex = Math.floor(Math.random() * reviewImages.length);
+                        const target = e.target as HTMLImageElement;
+                        target.src = reviewImages[randomIndex];
+                      }}
+                    />
+                  </div>
 
-          {/* Progress Indicator */}
-          <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5">
-            {reviews.map((_, index) => (
-              <div
-                key={index}
-                className={`h-0.5 w-6 rounded-full transition-all duration-300 ${
-                  index === currentIndex 
-                    ? "bg-gold/90" 
-                    : "bg-cream/30"
-                }`}
-              />
-            ))}
+                  {/* Stars - Centered */}
+                  <div className="flex gap-1 justify-center">
+                    {renderStars(review.rating)}
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Progress Indicator */}
+            <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex gap-1.5">
+              {reviews.map((_, index) => (
+                <div
+                  key={index}
+                  className={`h-0.5 w-6 rounded-full transition-all duration-300 ${
+                    index === currentIndex 
+                      ? "bg-gold/90" 
+                      : "bg-cream/30"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
