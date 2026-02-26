@@ -16,7 +16,23 @@ import {
 import { ShopProductCard } from "@/components/shared/ShopProductCard";
 
 export default function ProductPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+  console.log('🔍 Full params object:', params);
+  const slug = params?.slug;
+  console.log('🔍 Extracted slug:', slug);
+  
+  // Early return if slug is invalid
+  if (!slug) {
+    console.log('❌ Slug is undefined or null');
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dark-base px-6">
+        <div className="text-center">
+          <p className="font-cormorant text-2xl italic text-cream/60">Invalid product URL.</p>
+          <Link href="/collection" className="text-label text-gold mt-3 inline-block">Back to Collection</Link>
+        </div>
+      </div>
+    );
+  }
+  
   const [product, setProduct] = useState<StorefrontProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [liveProducts, setLiveProducts] = useState<StorefrontProduct[]>([]);
