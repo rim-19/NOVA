@@ -307,7 +307,6 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                         sizes="(max-width: 768px) 100vw, 50vw"
                         unoptimized={true}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
                     </div>
                   );
                 })}
