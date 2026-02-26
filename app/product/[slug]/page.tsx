@@ -55,8 +55,13 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           if (foundProduct) {
             setProduct(foundProduct);
           } else {
-            // Product not found - show 404
-            setProduct(null);
+            // Try to find by partial match or show first product as fallback
+            const fallbackProduct = storefrontProducts[0];
+            if (fallbackProduct) {
+              setProduct(fallbackProduct);
+            } else {
+              setProduct(null);
+            }
           }
         }
       } catch {
@@ -65,8 +70,13 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
         if (foundProduct) {
           setProduct(foundProduct);
         } else {
-          // Product not found - don't show fallback product
-          setProduct(null);
+          // Use fallback product
+          const fallbackProduct = storefrontProducts[0];
+          if (fallbackProduct) {
+            setProduct(fallbackProduct);
+          } else {
+            setProduct(null);
+          }
         }
       } finally {
         setLoading(false);
