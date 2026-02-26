@@ -14,8 +14,15 @@ interface ProductCardProps {
 
 export function ProductCard({ product, index = 0, className = "" }: ProductCardProps) {
     const [isHovered, setIsHovered] = useState(false);
-    const [showSecondImage, setShowSecondImage] = useState(false);
+    const [mobileImageIndex, setMobileImageIndex] = useState(0);
     const secondImageExists = product.images && product.images.length > 1;
+
+    // Derived state - no need for separate showSecondImage state
+    const showSecondImage = secondImageExists && (
+        window.matchMedia("(hover: none)").matches ? 
+        mobileImageIndex === 1 : 
+        isHovered
+    );
 
     useEffect(() => {
         if (!secondImageExists) return;
@@ -25,23 +32,11 @@ export function ProductCard({ product, index = 0, className = "" }: ProductCardP
 
         // Cycle every 3s (1.5s pause + 1.5s transition)
         const interval = setInterval(() => {
-            setShowSecondImage((prev) => !prev);
+            setMobileImageIndex((prev) => (prev === 0 ? 1 : 0));
         }, 3000);
 
         return () => clearInterval(interval);
     }, [secondImageExists]);
-
-    // Desktop hover state
-    useEffect(() => {
-        if (!secondImageExists) {
-            setShowSecondImage(false);
-            return;
-        }
-        const isMobile = window.matchMedia("(hover: none)").matches;
-        if (isMobile) return;
-
-        setShowSecondImage(isHovered);
-    }, [isHovered, secondImageExists]);
 
     return (
         <motion.div

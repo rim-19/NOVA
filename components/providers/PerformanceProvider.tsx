@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 interface PerformanceProviderProps {
   children: React.ReactNode;
@@ -9,11 +9,11 @@ interface PerformanceProviderProps {
 export function PerformanceProvider({ children }: PerformanceProviderProps) {
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const [isLowPerformance, setIsLowPerformance] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-    
+  // Derived state - isClient is always true after mount
+  const isClient = typeof window !== 'undefined';
+
+  useLayoutEffect(() => {
     // Check for reduced motion preference
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setIsReducedMotion(mediaQuery.matches);
@@ -30,7 +30,7 @@ export function PerformanceProvider({ children }: PerformanceProviderProps) {
                               (navigator as any).deviceMemory <= 2;
 
         setIsLowPerformance(isSlowConnection || isLowEndDevice);
-      } catch (error) {
+      } catch {
         // Fallback if APIs aren't available
         setIsLowPerformance(false);
       }
