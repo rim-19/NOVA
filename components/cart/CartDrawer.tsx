@@ -35,6 +35,10 @@ export function CartDrawer() {
         if (!drawer || !overlay) return;
 
         if (isOpen) {
+            // Lock body scroll
+            document.body.style.overflow = "hidden";
+            document.body.style.paddingRight = "var(--scrollbar-width, 0px)"; // Prevent jitter if possible
+
             gsap.set([overlay, drawer], { display: "block", visibility: "visible" });
             gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
             gsap.to(drawer, {
@@ -45,6 +49,10 @@ export function CartDrawer() {
                 pointerEvents: "auto"
             });
         } else {
+            // Unlock body scroll
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+
             gsap.to(drawer, {
                 x: "100%",
                 opacity: 0,
@@ -61,6 +69,11 @@ export function CartDrawer() {
                 },
             });
         }
+
+        return () => {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+        };
     }, [isOpen, mounted]);
 
     const total = getTotalPrice();
@@ -121,11 +134,11 @@ export function CartDrawer() {
                 </div>
 
                 {/* Unified Scroll Area */}
-                <div className="flex-1 overflow-y-auto overflow-x-hidden transition-all duration-300 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto overflow-x-hidden transition-all duration-300 custom-scrollbar overscroll-contain">
                     <style dangerouslySetInnerHTML={{
                         __html: `
                         .custom-scrollbar::-webkit-scrollbar {
-                            width: 5px;
+                            width: 4px;
                         }
                         .custom-scrollbar::-webkit-scrollbar-track {
                             background: transparent;
@@ -170,15 +183,15 @@ export function CartDrawer() {
                                                 </div>
 
                                                 <div className="flex items-center justify-between mt-3">
-                                                    <div className="flex items-center border border-white/10 rounded overflow-hidden">
+                                                    <div className="flex items-center border border-gold/10 rounded overflow-hidden bg-black/20">
                                                         <button
                                                             onClick={() => updateQuantity(item.id, item.quantity - 1, item.size)}
-                                                            className="w-7 h-7 flex items-center justify-center hover:bg-white/5 transition-colors text-cream/40"
+                                                            className="w-7 h-7 flex items-center justify-center hover:bg-gold/5 transition-colors text-cream/30"
                                                         >−</button>
-                                                        <span className="w-8 text-center text-[0.7rem] text-cream/80">{item.quantity}</span>
+                                                        <span className="w-8 text-center text-[0.7rem] text-gold/80">{item.quantity}</span>
                                                         <button
                                                             onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}
-                                                            className="w-7 h-7 flex items-center justify-center hover:bg-white/5 transition-colors text-cream/40"
+                                                            className="w-7 h-7 flex items-center justify-center hover:bg-gold/5 transition-colors text-cream/30"
                                                         >+</button>
                                                     </div>
                                                     <button
