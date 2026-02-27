@@ -42,7 +42,8 @@ export function CartDrawer() {
             document.body.style.overflow = "hidden";
             document.body.style.paddingRight = "var(--scrollbar-width, 0px)"; // Prevent jitter if possible
 
-            gsap.set([overlay, drawer], { display: "block", visibility: "visible" });
+            gsap.set(overlay, { display: "block", visibility: "visible" });
+            gsap.set(drawer, { display: "flex", visibility: "visible" });
             gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
             gsap.to(drawer, {
                 x: "0%",
