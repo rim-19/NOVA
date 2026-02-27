@@ -215,15 +215,6 @@ export default function OrdersAdminPage() {
                       <p className="text-xs text-cream/40 leading-relaxed font-light">
                         {order.address || "No address provided."}
                       </p>
-                      <div className="pt-4">
-                        <a
-                          href={`https://wa.me/${order.phone.replace(/[^0-9]/g, "")}`}
-                          target="_blank"
-                          className="btn-luxury px-6 py-2 text-[0.6rem] inline-block"
-                        >
-                          Start WhatsApp Dialogue
-                        </a>
-                      </div>
                     </div>
                   </div>
                 </motion.div>

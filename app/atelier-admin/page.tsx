@@ -94,7 +94,6 @@ export default function AdminDashboard() {
                     <div className="space-y-4">
                         <SystemCheck label="Supabase Connection" status="active" />
                         <SystemCheck label="Image Storage (CDN)" status="active" />
-                        <SystemCheck label="WhatsApp Integration" status="active" />
                     </div>
                 </motion.div>
 
