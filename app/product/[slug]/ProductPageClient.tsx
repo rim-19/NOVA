@@ -290,7 +290,10 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                   ref={imageTrackRef}
                   animate={{ x: -activeImageIndex * imageWidth }}
                   drag={product.images.length > 1 ? "x" : false}
-                  dragConstraints={{ left: -(imageDragWidth), right: 0 }}
+                  dragConstraints={{
+                    left: -(product.images.length - 1) * imageWidth,
+                    right: 0
+                  }}
                   onDragEnd={(e, info) => {
                     const threshold = imageWidth / 4;
                     if (info.offset.x < -threshold && activeImageIndex < product.images.length - 1) {

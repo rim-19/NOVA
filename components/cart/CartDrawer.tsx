@@ -159,223 +159,225 @@ export function CartDrawer() {
                     </button>
                 </div>
 
-                {/* Items - Scrollable area */}
+                {/* Items & Content - Scrollable area */}
                 <div
-                    className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-6 md:px-8 scrollbar-elegant"
+                    className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-elegant flex flex-col"
                 >
-                    {items.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full gap-6 py-20">
-                            <p
-                                style={{
-                                    fontFamily: "MonteCarlo, cursive",
-                                    fontSize: "1.8rem",
-                                    color: "rgba(245,233,226,0.2)",
-                                }}
-                            >
-                                Your cart whispers...
-                            </p>
-                            <p
-                                className="text-label text-center"
-                                style={{
-                                    color: "rgba(245,233,226,0.2)",
-                                    fontSize: "0.65rem",
-                                    letterSpacing: "0.25em",
-                                }}
-                            >
-                                Nothing yet. The collection awaits.
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col gap-6 py-2" style={{ opacity: 1 }}>
-                            {items.map((item) => (
-                                <div
-                                    key={`${item.id}-${item.size}`}
-                                    className="flex gap-4 pb-6"
-                                    style={{ borderBottom: "1px solid rgba(125,23,54,0.08)" }}
+                    <div className="py-4 px-6 md:px-8">
+                        {items.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-20 gap-6">
+                                <p
+                                    style={{
+                                        fontFamily: "MonteCarlo, cursive",
+                                        fontSize: "1.8rem",
+                                        color: "rgba(245,233,226,0.2)",
+                                    }}
                                 >
-                                    {/* Image */}
-                                    <div className="relative w-20 h-24 flex-shrink-0 rounded-xl overflow-hidden">
-                                        <Image
-                                            src={item.image}
-                                            alt={item.name}
-                                            fill
-                                            className="object-cover"
-                                            style={{ filter: "contrast(1.05) saturate(0.85)" }}
-                                        />
-                                    </div>
+                                    Your cart whispers...
+                                </p>
+                                <p
+                                    className="text-label text-center"
+                                    style={{
+                                        color: "rgba(245,233,226,0.2)",
+                                        fontSize: "0.65rem",
+                                        letterSpacing: "0.25em",
+                                    }}
+                                >
+                                    Nothing yet. The collection awaits.
+                                </p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-6" style={{ opacity: 1 }}>
+                                {items.map((item) => (
+                                    <div
+                                        key={`${item.id}-${item.size}`}
+                                        className="flex gap-4 pb-6"
+                                        style={{ borderBottom: "1px solid rgba(125,23,54,0.08)" }}
+                                    >
+                                        {/* Image */}
+                                        <div className="relative w-20 h-24 flex-shrink-0 rounded-xl overflow-hidden">
+                                            <Image
+                                                src={item.image}
+                                                alt={item.name}
+                                                fill
+                                                className="object-cover"
+                                                style={{ filter: "contrast(1.05) saturate(0.85)" }}
+                                            />
+                                        </div>
 
-                                    {/* Info */}
-                                    <div className="flex-1 flex flex-col justify-between">
-                                        <div>
-                                            <p
-                                                style={{
-                                                    fontFamily: "Cormorant Garamond, serif",
-                                                    fontStyle: "italic",
-                                                    fontWeight: 300,
-                                                    fontSize: "1rem",
-                                                    color: "#F5E9E2",
-                                                }}
-                                            >
-                                                {item.name}
-                                            </p>
-                                            {item.size && (
+                                        {/* Info */}
+                                        <div className="flex-1 flex flex-col justify-between">
+                                            <div>
                                                 <p
-                                                    className="text-label mt-1"
                                                     style={{
-                                                        color: "rgba(184,149,106,0.5)",
-                                                        fontSize: "0.6rem",
+                                                        fontFamily: "Cormorant Garamond, serif",
+                                                        fontStyle: "italic",
+                                                        fontWeight: 300,
+                                                        fontSize: "1rem",
+                                                        color: "#F5E9E2",
                                                     }}
                                                 >
-                                                    Size: {item.size}
+                                                    {item.name}
                                                 </p>
-                                            )}
-                                            <div className="flex flex-col gap-1 mt-1">
-                                                {item.original_price ? (
-                                                    <div className="flex items-center gap-2">
-                                                        <span
+                                                {item.size && (
+                                                    <p
+                                                        className="text-label mt-1"
+                                                        style={{
+                                                            color: "rgba(184,149,106,0.5)",
+                                                            fontSize: "0.6rem",
+                                                        }}
+                                                    >
+                                                        Size: {item.size}
+                                                    </p>
+                                                )}
+                                                <div className="flex flex-col gap-1 mt-1">
+                                                    {item.original_price ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <span
+                                                                style={{
+                                                                    fontFamily: "Cormorant Garamond, serif",
+                                                                    fontSize: "0.8rem",
+                                                                    color: "rgba(184,149,106,0.3)",
+                                                                    textDecoration: "line-through"
+                                                                }}
+                                                            >
+                                                                {item.original_price.toLocaleString("en-US")}
+                                                            </span>
+                                                            <span
+                                                                style={{
+                                                                    fontFamily: "Cormorant Garamond, serif",
+                                                                    fontSize: "0.95rem",
+                                                                    color: "#B8956A",
+                                                                    fontWeight: 500
+                                                                }}
+                                                            >
+                                                                {item.price.toLocaleString("en-US")} MAD
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        <p
                                                             style={{
                                                                 fontFamily: "Cormorant Garamond, serif",
-                                                                fontSize: "0.8rem",
-                                                                color: "rgba(184,149,106,0.3)",
-                                                                textDecoration: "line-through"
-                                                            }}
-                                                        >
-                                                            {item.original_price.toLocaleString("en-US")}
-                                                        </span>
-                                                        <span
-                                                            style={{
-                                                                fontFamily: "Cormorant Garamond, serif",
-                                                                fontSize: "0.95rem",
-                                                                color: "#B8956A",
-                                                                fontWeight: 500
+                                                                fontSize: "0.9rem",
+                                                                color: "rgba(184,149,106,0.8)",
                                                             }}
                                                         >
                                                             {item.price.toLocaleString("en-US")} MAD
-                                                        </span>
-                                                    </div>
-                                                ) : (
-                                                    <p
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Quantity & remove */}
+                                            <div className="flex items-center justify-between mt-2">
+                                                <div className="flex items-center gap-3">
+                                                    <button
+                                                        onClick={() =>
+                                                            updateQuantity(
+                                                                item.id,
+                                                                item.quantity - 1,
+                                                                item.size
+                                                            )
+                                                        }
+                                                        className="w-6 h-6 flex items-center justify-center transition-colors duration-300"
                                                         style={{
-                                                            fontFamily: "Cormorant Garamond, serif",
-                                                            fontSize: "0.9rem",
-                                                            color: "rgba(184,149,106,0.8)",
+                                                            border: "1px solid rgba(245,233,226,0.1)",
+                                                            color: "rgba(245,233,226,0.4)",
+                                                            borderRadius: "2px",
+                                                            fontSize: "1rem",
+                                                            lineHeight: 1,
                                                         }}
                                                     >
-                                                        {item.price.toLocaleString("en-US")} MAD
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Quantity & remove */}
-                                        <div className="flex items-center justify-between mt-2">
-                                            <div className="flex items-center gap-3">
+                                                        −
+                                                    </button>
+                                                    <span
+                                                        className="text-label"
+                                                        style={{
+                                                            color: "rgba(245,233,226,0.6)",
+                                                            fontSize: "0.75rem",
+                                                        }}
+                                                    >
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() =>
+                                                            updateQuantity(
+                                                                item.id,
+                                                                item.quantity + 1,
+                                                                item.size
+                                                            )
+                                                        }
+                                                        className="w-6 h-6 flex items-center justify-center transition-colors duration-300"
+                                                        style={{
+                                                            border: "1px solid rgba(245,233,226,0.1)",
+                                                            color: "rgba(245,233,226,0.4)",
+                                                            borderRadius: "2px",
+                                                            fontSize: "1rem",
+                                                            lineHeight: 1,
+                                                        }}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
                                                 <button
-                                                    onClick={() =>
-                                                        updateQuantity(
-                                                            item.id,
-                                                            item.quantity - 1,
-                                                            item.size
-                                                        )
-                                                    }
-                                                    className="w-6 h-6 flex items-center justify-center transition-colors duration-300"
+                                                    onClick={() => removeItem(item.id, item.size)}
+                                                    className="text-label transition-colors duration-300 hover:text-cream/60"
                                                     style={{
-                                                        border: "1px solid rgba(245,233,226,0.1)",
-                                                        color: "rgba(245,233,226,0.4)",
-                                                        borderRadius: "2px",
-                                                        fontSize: "1rem",
-                                                        lineHeight: 1,
+                                                        color: "rgba(245,233,226,0.2)",
+                                                        fontSize: "0.6rem",
+                                                        letterSpacing: "0.2em",
                                                     }}
                                                 >
-                                                    −
-                                                </button>
-                                                <span
-                                                    className="text-label"
-                                                    style={{
-                                                        color: "rgba(245,233,226,0.6)",
-                                                        fontSize: "0.75rem",
-                                                    }}
-                                                >
-                                                    {item.quantity}
-                                                </span>
-                                                <button
-                                                    onClick={() =>
-                                                        updateQuantity(
-                                                            item.id,
-                                                            item.quantity + 1,
-                                                            item.size
-                                                        )
-                                                    }
-                                                    className="w-6 h-6 flex items-center justify-center transition-colors duration-300"
-                                                    style={{
-                                                        border: "1px solid rgba(245,233,226,0.1)",
-                                                        color: "rgba(245,233,226,0.4)",
-                                                        borderRadius: "2px",
-                                                        fontSize: "1rem",
-                                                        lineHeight: 1,
-                                                    }}
-                                                >
-                                                    +
+                                                    Remove
                                                 </button>
                                             </div>
-                                            <button
-                                                onClick={() => removeItem(item.id, item.size)}
-                                                className="text-label transition-colors duration-300 hover:text-cream/60"
-                                                style={{
-                                                    color: "rgba(245,233,226,0.2)",
-                                                    fontSize: "0.6rem",
-                                                    letterSpacing: "0.2em",
-                                                }}
-                                            >
-                                                Remove
-                                            </button>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer - Part of the scrollable content if needed, or stick to bottom */}
+                    {items.length > 0 && (
+                        <div
+                            className="p-6 md:p-8 flex flex-col gap-5 bg-dark-base mt-auto shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
+                            style={{ borderTop: "1px solid rgba(125,23,54,0.1)" }}
+                        >
+                            <div className="flex justify-between items-center">
+                                <p
+                                    className="text-label"
+                                    style={{ color: "rgba(245,233,226,0.4)", letterSpacing: "0.2em" }}
+                                >
+                                    Total
+                                </p>
+                                <p
+                                    style={{
+                                        fontFamily: "Cormorant Garamond, serif",
+                                        fontStyle: "italic",
+                                        fontSize: "1.2rem",
+                                        color: "rgba(184,149,106,0.9)",
+                                    }}
+                                >
+                                    {total.toLocaleString("fr-MA")} MAD
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleWhatsAppCheckout}
+                                className="btn-burgundy w-full animate-pulse-glow py-4 text-[0.7rem] tracking-widest uppercase font-medium"
+                            >
+                                Proceed to Order
+                            </button>
+                            <button
+                                onClick={closeCart}
+                                className="text-label text-center transition-colors duration-300"
+                                style={{ color: "rgba(245,233,226,0.2)", fontSize: "0.6rem", letterSpacing: "0.3em" }}
+                            >
+                                Continue Browsing
+                            </button>
                         </div>
                     )}
                 </div>
-
-                {/* Footer - Fixed */}
-                {items.length > 0 && (
-                    <div
-                        className="flex-shrink-0 p-6 md:p-8 flex flex-col gap-5 bg-dark-base shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
-                        style={{ borderTop: "1px solid rgba(125,23,54,0.1)" }}
-                    >
-                        <div className="flex justify-between items-center">
-                            <p
-                                className="text-label"
-                                style={{ color: "rgba(245,233,226,0.4)", letterSpacing: "0.2em" }}
-                            >
-                                Total
-                            </p>
-                            <p
-                                style={{
-                                    fontFamily: "Cormorant Garamond, serif",
-                                    fontStyle: "italic",
-                                    fontSize: "1.2rem",
-                                    color: "rgba(184,149,106,0.9)",
-                                }}
-                            >
-                                {total.toLocaleString("fr-MA")} MAD
-                            </p>
-                        </div>
-                        <button
-                            onClick={handleWhatsAppCheckout}
-                            className="btn-burgundy w-full animate-pulse-glow py-4 text-[0.7rem] tracking-widest uppercase font-medium"
-                        >
-                            Proceed to Order
-                        </button>
-                        <button
-                            onClick={closeCart}
-                            className="text-label text-center transition-colors duration-300"
-                            style={{ color: "rgba(245,233,226,0.2)", fontSize: "0.6rem", letterSpacing: "0.3em" }}
-                        >
-                            Continue Browsing
-                        </button>
-                    </div>
-                )}
             </div>
         </>
     );

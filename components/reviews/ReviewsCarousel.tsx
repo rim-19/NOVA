@@ -131,7 +131,7 @@ export function ReviewsCarousel() {
                     }}
                     className="flex-shrink-0 w-[240px]"
                   >
-                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20">
+                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20 mb-6">
                       <Image
                         src={review.image}
                         alt={`Review ${review.id}`}
@@ -139,12 +139,13 @@ export function ReviewsCarousel() {
                         className="object-contain"
                         sizes="240px"
                       />
-                      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                        <div className="flex gap-1 mb-1">
-                          {renderStars()}
-                        </div>
-                        <p className="text-cream/80 text-[0.6rem] uppercase tracking-widest font-light">Verified Ritual</p>
+                    </div>
+                    {/* Review Details Outside */}
+                    <div className="text-center">
+                      <div className="flex justify-center gap-1 mb-2">
+                        {renderStars()}
                       </div>
+                      <p className="text-cream/80 text-[0.6rem] uppercase tracking-widest font-light">Verified Ritual</p>
                     </div>
                   </motion.div>
                 );
