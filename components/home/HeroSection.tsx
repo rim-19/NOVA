@@ -127,15 +127,12 @@ export function HeroSection() {
         <section
             ref={sectionRef}
             className="relative w-full lace-overlay overflow-hidden"
-            style={{ height: "100vh", minHeight: "500px" }}
+            style={{ height: "100vh", minHeight: "500px", opacity: 0 }}
         >
             {/* Background image with overlay */}
             <div
                 ref={bgRef}
-                className="absolute inset-0 will-change-transform"
-                style={{
-                    background: "#2B0303",
-                }}
+                className="absolute inset-0 will-change-transform bg-[#2B0303]"
             >
                 <video
                     ref={videoRef}
@@ -146,7 +143,7 @@ export function HeroSection() {
                     preload="auto"
                     poster="/new_assets/hero.png"
                     style={{ filter: "brightness(0.8) contrast(1.1)" }}
-                    className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-1000 ${videoReady ? "opacity-100" : "opacity-30"}`}
+                    className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-1000 ${videoReady ? "opacity-100" : "opacity-0"}`}
                 >
                     <source src="/new_assets/hero_video1.mp4" type="video/mp4" />
                 </video>
