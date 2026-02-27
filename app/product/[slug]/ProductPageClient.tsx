@@ -21,7 +21,7 @@ interface ProductPageClientProps {
 
 export default function ProductPageClient({ slug }: ProductPageClientProps) {
   console.log('🔍 ProductPageClient received slug:', slug);
-  
+
   // Early return if slug is invalid
   if (!slug) {
     console.log('❌ Slug is undefined or null');
@@ -34,7 +34,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
       </div>
     );
   }
-  
+
   const [product, setProduct] = useState<StorefrontProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [liveProducts, setLiveProducts] = useState<StorefrontProduct[]>([]);
@@ -55,7 +55,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     async function fetchProduct() {
       setLoading(true);
       console.log('🔍 Fetching product for slug:', slug);
-      
+
       try {
         const [oneRes, allRes] = await Promise.all([
           supabase.from("products").select("*").eq("slug", slug).single(),
@@ -117,11 +117,11 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
 
     const detectDimensions = async () => {
       const dimensions: { [key: string]: { width: number; height: number } } = {};
-      
+
       for (const imgSrc of product.images) {
         try {
           console.log('🔍 Detecting dimensions for:', imgSrc);
-          
+
           // For Supabase URLs, try a different approach
           if (imgSrc.includes('supabase.co')) {
             // Try to fetch image headers first to get dimensions
@@ -130,7 +130,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
               // Create image element with proper CORS handling
               const img = document.createElement('img');
               img.crossOrigin = 'anonymous';
-              
+
               await new Promise((resolve, reject) => {
                 const timeout = setTimeout(() => reject(new Error('Timeout')), 3000);
                 img.onload = () => {
@@ -143,7 +143,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                 };
                 img.src = imgSrc;
               });
-              
+
               dimensions[imgSrc] = { width: img.naturalWidth, height: img.naturalHeight };
               console.log('✅ Detected dimensions for Supabase image:', imgSrc, dimensions[imgSrc]);
             } else {
@@ -170,7 +170,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
           }
         }
       }
-      
+
       console.log('📦 Final dimensions object:', dimensions);
       setImageDimensions(dimensions);
     };
@@ -181,7 +181,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const getAspectRatio = (imgSrc: string) => {
     // Use 1:1 aspect ratio for all products to match the perfect product
     return "1/1";
-    
+
     // Original code - commented out
     /*
     const dim = imageDimensions[imgSrc];
@@ -277,37 +277,80 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     ? `${firstSentence.replace(/[.!?]+$/, "")}.`
     : "A sensual piece curated to reveal your confidence.";
 
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const handleImageScroll = (event: any, info: any) => {
+    // Determine which image is currently in view based on scroll position
+    const offset = info.point.x;
+    const newIndex = Math.round(Math.abs(offset) / imageWidth);
+    if (newIndex >= 0 && newIndex < (product?.images.length || 0)) {
+      // Only sync if it's a significant change to avoid jitter
+    }
+  };
+
+  // We'll use a controlled approach for the carousel to allow dot navigation
+  const scrollToImage = (index: number) => {
+    setActiveImageIndex(index);
+  };
+
   return (
     <div className="min-h-screen pt-20 pb-14 px-3 md:px-10" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-10 items-start">
-          <div className="space-y-2">
-            <div ref={imageWrapRef} className="overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_25px_rgba(184,149,106,0.12)]">
-              <motion.div
-                ref={imageTrackRef}
-                drag={product.images.length > 1 ? "x" : false}
-                dragConstraints={{ left: -(imageDragWidth - imageWidth), right: 0 }}
-                dragElastic={0.08}
-                className="flex w-max cursor-grab active:cursor-grabbing"
-              >
-                {product.images.map((img, idx) => {
-                  const fallbackWidth = imageWidth > 0 ? imageWidth : 600;
-                  console.log('🎨 Rendering image:', img, 'imageWidth:', imageWidth, 'fallbackWidth:', fallbackWidth);
-                  return (
-                    <div key={`${img}-${idx}`} className="relative" style={{ width: `${fallbackWidth}px`, height: `${fallbackWidth}px` }}>
-                      <Image 
-                        src={img} 
-                        alt={`${product.name} ${idx + 1}`} 
-                        fill 
-                        priority={idx === 0} 
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                        unoptimized={true}
-                      />
-                    </div>
-                  );
-                })}
-              </motion.div>
+          <div className="space-y-4">
+            <div className="relative group">
+              <div ref={imageWrapRef} className="overflow-hidden rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.5),0_0_25px_rgba(184,149,106,0.12)]">
+                <motion.div
+                  ref={imageTrackRef}
+                  animate={{ x: -activeImageIndex * imageWidth }}
+                  drag={product.images.length > 1 ? "x" : false}
+                  dragConstraints={{ left: -(imageDragWidth), right: 0 }}
+                  onDragEnd={(e, info) => {
+                    const threshold = imageWidth / 4;
+                    if (info.offset.x < -threshold && activeImageIndex < product.images.length - 1) {
+                      setActiveImageIndex(prev => prev + 1);
+                    } else if (info.offset.x > threshold && activeImageIndex > 0) {
+                      setActiveImageIndex(prev => prev - 1);
+                    }
+                  }}
+                  dragElastic={0.08}
+                  className="flex w-max cursor-grab active:cursor-grabbing"
+                >
+                  {product.images.map((img, idx) => {
+                    const fallbackWidth = imageWidth > 0 ? imageWidth : 600;
+                    return (
+                      <div key={`${img}-${idx}`} className="relative" style={{ width: `${fallbackWidth}px`, height: `${fallbackWidth}px` }}>
+                        <Image
+                          src={img}
+                          alt={`${product.name} ${idx + 1}`}
+                          fill
+                          priority={idx === 0}
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          unoptimized={true}
+                        />
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              </div>
+
+              {/* Navigation Dots */}
+              {product.images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                  {product.images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={`h-1 rounded-full transition-all duration-300 ${idx === activeImageIndex
+                          ? "w-6 bg-gold shadow-[0_0_8px_rgba(184,149,106,0.6)]"
+                          : "w-2 bg-white/20 hover:bg-white/40"
+                        }`}
+                      aria-label={`Go to image ${idx + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -335,11 +378,10 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                       console.log('Size clicked:', size);
                       setSelectedSize(size);
                     }}
-                    className={`rounded-md px-3 py-1.5 text-[0.6rem] tracking-[0.2em] transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 cursor-pointer relative z-10 hover:scale-105 ${
-                      selectedSize === size
+                    className={`rounded-md px-3 py-1.5 text-[0.6rem] tracking-[0.2em] transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 cursor-pointer relative z-10 hover:scale-105 ${selectedSize === size
                         ? "bg-burgundy text-cream shadow-lg"
                         : "bg-dark-base/40 text-cream/70 hover:bg-dark-base/60"
-                    }`}
+                      }`}
                     style={{ pointerEvents: 'auto' }}
                   >
                     {size}

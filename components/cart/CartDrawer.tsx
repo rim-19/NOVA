@@ -19,8 +19,8 @@ export function CartDrawer() {
 
         // Ensure hidden state initially
         gsap.set(overlay, { display: "none", opacity: 0 });
-        gsap.set(drawer, { 
-            display: "none", 
+        gsap.set(drawer, {
+            display: "none",
             opacity: 0,
             visibility: "hidden",
             pointerEvents: "none",
@@ -35,20 +35,20 @@ export function CartDrawer() {
 
         if (isOpen) {
             // Make visible first
-            gsap.set(overlay, { 
-                display: "block", 
+            gsap.set(overlay, {
+                display: "block",
                 opacity: 0,
                 visibility: "visible",
                 pointerEvents: "auto"
             });
-            gsap.set(drawer, { 
-                display: "block", 
+            gsap.set(drawer, {
+                display: "block",
                 opacity: 1,
                 visibility: "visible",
                 pointerEvents: "auto",
                 x: "100%"
             });
-            
+
             // Animate in
             gsap.to(overlay, { opacity: 1, duration: 0.3, ease: "power2.out" });
             gsap.to(drawer, {
@@ -68,8 +68,8 @@ export function CartDrawer() {
                 duration: 0.25,
                 ease: "power2.in",
                 onComplete: () => {
-                    gsap.set([drawer, overlay], { 
-                        display: "none", 
+                    gsap.set([drawer, overlay], {
+                        display: "none",
                         visibility: "hidden",
                         pointerEvents: "none"
                     });
@@ -91,8 +91,8 @@ export function CartDrawer() {
             <div
                 ref={overlayRef}
                 className="fixed inset-0 z-[1300]"
-                style={{ 
-                    background: "rgba(43,3,3,0.7)", 
+                style={{
+                    background: "rgba(43,3,3,0.7)",
                     opacity: 0,
                     visibility: "hidden",
                     pointerEvents: "none"
@@ -160,7 +160,12 @@ export function CartDrawer() {
                 </div>
 
                 {/* Items */}
-                <div className="flex-1 overflow-y-auto py-4 px-6 md:px-8" style={{ minHeight: "200px" }}>
+                <div
+                    className="flex-1 overflow-y-auto py-4 px-6 md:px-8 scrollbar-thin scrollbar-thumb-gold/20"
+                    style={{
+                        maxHeight: "calc(100vh - 220px)", // Estimate header + footer height
+                    }}
+                >
                     {items.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full gap-6 py-20">
                             <p

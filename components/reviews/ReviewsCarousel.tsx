@@ -7,7 +7,7 @@ import Image from "next/image";
 // Get all review images from the folder
 const reviewImages = [
   "/new_assets/reviews/review1.jpeg",
-  "/new_assets/reviews/review2.jpeg", 
+  "/new_assets/reviews/review2.jpeg",
   "/new_assets/reviews/review3.jpeg",
   "/new_assets/reviews/review4.jpeg",
   "/new_assets/reviews/review5.jpeg",
@@ -27,115 +27,142 @@ export function ReviewsCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const dragConstraintsRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Auto-play with smooth horizontal scrolling
+  // We clone the items to create a seamless infinite loop
+  // Original: [1,2,3,4,5,6,7,8]
+  // Extended: [1,2,3,4,5,6,7,8, 1,2,3,4,5,6,7,8, 1,2,3,4,5,6,7,8]
+  // We start in the middle set (index 8 to 15)
+  const extendedReviews = [...reviews, ...reviews, ...reviews];
+  const [displayIndex, setDisplayIndex] = useState(reviews.length);
+  const [isTransitioning, setIsTransitioning] = useState(true);
+
+  const ITEM_WIDTH = 260; // 240px width + 20px (approx gap/padding)
+
+  // Auto-play
   useEffect(() => {
     if (isAutoPlaying) {
       intervalRef.current = setInterval(() => {
-        setCurrentIndex((prev) => (prev + 1) % reviews.length);
-      }, 3000); // 3 seconds for auto-scroll
+        handleNext();
+      }, 4000);
     }
-    
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, displayIndex]);
 
-  // Stop auto-play when user interacts
-  const handleDragStart = () => {
-    setIsAutoPlaying(false);
+  const handleNext = () => {
+    setIsTransitioning(true);
+    setDisplayIndex((prev) => prev + 1);
   };
 
+  const handlePrev = () => {
+    setIsTransitioning(true);
+    setDisplayIndex((prev) => prev - 1);
+  };
+
+  // Infinite loop logic: when we hit the end of our "middle" set, 
+  // jump back to the equivalent index in the middle set without animation
+  useEffect(() => {
+    if (displayIndex >= reviews.length * 2) {
+      // Small timeout to allow the last transition to finish
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setDisplayIndex(reviews.length);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+    if (displayIndex < reviews.length) {
+      const timer = setTimeout(() => {
+        setIsTransitioning(false);
+        setDisplayIndex(reviews.length * 2 - 1);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [displayIndex]);
+
+  // Sync currentIndex for navigation dots
+  useEffect(() => {
+    setCurrentIndex(displayIndex % reviews.length);
+  }, [displayIndex]);
+
   const handleDotClick = (index: number) => {
-    setCurrentIndex(index);
     setIsAutoPlaying(false);
+    setIsTransitioning(true);
+    setDisplayIndex(reviews.length + index);
   };
 
   const renderStars = () => {
     return Array.from({ length: 5 }, (_, i) => (
-      <svg
-        key={i}
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="#B8956A"
-        className="inline-block"
-      >
+      <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#B8956A">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
       </svg>
     ));
   };
 
   return (
-    <section className="py-16 px-6 md:px-12 bg-gradient-to-b from-[#1a0202] to-[#2a0508]">
-      <div className="max-w-6xl mx-auto rounded-3xl">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <p className="text-[0.65rem] uppercase tracking-[0.35em] text-gold/60 mb-4">Customer Voices</p>
+    <section className="py-24 bg-[#1a0202] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="text-center mb-16">
+          <p className="text-[0.65rem] uppercase tracking-[0.4em] text-gold/50 mb-3">Testimonials</p>
+          <h2 className="font-cormorant text-4xl italic text-cream">Client Experiences</h2>
         </div>
 
-        {/* Horizontal Auto-Dragging Carousel */}
-        <div className="relative overflow-hidden mb-8">
-          <motion.div
-            ref={dragConstraintsRef}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={0.2}
-            onDragStart={handleDragStart}
-            animate={{ x: -currentIndex * 264 + "px" }}
-            transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
-            className="flex gap-4 cursor-grab active:cursor-grabbing"
-          >
-            {reviews.map((review, index) => (
-              <motion.div
-                key={review.id}
-                className="flex-shrink-0 w-[220px] md:w-[240px]"
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="relative w-full h-[350px] md:h-[400px] bg-white/90 rounded-2xl overflow-hidden">
-                  {/* Review Image */}
-                  <div className="relative w-full h-full">
-                    <Image
-                      src={review.image}
-                      alt={`Review ${review.id}`}
-                      fill
-                      className="object-contain"
-                      priority={index === 0}
-                      onError={(e) => {
-                        const randomIndex = Math.floor(Math.random() * reviewImages.length);
-                        const target = e.target as HTMLImageElement;
-                        target.src = reviewImages[randomIndex];
-                      }}
-                    />
-                  </div>
-                </div>
-
-                {/* Review Details */}
-                <div className="text-center mt-4">
-                  <div className="flex justify-center gap-1 mb-2">
-                    {renderStars()}
-                  </div>
-                  <p className="text-cream/60 text-xs">Verified Customer</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+        <div className="relative" ref={containerRef}>
+          <div className="flex justify-center items-center">
+            <motion.div
+              animate={{
+                x: `calc(50% - ${(displayIndex * 260) + 120}px)`
+              }}
+              transition={isTransitioning ? { type: "spring", stiffness: 300, damping: 30 } : { duration: 0 }}
+              className="flex gap-5"
+              onMouseEnter={() => setIsAutoPlaying(false)}
+              onMouseLeave={() => setIsAutoPlaying(true)}
+            >
+              {extendedReviews.map((review, idx) => {
+                const isActive = idx === displayIndex;
+                return (
+                  <motion.div
+                    key={`${review.id}-${idx}`}
+                    initial={false}
+                    animate={{
+                      scale: isActive ? 1 : 0.85,
+                      opacity: isActive ? 1 : 0.4,
+                    }}
+                    className="flex-shrink-0 w-[240px]"
+                  >
+                    <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20">
+                      <Image
+                        src={review.image}
+                        alt={`Review ${review.id}`}
+                        fill
+                        className="object-cover"
+                        sizes="240px"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                        <div className="flex gap-1 mb-1">
+                          {renderStars()}
+                        </div>
+                        <p className="text-cream/80 text-[0.6rem] uppercase tracking-widest font-light">Verified Ritual</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
         </div>
 
         {/* Navigation Dots */}
-        <div className="flex justify-center gap-3 pb-8">
+        <div className="flex justify-center gap-3 mt-12">
           {reviews.map((_, index) => (
             <button
               key={index}
               onClick={() => handleDotClick(index)}
-              className={`transition-all duration-300 ${
-                index === currentIndex
-                  ? "w-12 h-1 bg-gold shadow-[0_0_10px_rgba(184,149,106,0.5)]"
-                  : "w-8 h-0.5 bg-cream/30 hover:bg-cream/50"
-              }`}
+              className={`h-1 transition-all duration-500 rounded-full ${index === currentIndex
+                  ? "w-10 bg-gold"
+                  : "w-4 bg-white/10 hover:bg-white/20"
+                }`}
               aria-label={`Go to review ${index + 1}`}
             />
           ))}
