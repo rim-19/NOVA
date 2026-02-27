@@ -136,7 +136,7 @@ export function ReviewsCarousel() {
                         src={review.image}
                         alt={`Review ${review.id}`}
                         fill
-                        className="object-cover"
+                        className="object-contain"
                         sizes="240px"
                       />
                       <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
@@ -160,8 +160,8 @@ export function ReviewsCarousel() {
               key={index}
               onClick={() => handleDotClick(index)}
               className={`h-1 transition-all duration-500 rounded-full ${index === currentIndex
-                  ? "w-10 bg-gold"
-                  : "w-4 bg-white/10 hover:bg-white/20"
+                ? "w-10 bg-gold"
+                : "w-4 bg-white/10 hover:bg-white/20"
                 }`}
               aria-label={`Go to review ${index + 1}`}
             />

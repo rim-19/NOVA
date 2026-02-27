@@ -103,7 +103,7 @@ export function CartDrawer() {
             {/* Drawer */}
             <div
                 ref={drawerRef}
-                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col"
+                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col overflow-hidden"
                 style={{
                     background: "rgba(26,2,2,0.95)",
                     backdropFilter: "blur(20px)",
@@ -112,12 +112,12 @@ export function CartDrawer() {
                     visibility: "hidden",
                     pointerEvents: "none",
                     transform: "translateX(100%)",
-                    minHeight: "100vh",
+                    height: "100vh",
                 }}
             >
-                {/* Header */}
+                {/* Header - Fixed */}
                 <div
-                    className="flex items-center justify-between p-6 md:p-8"
+                    className="flex-shrink-0 flex items-center justify-between p-6 md:p-8"
                     style={{ borderBottom: "1px solid rgba(125,23,54,0.1)" }}
                 >
                     <div>
@@ -159,12 +159,9 @@ export function CartDrawer() {
                     </button>
                 </div>
 
-                {/* Items */}
+                {/* Items - Scrollable area */}
                 <div
-                    className="flex-1 overflow-y-auto py-4 px-6 md:px-8 scrollbar-thin scrollbar-thumb-gold/20"
-                    style={{
-                        maxHeight: "calc(100vh - 220px)", // Estimate header + footer height
-                    }}
+                    className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-6 md:px-8 scrollbar-elegant"
                 >
                     {items.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-full gap-6 py-20">
@@ -340,10 +337,10 @@ export function CartDrawer() {
                     )}
                 </div>
 
-                {/* Footer */}
+                {/* Footer - Fixed */}
                 {items.length > 0 && (
                     <div
-                        className="p-6 md:p-8 flex flex-col gap-5"
+                        className="flex-shrink-0 p-6 md:p-8 flex flex-col gap-5 bg-dark-base shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
                         style={{ borderTop: "1px solid rgba(125,23,54,0.1)" }}
                     >
                         <div className="flex justify-between items-center">
@@ -366,7 +363,7 @@ export function CartDrawer() {
                         </div>
                         <button
                             onClick={handleWhatsAppCheckout}
-                            className="btn-burgundy w-full animate-pulse-glow"
+                            className="btn-burgundy w-full animate-pulse-glow py-4 text-[0.7rem] tracking-widest uppercase font-medium"
                         >
                             Proceed to Order
                         </button>

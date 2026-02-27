@@ -42,6 +42,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const { isFavorite, toggle } = useFavoriteStore();
   const [selectedSize, setSelectedSize] = useState("");
   const [addedToCart, setAddedToCart] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [imageDragWidth, setImageDragWidth] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
   const [imageDimensions, setImageDimensions] = useState<{ [key: string]: { width: number; height: number } }>({});
@@ -277,21 +278,6 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
     ? `${firstSentence.replace(/[.!?]+$/, "")}.`
     : "A sensual piece curated to reveal your confidence.";
 
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
-
-  const handleImageScroll = (event: any, info: any) => {
-    // Determine which image is currently in view based on scroll position
-    const offset = info.point.x;
-    const newIndex = Math.round(Math.abs(offset) / imageWidth);
-    if (newIndex >= 0 && newIndex < (product?.images.length || 0)) {
-      // Only sync if it's a significant change to avoid jitter
-    }
-  };
-
-  // We'll use a controlled approach for the carousel to allow dot navigation
-  const scrollToImage = (index: number) => {
-    setActiveImageIndex(index);
-  };
 
   return (
     <div className="min-h-screen pt-20 pb-14 px-3 md:px-10" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
@@ -343,8 +329,8 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                       key={idx}
                       onClick={() => setActiveImageIndex(idx)}
                       className={`h-1 rounded-full transition-all duration-300 ${idx === activeImageIndex
-                          ? "w-6 bg-gold shadow-[0_0_8px_rgba(184,149,106,0.6)]"
-                          : "w-2 bg-white/20 hover:bg-white/40"
+                        ? "w-6 bg-gold shadow-[0_0_8px_rgba(184,149,106,0.6)]"
+                        : "w-2 bg-white/20 hover:bg-white/40"
                         }`}
                       aria-label={`Go to image ${idx + 1}`}
                     />
@@ -379,8 +365,8 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                       setSelectedSize(size);
                     }}
                     className={`rounded-md px-3 py-1.5 text-[0.6rem] tracking-[0.2em] transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 cursor-pointer relative z-10 hover:scale-105 ${selectedSize === size
-                        ? "bg-burgundy text-cream shadow-lg"
-                        : "bg-dark-base/40 text-cream/70 hover:bg-dark-base/60"
+                      ? "bg-burgundy text-cream shadow-lg"
+                      : "bg-dark-base/40 text-cream/70 hover:bg-dark-base/60"
                       }`}
                     style={{ pointerEvents: 'auto' }}
                   >
