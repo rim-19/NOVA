@@ -107,12 +107,11 @@ export function CartDrawer() {
             {/* Drawer */}
             <div
                 ref={drawerRef}
-                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col bg-[#1A0202] shadow-2xl overflow-hidden translate-x-full opacity-0 pointer-events-none"
+                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col bg-[#1A0202] shadow-2xl overflow-hidden"
                 style={{
                     borderLeft: "1px solid rgba(125,23,54,0.3)",
-                    display: "none",
-                    visibility: "hidden",
-                    height: "100dvh"
+                    height: "100dvh",
+                    opacity: 0
                 }}
             >
                 {/* Header — fixed at top, never scrolls */}
