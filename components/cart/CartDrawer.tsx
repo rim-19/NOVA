@@ -117,7 +117,7 @@ export function CartDrawer() {
                 {/* Header — fixed at top, never scrolls */}
                 <div
                     className="flex-shrink-0 flex items-center justify-between p-6 md:p-8"
-                    style={{ borderBottom: "1px solid rgba(184,149,106,0.15)" }}
+                    style={{ borderBottom: "1px solid rgba(184, 149, 106, 0.15)" }}
                 >
                     <div>
                         <p className="text-label mb-1 text-gold/60">Your Selection</p>
@@ -163,8 +163,8 @@ export function CartDrawer() {
                     ) : (
                         <div className="space-y-6 py-2">
                             {items.map((item) => (
-                                <div key={`${item.id}-${item.size}`} className="flex gap-4 pb-6 border-b border-gold/10">
-                                    <div className="relative w-20 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-black/40">
+                                <div key={`${item.id}-${item.size}`} className="flex gap-4 pb-6 border-b" style={{ borderBottomColor: "rgba(184, 149, 106, 0.1)" }}>
+                                    <div className="relative w-20 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-black/40 border" style={{ borderColor: "rgba(184, 149, 106, 0.15)" }}>
                                         <Image
                                             src={item.image}
                                             alt={item.name}
@@ -180,24 +180,24 @@ export function CartDrawer() {
                                             {item.size && (
                                                 <p className="text-[0.6rem] text-gold/50 uppercase tracking-widest mt-1">Size: {item.size}</p>
                                             )}
-                                            <p className="font-cormorant text-gold/80 mt-1">{item.price.toLocaleString()} MAD</p>
+                                            <p className="font-cormorant text-gold mt-1">{item.price.toLocaleString()} MAD</p>
                                         </div>
 
                                         <div className="flex items-center justify-between mt-4">
-                                            <div className="flex items-center border border-gold/10 rounded overflow-hidden bg-black/20">
+                                            <div className="flex items-center border rounded-md overflow-hidden bg-black/40" style={{ borderColor: "rgba(184, 149, 106, 0.2)" }}>
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity - 1, item.size)}
-                                                    className="w-7 h-7 flex items-center justify-center hover:bg-gold/5 transition-colors text-cream/30"
+                                                    className="w-7 h-7 flex items-center justify-center hover:bg-gold/5 transition-colors text-gold/60"
                                                 >−</button>
-                                                <span className="w-8 text-center text-[0.7rem] text-gold/80">{item.quantity}</span>
+                                                <span className="w-8 text-center text-[0.7rem] text-cream font-light">{item.quantity}</span>
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}
-                                                    className="w-7 h-7 flex items-center justify-center hover:bg-gold/5 transition-colors text-cream/30"
+                                                    className="w-7 h-7 flex items-center justify-center hover:bg-gold/5 transition-colors text-gold/60"
                                                 >+</button>
                                             </div>
                                             <button
                                                 onClick={() => removeItem(item.id, item.size)}
-                                                className="text-[0.6rem] text-burgundy-light/60 hover:text-burgundy-light uppercase tracking-widest transition-colors"
+                                                className="text-[0.6rem] text-burgundy-light/60 hover:text-burgundy-light transition-colors uppercase tracking-widest"
                                             >Remove</button>
                                         </div>
                                     </div>
@@ -209,20 +209,21 @@ export function CartDrawer() {
 
                 {/* Footer — fixed at bottom, never scrolls */}
                 {items.length > 0 && (
-                    <div className="flex-shrink-0 p-6 md:p-8 bg-black/20 border-t border-gold/10">
+                    <div className="flex-shrink-0 p-6 md:p-8 bg-[#1A0202] border-t" style={{ borderTopColor: "rgba(184, 149, 106, 0.15)" }}>
                         <div className="flex justify-between items-center mb-6">
                             <p className="text-[0.6rem] uppercase tracking-widest text-cream/40">Total Amount</p>
                             <p className="font-cormorant italic text-xl text-gold">{total.toLocaleString()} MAD</p>
                         </div>
                         <button
                             onClick={handleWhatsAppCheckout}
-                            className="w-full py-4 bg-burgundy hover:bg-burgundy-light text-cream text-[0.7rem] uppercase tracking-[0.3em] rounded-full transition-all duration-500 shadow-lg shadow-burgundy/20"
+                            className="w-full py-4 bg-burgundy hover:bg-burgundy-deep text-cream text-[0.7rem] uppercase tracking-[0.4em] rounded-full transition-all duration-700 shadow-2xl relative overflow-hidden group btn-click-effect border border-burgundy-light/20"
                         >
-                            Proceed to Order
+                            <span className="relative z-10">Proceed to Order</span>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-[150%] skew-x-12 group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out" />
                         </button>
                         <button
                             onClick={closeCart}
-                            className="w-full mt-4 text-[0.6rem] uppercase tracking-[0.4em] text-cream/20 hover:text-cream/50 transition-colors"
+                            className="w-full mt-4 text-[0.6rem] uppercase tracking-[0.4em] text-gold/20 hover:text-gold/50 transition-colors"
                         >
                             Continue Browsing
                         </button>
