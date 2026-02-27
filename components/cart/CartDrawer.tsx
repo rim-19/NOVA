@@ -13,6 +13,9 @@ export function CartDrawer() {
         useCartStore();
 
     useEffect(() => {
+        // Reset cart state on fresh load to prevent persisting "open" state which causes flashes
+        closeCart();
+
         setMounted(true);
         const drawer = drawerRef.current;
         const overlay = overlayRef.current;
@@ -26,7 +29,7 @@ export function CartDrawer() {
             x: "100%",
             opacity: 0
         });
-    }, []);
+    }, [closeCart]);
 
     useEffect(() => {
         if (!mounted) return;
@@ -103,7 +106,7 @@ export function CartDrawer() {
             {/* Drawer */}
             <div
                 ref={drawerRef}
-                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col bg-[#1A0202] shadow-2xl overflow-hidden"
+                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col bg-[#1A0202] shadow-2xl overflow-hidden translate-x-full opacity-0 pointer-events-none"
                 style={{
                     borderLeft: "1px solid rgba(125,23,54,0.3)",
                     display: "none",
