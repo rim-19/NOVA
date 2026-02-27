@@ -7,7 +7,6 @@ import { CursorControl } from "@/components/layout/CursorControl";
 import { LenisProvider } from "@/components/providers/LenisProvider";
 import { PerformanceProvider } from "@/components/providers/PerformanceProvider";
 import { PrivateAtelierGate } from "@/components/shared/PrivateAtelierGate";
-import { WhatsAppIcon } from "@/components/shared/WhatsAppIcon";
 
 export const metadata: Metadata = {
   title: "NOVA - Luxury Lingerie",
@@ -57,7 +56,6 @@ export default function RootLayout({
             <NavbarControl />
             <CartDrawer />
             <PrivateAtelierGate />
-            <WhatsAppIcon />
             <main>{children}</main>
           </LenisProvider>
         </PerformanceProvider>
