@@ -85,7 +85,7 @@ export function ReviewsCarousel() {
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
             onDragStart={handleDragStart}
-            animate={{ x: -currentIndex * 270 + "px" }}
+            animate={{ x: -currentIndex * 264 + "px" }}
             transition={{ type: "tween", ease: "easeInOut", duration: 0.5 }}
             className="flex gap-4 cursor-grab active:cursor-grabbing"
           >
