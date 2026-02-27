@@ -7,6 +7,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
 export function HeroSection() {
+    const videoRef = useRef<HTMLVideoElement>(null);
     const [videoReady, setVideoReady] = useState(false);
     const [content, setContent] = useState({
         hero_tagline: "Luxury Intimate Collection",
@@ -22,6 +23,38 @@ export function HeroSection() {
         }
         fetchHero();
     }, []);
+
+    // Explicitly try to play the video and handle ready state more robustly
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        // If video is already loaded
+        if (video.readyState >= 3) {
+            setVideoReady(true);
+        }
+
+        const handleReady = () => setVideoReady(true);
+        video.addEventListener('canplay', handleReady);
+        video.addEventListener('canplaythrough', handleReady);
+        video.addEventListener('playing', handleReady);
+
+        // Explicitly try to play for mobile browsers in low power mode
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(() => {
+                // Auto-play was prevented - we show the poster naturally
+                console.log("Autoplay prevented, showing poster fallback.");
+            });
+        }
+
+        return () => {
+            video.removeEventListener('canplay', handleReady);
+            video.removeEventListener('canplaythrough', handleReady);
+            video.removeEventListener('playing', handleReady);
+        };
+    }, []);
+
     const sectionRef = useRef<HTMLElement>(null);
     const bgRef = useRef<HTMLDivElement>(null);
     const taglineRef = useRef<HTMLDivElement>(null);
@@ -100,16 +133,20 @@ export function HeroSection() {
             <div
                 ref={bgRef}
                 className="absolute inset-0 will-change-transform"
-                style={{ background: "#2B0303" }}
+                style={{
+                    background: "#2B0303",
+                }}
             >
                 <video
+                    ref={videoRef}
                     autoPlay
                     loop
                     muted
                     playsInline
                     preload="auto"
-                    onLoadedData={() => setVideoReady(true)}
-                    className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-500 ${videoReady ? "opacity-100" : "opacity-0"}`}
+                    poster="/new_assets/hero.png"
+                    style={{ filter: "brightness(0.8) contrast(1.1)" }}
+                    className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-1000 ${videoReady ? "opacity-100" : "opacity-30"}`}
                 >
                     <source src="/new_assets/hero_video1.mp4" type="video/mp4" />
                 </video>
@@ -201,7 +238,7 @@ export function HeroSection() {
                     <Link
                         href="/collection"
                         className="btn-luxury rounded-none animate-pulse-glow"
-                        style={{ 
+                        style={{
                             minWidth: "180px",
                             boxShadow: "0 0 50px rgba(184, 149, 106, 0.8), 0 0 100px rgba(184, 149, 106, 0.4), 0 0 150px rgba(184, 149, 106, 0.2), inset 0 0 30px rgba(184, 149, 106, 0.3)",
                             textShadow: "0 0 30px rgba(184, 149, 106, 0.6), 0 0 50px rgba(184, 149, 106, 0.4)",
@@ -212,8 +249,9 @@ export function HeroSection() {
                     </Link>
                     <Link
                         href="/about"
-                        className="text-label text-cream/40 hover:text-cream/70 transition-colors duration-500 group flex items-center gap-3"
+                        className="text-label text-cream/40 hover:text-cream/70 transition-colors duration-500 group flex items-center justify-center gap-3 w-full sm:w-auto mt-2 sm:mt-0"
                     >
+                        <span className="w-8 h-px bg-cream/40 opacity-0 sm:hidden" /> {/* Spacer to balance the right line on mobile */}
                         Our Story
                         <span className="w-5 h-px bg-cream/40 group-hover:w-8 group-hover:bg-cream/70 transition-all duration-500 inline-block" />
                     </Link>

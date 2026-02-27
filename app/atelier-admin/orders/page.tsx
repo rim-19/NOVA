@@ -55,17 +55,15 @@ export default function OrdersAdminPage() {
 
   function exportOrdersCsv() {
     const header = [
-      "id",
-      "created_at",
-      "customer_name",
-      "phone",
-      "city",
-      "address",
-      "message",
-      "status",
-      "total_price",
-      "items_summary",
-      "items_json",
+      "Order Date",
+      "Customer Name",
+      "Phone Number",
+      "City",
+      "Delivery Address",
+      "Note/Message",
+      "Status",
+      "Total Price (MAD)",
+      "Selection Summary",
     ];
 
     const rows = orders.map((order) => {
@@ -74,18 +72,25 @@ export default function OrdersAdminPage() {
         .map((item) => `${item.quantity}x ${item.name}${item.size ? ` (${item.size})` : ""}`)
         .join(" | ");
 
+      // Format date to readable string
+      const orderDate = new Date(order.created_at).toLocaleString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
       return [
-        toCsvValue(order.id),
-        toCsvValue(order.created_at),
+        toCsvValue(orderDate),
         toCsvValue(order.customer_name),
-        toCsvValue(order.phone),
+        toCsvValue(`'${order.phone}`), // Prepend apostrophe to prevent Excel from scientific notation
         toCsvValue(order.city),
-        toCsvValue(order.address || ""),
-        toCsvValue(order.message || ""),
-        toCsvValue(order.status),
-        toCsvValue(order.total_price ?? 0),
+        toCsvValue(order.address || "N/A"),
+        toCsvValue(order.message || "None"),
+        toCsvValue(order.status.charAt(0).toUpperCase() + order.status.slice(1)),
+        toCsvValue(order.total_price || 0),
         toCsvValue(itemsSummary),
-        toCsvValue(JSON.stringify(items)),
       ];
     });
 
@@ -142,15 +147,14 @@ export default function OrdersAdminPage() {
                       <div className="flex items-center gap-3">
                         <h3 className="font-cormorant italic text-2xl text-cream">{order.customer_name}</h3>
                         <span
-                          className={`text-[0.6rem] tracking-[0.2em] uppercase px-3 py-1 rounded-full ${
-                            order.status === "new"
-                              ? "bg-gold/20 text-gold"
-                              : order.status === "processing"
-                                ? "bg-burgundy/40 text-cream/70"
-                                : order.status === "completed"
-                                  ? "bg-green-500/10 text-green-400"
-                                  : "bg-zinc-700/50 text-zinc-300"
-                          }`}
+                          className={`text-[0.6rem] tracking-[0.2em] uppercase px-3 py-1 rounded-full ${order.status === "new"
+                            ? "bg-gold/20 text-gold"
+                            : order.status === "processing"
+                              ? "bg-burgundy/40 text-cream/70"
+                              : order.status === "completed"
+                                ? "bg-green-500/10 text-green-400"
+                                : "bg-zinc-700/50 text-zinc-300"
+                            }`}
                         >
                           {order.status}
                         </span>

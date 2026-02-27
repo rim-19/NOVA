@@ -1,82 +1,67 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import Image from "next/image";
 import { useCartStore } from "@/store/useCartStore";
 
 export function CartDrawer() {
+    const [mounted, setMounted] = useState(false);
     const drawerRef = useRef<HTMLDivElement>(null);
     const overlayRef = useRef<HTMLDivElement>(null);
     const { items, isOpen, closeCart, removeItem, updateQuantity, getTotalPrice } =
         useCartStore();
 
-    // Prevent flash on initial load
     useEffect(() => {
+        setMounted(true);
         const drawer = drawerRef.current;
         const overlay = overlayRef.current;
         if (!drawer || !overlay) return;
 
-        // Ensure hidden state initially
+        // Ensure hidden state initially via GSAP to sync with animations
         gsap.set(overlay, { display: "none", opacity: 0 });
         gsap.set(drawer, {
             display: "none",
-            opacity: 0,
             visibility: "hidden",
-            pointerEvents: "none",
-            x: "100%"
+            x: "100%",
+            opacity: 0
         });
     }, []);
 
     useEffect(() => {
+        if (!mounted) return;
         const drawer = drawerRef.current;
         const overlay = overlayRef.current;
         if (!drawer || !overlay) return;
 
         if (isOpen) {
-            // Make visible first
-            gsap.set(overlay, {
-                display: "block",
-                opacity: 0,
-                visibility: "visible",
-                pointerEvents: "auto"
-            });
-            gsap.set(drawer, {
-                display: "block",
-                opacity: 1,
-                visibility: "visible",
-                pointerEvents: "auto",
-                x: "100%"
-            });
-
-            // Animate in
-            gsap.to(overlay, { opacity: 1, duration: 0.3, ease: "power2.out" });
+            gsap.set([overlay, drawer], { display: "block", visibility: "visible" });
+            gsap.to(overlay, { opacity: 1, duration: 0.4, ease: "power2.out" });
             gsap.to(drawer, {
                 x: "0%",
-                duration: 0.4,
-                ease: "power3.out"
+                opacity: 1,
+                duration: 0.5,
+                ease: "power3.out",
+                pointerEvents: "auto"
             });
         } else {
-            // Simplified close animation
             gsap.to(drawer, {
                 x: "100%",
-                duration: 0.3,
+                opacity: 0,
+                duration: 0.4,
                 ease: "power3.in",
+                pointerEvents: "none"
             });
             gsap.to(overlay, {
                 opacity: 0,
-                duration: 0.25,
+                duration: 0.3,
                 ease: "power2.in",
                 onComplete: () => {
-                    gsap.set([drawer, overlay], {
-                        display: "none",
-                        visibility: "hidden",
-                        pointerEvents: "none"
-                    });
+                    gsap.set([drawer, overlay], { display: "none", visibility: "hidden" });
                 },
             });
         }
-    }, [isOpen]);
+    }, [isOpen, mounted]);
 
     const total = getTotalPrice();
 
@@ -85,6 +70,8 @@ export function CartDrawer() {
         window.location.href = "/checkout";
     };
 
+    if (!mounted) return null;
+
     return (
         <>
             {/* Overlay */}
@@ -92,10 +79,10 @@ export function CartDrawer() {
                 ref={overlayRef}
                 className="fixed inset-0 z-[1300]"
                 style={{
-                    background: "rgba(43,3,3,0.7)",
-                    opacity: 0,
-                    visibility: "hidden",
-                    pointerEvents: "none"
+                    background: "rgba(43,3,3,0.8)",
+                    backdropFilter: "blur(4px)",
+                    display: "none",
+                    opacity: 0
                 }}
                 onClick={closeCart}
             />
@@ -103,280 +90,131 @@ export function CartDrawer() {
             {/* Drawer */}
             <div
                 ref={drawerRef}
-                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col overflow-hidden"
+                className="fixed right-0 top-0 bottom-0 z-[1400] w-full max-w-sm flex flex-col bg-[#1A0202] shadow-2xl overflow-hidden"
                 style={{
-                    background: "rgba(26,2,2,0.95)",
-                    backdropFilter: "blur(20px)",
-                    WebkitBackdropFilter: "blur(20px)",
-                    borderLeft: "1px solid rgba(125,23,54,0.2)",
+                    borderLeft: "1px solid rgba(125,23,54,0.3)",
+                    display: "none",
                     visibility: "hidden",
-                    pointerEvents: "none",
-                    transform: "translateX(100%)",
-                    height: "100vh",
+                    height: "100dvh" // Use dynamic viewport height
                 }}
             >
                 {/* Header - Fixed */}
                 <div
                     className="flex-shrink-0 flex items-center justify-between p-6 md:p-8"
-                    style={{ borderBottom: "1px solid rgba(125,23,54,0.1)" }}
+                    style={{ borderBottom: "1px solid rgba(125,23,54,0.15)" }}
                 >
                     <div>
-                        <p
-                            className="text-label mb-1"
-                            style={{ color: "rgba(184,149,106,0.6)", fontSize: "0.6rem" }}
-                        >
-                            Your Selection
-                        </p>
-                        <h2
-                            style={{
-                                fontFamily: "Cormorant Garamond, serif",
-                                fontStyle: "italic",
-                                fontWeight: 300,
-                                fontSize: "1.4rem",
-                                color: "#F5E9E2",
-                                letterSpacing: "0.05em",
-                            }}
-                        >
+                        <p className="text-label mb-1 text-gold/60">Your Selection</p>
+                        <h2 className="font-cormorant italic font-light text-2xl text-cream tracking-wide">
                             The Cart
                         </h2>
                     </div>
                     <button
                         onClick={closeCart}
-                        className="text-cream/40 hover:text-cream/80 transition-colors duration-300"
+                        className="p-2 -mr-2 text-cream/30 hover:text-cream/80 transition-colors"
                         aria-label="Close cart"
                     >
-                        <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1"
-                        >
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M18 6L6 18M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
-                {/* Items & Content - Scrollable area */}
-                <div
-                    className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-elegant flex flex-col"
-                >
-                    <div className="py-4 px-6 md:px-8">
-                        {items.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-20 gap-6">
-                                <p
-                                    style={{
-                                        fontFamily: "MonteCarlo, cursive",
-                                        fontSize: "1.8rem",
-                                        color: "rgba(245,233,226,0.2)",
-                                    }}
-                                >
-                                    Your cart whispers...
-                                </p>
-                                <p
-                                    className="text-label text-center"
-                                    style={{
-                                        color: "rgba(245,233,226,0.2)",
-                                        fontSize: "0.65rem",
-                                        letterSpacing: "0.25em",
-                                    }}
-                                >
-                                    Nothing yet. The collection awaits.
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col gap-6" style={{ opacity: 1 }}>
-                                {items.map((item) => (
-                                    <div
-                                        key={`${item.id}-${item.size}`}
-                                        className="flex gap-4 pb-6"
-                                        style={{ borderBottom: "1px solid rgba(125,23,54,0.08)" }}
-                                    >
-                                        {/* Image */}
-                                        <div className="relative w-20 h-24 flex-shrink-0 rounded-xl overflow-hidden">
-                                            <Image
-                                                src={item.image}
-                                                alt={item.name}
-                                                fill
-                                                className="object-cover"
-                                                style={{ filter: "contrast(1.05) saturate(0.85)" }}
-                                            />
-                                        </div>
+                {/* Unified Scroll Area */}
+                <div className="flex-1 overflow-y-auto overflow-x-hidden transition-all duration-300 custom-scrollbar">
+                    <style dangerouslySetInnerHTML={{
+                        __html: `
+                        .custom-scrollbar::-webkit-scrollbar {
+                            width: 5px;
+                        }
+                        .custom-scrollbar::-webkit-scrollbar-track {
+                            background: transparent;
+                        }
+                        .custom-scrollbar::-webkit-scrollbar-thumb {
+                            background: rgba(184, 149, 106, 0.2);
+                            border-radius: 10px;
+                        }
+                        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                            background: rgba(184, 149, 106, 0.4);
+                        }
+                    `}} />
+                    <div className="flex flex-col min-h-full">
+                        {/* Items Section */}
+                        <div className="flex-1 py-4 px-6 md:px-8">
+                            {items.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center py-20 gap-6 opacity-40">
+                                    <p className="font-montecarlo text-3xl">Your cart whispers...</p>
+                                    <p className="text-[0.6rem] uppercase tracking-[0.3em] text-center">Nothing yet. The collection awaits.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-6 py-2">
+                                    {items.map((item) => (
+                                        <div key={`${item.id}-${item.size}`} className="flex gap-4 pb-6 border-b border-burgundy/10">
+                                            <div className="relative w-20 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-black/40">
+                                                <Image
+                                                    src={item.image}
+                                                    alt={item.name}
+                                                    fill
+                                                    className="object-cover"
+                                                    unoptimized
+                                                />
+                                            </div>
 
-                                        {/* Info */}
-                                        <div className="flex-1 flex flex-col justify-between">
-                                            <div>
-                                                <p
-                                                    style={{
-                                                        fontFamily: "Cormorant Garamond, serif",
-                                                        fontStyle: "italic",
-                                                        fontWeight: 300,
-                                                        fontSize: "1rem",
-                                                        color: "#F5E9E2",
-                                                    }}
-                                                >
-                                                    {item.name}
-                                                </p>
-                                                {item.size && (
-                                                    <p
-                                                        className="text-label mt-1"
-                                                        style={{
-                                                            color: "rgba(184,149,106,0.5)",
-                                                            fontSize: "0.6rem",
-                                                        }}
-                                                    >
-                                                        Size: {item.size}
-                                                    </p>
-                                                )}
-                                                <div className="flex flex-col gap-1 mt-1">
-                                                    {item.original_price ? (
-                                                        <div className="flex items-center gap-2">
-                                                            <span
-                                                                style={{
-                                                                    fontFamily: "Cormorant Garamond, serif",
-                                                                    fontSize: "0.8rem",
-                                                                    color: "rgba(184,149,106,0.3)",
-                                                                    textDecoration: "line-through"
-                                                                }}
-                                                            >
-                                                                {item.original_price.toLocaleString("en-US")}
-                                                            </span>
-                                                            <span
-                                                                style={{
-                                                                    fontFamily: "Cormorant Garamond, serif",
-                                                                    fontSize: "0.95rem",
-                                                                    color: "#B8956A",
-                                                                    fontWeight: 500
-                                                                }}
-                                                            >
-                                                                {item.price.toLocaleString("en-US")} MAD
-                                                            </span>
-                                                        </div>
-                                                    ) : (
-                                                        <p
-                                                            style={{
-                                                                fontFamily: "Cormorant Garamond, serif",
-                                                                fontSize: "0.9rem",
-                                                                color: "rgba(184,149,106,0.8)",
-                                                            }}
-                                                        >
-                                                            {item.price.toLocaleString("en-US")} MAD
-                                                        </p>
+                                            <div className="flex-1 flex flex-col justify-between py-1">
+                                                <div>
+                                                    <h3 className="font-cormorant italic text-lg text-cream leading-tight">{item.name}</h3>
+                                                    {item.size && (
+                                                        <p className="text-[0.6rem] text-gold/50 uppercase tracking-widest mt-1">Size: {item.size}</p>
                                                     )}
+                                                    <p className="font-cormorant text-gold/80 mt-1">{item.price.toLocaleString()} MAD</p>
                                                 </div>
-                                            </div>
 
-                                            {/* Quantity & remove */}
-                                            <div className="flex items-center justify-between mt-2">
-                                                <div className="flex items-center gap-3">
+                                                <div className="flex items-center justify-between mt-3">
+                                                    <div className="flex items-center border border-white/10 rounded overflow-hidden">
+                                                        <button
+                                                            onClick={() => updateQuantity(item.id, item.quantity - 1, item.size)}
+                                                            className="w-7 h-7 flex items-center justify-center hover:bg-white/5 transition-colors text-cream/40"
+                                                        >−</button>
+                                                        <span className="w-8 text-center text-[0.7rem] text-cream/80">{item.quantity}</span>
+                                                        <button
+                                                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.size)}
+                                                            className="w-7 h-7 flex items-center justify-center hover:bg-white/5 transition-colors text-cream/40"
+                                                        >+</button>
+                                                    </div>
                                                     <button
-                                                        onClick={() =>
-                                                            updateQuantity(
-                                                                item.id,
-                                                                item.quantity - 1,
-                                                                item.size
-                                                            )
-                                                        }
-                                                        className="w-6 h-6 flex items-center justify-center transition-colors duration-300"
-                                                        style={{
-                                                            border: "1px solid rgba(245,233,226,0.1)",
-                                                            color: "rgba(245,233,226,0.4)",
-                                                            borderRadius: "2px",
-                                                            fontSize: "1rem",
-                                                            lineHeight: 1,
-                                                        }}
-                                                    >
-                                                        −
-                                                    </button>
-                                                    <span
-                                                        className="text-label"
-                                                        style={{
-                                                            color: "rgba(245,233,226,0.6)",
-                                                            fontSize: "0.75rem",
-                                                        }}
-                                                    >
-                                                        {item.quantity}
-                                                    </span>
-                                                    <button
-                                                        onClick={() =>
-                                                            updateQuantity(
-                                                                item.id,
-                                                                item.quantity + 1,
-                                                                item.size
-                                                            )
-                                                        }
-                                                        className="w-6 h-6 flex items-center justify-center transition-colors duration-300"
-                                                        style={{
-                                                            border: "1px solid rgba(245,233,226,0.1)",
-                                                            color: "rgba(245,233,226,0.4)",
-                                                            borderRadius: "2px",
-                                                            fontSize: "1rem",
-                                                            lineHeight: 1,
-                                                        }}
-                                                    >
-                                                        +
-                                                    </button>
+                                                        onClick={() => removeItem(item.id, item.size)}
+                                                        className="text-[0.6rem] text-cream/20 hover:text-burgundy-light uppercase tracking-widest transition-colors"
+                                                    >Remove</button>
                                                 </div>
-                                                <button
-                                                    onClick={() => removeItem(item.id, item.size)}
-                                                    className="text-label transition-colors duration-300 hover:text-cream/60"
-                                                    style={{
-                                                        color: "rgba(245,233,226,0.2)",
-                                                        fontSize: "0.6rem",
-                                                        letterSpacing: "0.2em",
-                                                    }}
-                                                >
-                                                    Remove
-                                                </button>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer Section - Part of the scroll if items are many */}
+                        {items.length > 0 && (
+                            <div className="p-6 md:p-8 mt-auto bg-black/20 border-t border-burgundy/10">
+                                <div className="flex justify-between items-center mb-6">
+                                    <p className="text-[0.6rem] uppercase tracking-widest text-cream/40">Total Amount</p>
+                                    <p className="font-cormorant italic text-xl text-gold">{total.toLocaleString()} MAD</p>
+                                </div>
+                                <button
+                                    onClick={handleWhatsAppCheckout}
+                                    className="w-full py-4 bg-burgundy hover:bg-burgundy-light text-cream text-[0.7rem] uppercase tracking-[0.3em] rounded-full transition-all duration-500 shadow-lg shadow-burgundy/20"
+                                >
+                                    Proceed to Order
+                                </button>
+                                <button
+                                    onClick={closeCart}
+                                    className="w-full mt-4 text-[0.6rem] uppercase tracking-[0.4em] text-cream/20 hover:text-cream/50 transition-colors"
+                                >
+                                    Continue Browsing
+                                </button>
                             </div>
                         )}
                     </div>
-
-                    {/* Footer - Part of the scrollable content if needed, or stick to bottom */}
-                    {items.length > 0 && (
-                        <div
-                            className="p-6 md:p-8 flex flex-col gap-5 bg-dark-base mt-auto shadow-[0_-10px_30px_rgba(0,0,0,0.5)]"
-                            style={{ borderTop: "1px solid rgba(125,23,54,0.1)" }}
-                        >
-                            <div className="flex justify-between items-center">
-                                <p
-                                    className="text-label"
-                                    style={{ color: "rgba(245,233,226,0.4)", letterSpacing: "0.2em" }}
-                                >
-                                    Total
-                                </p>
-                                <p
-                                    style={{
-                                        fontFamily: "Cormorant Garamond, serif",
-                                        fontStyle: "italic",
-                                        fontSize: "1.2rem",
-                                        color: "rgba(184,149,106,0.9)",
-                                    }}
-                                >
-                                    {total.toLocaleString("fr-MA")} MAD
-                                </p>
-                            </div>
-                            <button
-                                onClick={handleWhatsAppCheckout}
-                                className="btn-burgundy w-full animate-pulse-glow py-4 text-[0.7rem] tracking-widest uppercase font-medium"
-                            >
-                                Proceed to Order
-                            </button>
-                            <button
-                                onClick={closeCart}
-                                className="text-label text-center transition-colors duration-300"
-                                style={{ color: "rgba(245,233,226,0.2)", fontSize: "0.6rem", letterSpacing: "0.3em" }}
-                            >
-                                Continue Browsing
-                            </button>
-                        </div>
-                    )}
                 </div>
             </div>
         </>
