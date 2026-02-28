@@ -277,7 +277,7 @@ export default function CollectionArchivePage() {
                   }}
                   className="w-[98px] md:w-[132px] shrink-0"
                 >
-                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-[2.5px]" : ""}`}>
+                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-[1.5px]" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                   </div>
                   <p className={`mt-1 md:mt-2 text-[0.5rem] md:text-[0.56rem] uppercase tracking-[0.14em] md:tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
@@ -539,8 +539,8 @@ export default function CollectionArchivePage() {
                     <div className="flex flex-wrap gap-2">
                       <button
                         className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${selectedType === "all"
-                            ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
-                            : "bg-black/30 text-cream/60 hover:bg-black/45"
+                          ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
+                          : "bg-black/30 text-cream/60 hover:bg-black/45"
                           }`}
                         onClick={() => {
                           setSelectedType("all");
@@ -553,8 +553,8 @@ export default function CollectionArchivePage() {
                         <button
                           key={collection.slug}
                           className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${selectedType === collection.slug
-                              ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
-                              : "bg-black/30 text-cream/60 hover:bg-black/45"
+                            ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
+                            : "bg-black/30 text-cream/60 hover:bg-black/45"
                             }`}
                           onClick={() => {
                             setSelectedType(collection.slug === selectedType ? "all" : collection.slug);
@@ -598,8 +598,8 @@ export default function CollectionArchivePage() {
                           <button
                             key={color}
                             className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColors.includes(colorLower)
-                                ? "border-gold scale-110"
-                                : "border-cream/30 hover:border-cream/50"
+                              ? "border-gold scale-110"
+                              : "border-cream/30 hover:border-cream/50"
                               }`}
                             style={{ backgroundColor: getColorHex(colorLower) }}
                             onClick={() => {
@@ -624,8 +624,8 @@ export default function CollectionArchivePage() {
                         <button
                           key={size}
                           className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${selectedSize === size
-                              ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
-                              : "bg-black/30 text-cream/60 hover:bg-black/45"
+                            ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
+                            : "bg-black/30 text-cream/60 hover:bg-black/45"
                             }`}
                           onClick={() => {
                             setSelectedSize(size);
@@ -646,8 +646,8 @@ export default function CollectionArchivePage() {
                         <button
                           key={option.id}
                           className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${sortBy === option.id
-                              ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
-                              : "bg-black/30 text-cream/60 hover:bg-black/45"
+                            ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
+                            : "bg-black/30 text-cream/60 hover:bg-black/45"
                             }`}
                           onClick={() => {
                             setSortBy(option.id);

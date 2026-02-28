@@ -75,12 +75,12 @@ export function PromoBanner() {
                                 duration: duration,
                                 ease: "linear",
                             }}
-                            className="flex gap-[15rem] items-center min-w-full italic pr-[15rem]"
+                            className="flex gap-[24rem] items-center min-w-full italic pr-[24rem]"
                         >
                             {[...Array(4)].map((_, i) => (
                                 <Link key={i} href={promo.link || "#"} className="inline-flex items-center gap-10">
                                     <span
-                                        className="text-[0.65rem] md:text-[0.75rem] font-medium tracking-[0.5em] uppercase whitespace-nowrap"
+                                        className="text-[0.65rem] md:text-[0.75rem] font-medium tracking-[0.2em] uppercase whitespace-nowrap"
                                         style={{ fontFamily: "Inter, sans-serif" }}
                                     >
                                         {promo.text}
@@ -96,12 +96,12 @@ export function PromoBanner() {
                                 duration: duration,
                                 ease: "linear",
                             }}
-                            className="flex gap-[15rem] items-center min-w-full italic pr-[15rem]"
+                            className="flex gap-[24rem] items-center min-w-full italic pr-[24rem]"
                         >
                             {[...Array(4)].map((_, i) => (
                                 <Link key={i + 10} href={promo.link || "#"} className="inline-flex items-center gap-10">
                                     <span
-                                        className="text-[0.65rem] md:text-[0.75rem] font-medium tracking-[0.5em] uppercase whitespace-nowrap"
+                                        className="text-[0.65rem] md:text-[0.75rem] font-medium tracking-[0.2em] uppercase whitespace-nowrap"
                                         style={{ fontFamily: "Inter, sans-serif" }}
                                     >
                                         {promo.text}
