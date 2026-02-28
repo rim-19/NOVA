@@ -182,7 +182,7 @@ export default function AdminDashboard() {
                         {/* Shimmer Effect */}
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(184,149,106,0.05),transparent)] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
 
-                        <svg className="absolute inset-0 w-full h-full p-4 overflow-visible" preserveAspectRatio="none">
+                        <svg className="absolute inset-0 w-full h-full p-6 overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                             <defs>
                                 <linearGradient id="mainGraphGradient" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stopColor="#B8956A" stopOpacity="0.3" />
@@ -190,16 +190,18 @@ export default function AdminDashboard() {
                                 </linearGradient>
                             </defs>
                             <motion.path
-                                d={createSmoothPath(stats.salesData.map(d => d.amount), 100, 250)}
+                                d={createSmoothPath(stats.revenueTrend)}
                                 fill="none"
                                 stroke="#B8956A"
-                                strokeWidth="2.5"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
                                 initial={{ pathLength: 0 }}
                                 animate={{ pathLength: 1 }}
                                 transition={{ duration: 2.5, ease: "easeInOut" }}
                             />
                             <motion.path
-                                d={`${createSmoothPath(stats.salesData.map(d => d.amount), 100, 250)} L 100% 100% L 0% 100% Z`}
+                                d={`${createSmoothPath(stats.revenueTrend)} L 100 100 L 0 100 Z`}
                                 fill="url(#mainGraphGradient)"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -298,13 +300,14 @@ function MetricCard({ label, value, sub, trend, color }: { label: string; value:
 
                 {/* Mini Sparkline */}
                 <div className="h-10 w-full mt-auto relative pt-2">
-                    <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
+                    <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <motion.path
-                            d={createSmoothPath(trend, 100, 40)}
+                            d={createSmoothPath(trend)}
                             fill="none"
                             stroke={color}
-                            strokeWidth="1.5"
+                            strokeWidth="3"
                             strokeLinecap="round"
+                            strokeLinejoin="round"
                             initial={{ pathLength: 0 }}
                             animate={{ pathLength: 1 }}
                             transition={{ duration: 1.5, delay: 0.5 }}
@@ -335,15 +338,15 @@ function ShortcutLink({ href, label, desc }: { href: string; label: string; desc
     );
 }
 
-// Utility to create a smooth SVG path from data points
-function createSmoothPath(data: number[], width: number, height: number) {
-    if (data.length === 0) return "M 0 0";
+// Utility to create a smooth SVG path from data points mapping to 0-100 range
+function createSmoothPath(data: number[]) {
+    if (data.length === 0) return "M 0 100";
     const max = Math.max(...data, 1);
     const step = 100 / Math.max(data.length - 1, 1);
 
     return data.map((val, i) => {
         const x = i * step;
-        const y = 90 - (val / max) * 80; // 10% padding
-        return `${i === 0 ? 'M' : 'L'} ${x}% ${y}%`;
+        const y = 90 - (val / max) * 80; // 10% padding from top/bottom
+        return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
     }).join(' ');
 }
