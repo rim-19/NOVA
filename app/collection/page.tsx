@@ -52,14 +52,14 @@ export default function CollectionArchivePage() {
 
   const [allProducts, setAllProducts] = useState<StorefrontProduct[]>(storefrontProducts);
   const [collectionsList, setCollectionsList] = useState<Array<{ slug: string; name: string; image: string; isPrivate?: boolean }>>([
-  ...storefrontCollections,
-  {
-    slug: "private-wing",
-    name: "Private Wing",
-    image: "/new_assets/unspoken.jpeg",
-    isPrivate: true
-  }
-]);
+    ...storefrontCollections,
+    {
+      slug: "private-wing",
+      name: "Private Wing",
+      image: "/new_assets/unspoken.jpeg",
+      isPrivate: true
+    }
+  ]);
   const [loading, setLoading] = useState(true);
 
   const [selectedType, setSelectedType] = useState<string | "all">(() => {
@@ -185,14 +185,14 @@ export default function CollectionArchivePage() {
         product.collection_slug === selectedType;
       const searchOk = !search || product.name.toLowerCase().includes(search.toLowerCase());
       const sizeOk = selectedSize === "all" || product.sizes.includes(selectedSize);
-      const colorsOk = selectedColors.length === 0 || 
+      const colorsOk = selectedColors.length === 0 ||
         (product.colors || []).some(color => selectedColors.includes(color.toLowerCase()));
       const filterOk =
         selectedFilter === "all"
           ? true
           : selectedFilter.startsWith("collection:")
-              ? product.collection_slug === selectedFilter.replace("collection:", "")
-              : true;
+            ? product.collection_slug === selectedFilter.replace("collection:", "")
+            : true;
       const favoritesOk = !favoritesOnly || favoriteSlugs.includes(product.slug);
       return typeOk && searchOk && sizeOk && colorsOk && filterOk && favoritesOk;
     });
@@ -244,7 +244,7 @@ export default function CollectionArchivePage() {
                   setSelectedType("all");
                   setPage(1);
                 }}
-                className="text-[0.55rem] uppercase tracking-[0.2em] text-cream/50 hover:text-gold transition-colors"
+                className="text-[0.55rem] uppercase tracking-[0.2em] text-gold/80 hover:text-gold transition-colors font-medium bg-black/40 px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(184,149,106,0.2)] border border-gold/10"
               >
                 Clear
               </button>
@@ -277,7 +277,7 @@ export default function CollectionArchivePage() {
                   }}
                   className="w-[98px] md:w-[132px] shrink-0"
                 >
-                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-xs" : ""}`}>
+                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-[2.5px]" : ""}`}>
                     <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
                   </div>
                   <p className={`mt-1 md:mt-2 text-[0.5rem] md:text-[0.56rem] uppercase tracking-[0.14em] md:tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
@@ -314,7 +314,7 @@ export default function CollectionArchivePage() {
               </button>
               <button
                 onClick={() => setActivePanel("filter")}
-                className="flex items-center gap-1 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
+                className="flex items-center gap-1 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85 hover:bg-dark-base/90 transition-colors"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="4" y1="21" x2="4" y2="14" />
@@ -329,6 +329,20 @@ export default function CollectionArchivePage() {
                 </svg>
                 Filter
               </button>
+              {(selectedType !== "all" || selectedSize !== "all" || selectedColors.length > 0 || search) && (
+                <button
+                  onClick={() => {
+                    setSelectedType("all");
+                    setSelectedSize("all");
+                    setSelectedColors([]);
+                    setSearch("");
+                    setPage(1);
+                  }}
+                  className="rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-gold/80 hover:text-gold transition-colors font-medium shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
+                >
+                  Clear
+                </button>
+              )}
             </div>
 
             <div className="flex items-center gap-1 md:hidden">
@@ -466,9 +480,8 @@ export default function CollectionArchivePage() {
                   {sortOptions.map((option) => (
                     <button
                       key={option.id}
-                      className={`block w-full rounded-xl px-3 py-2 text-left text-xs uppercase tracking-[0.14em] ${
-                        sortBy === option.id ? "bg-gold/20 text-gold" : "bg-black/25 text-cream/75"
-                      }`}
+                      className={`block w-full rounded-xl px-3 py-2 text-left text-xs uppercase tracking-[0.14em] ${sortBy === option.id ? "bg-gold/20 text-gold" : "bg-black/25 text-cream/75"
+                        }`}
                       onClick={() => {
                         setSortBy(option.id);
                         setPage(1);
@@ -487,9 +500,8 @@ export default function CollectionArchivePage() {
                     {sizeOptions.map((size) => (
                       <button
                         key={size}
-                        className={`rounded-xl px-3 py-2 text-xs uppercase tracking-[0.14em] ${
-                          selectedSize === size ? "bg-gold/20 text-gold" : "bg-black/25 text-cream/75"
-                        }`}
+                        className={`rounded-xl px-3 py-2 text-xs uppercase tracking-[0.14em] ${selectedSize === size ? "bg-gold/20 text-gold" : "bg-black/25 text-cream/75"
+                          }`}
                         onClick={() => {
                           setSelectedSize(size);
                           setPage(1);
@@ -515,22 +527,21 @@ export default function CollectionArchivePage() {
                         setPage(1);
                         setActivePanel(null);
                       }}
-                      className="text-[0.55rem] uppercase tracking-[0.2em] text-cream/50 hover:text-gold transition-colors"
+                      className="text-[0.55rem] uppercase tracking-[0.2em] text-gold hover:text-gold transition-colors font-medium bg-black/40 px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(184,149,106,0.2)] border border-gold/10"
                     >
                       Clear
                     </button>
                   </div>
-                  
+
                   {/* Collections */}
                   <div className="space-y-2">
                     <p className="text-[0.5rem] uppercase tracking-[0.25em] text-cream/40">Collections</p>
                     <div className="flex flex-wrap gap-2">
                       <button
-                        className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
-                          selectedType === "all"
+                        className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${selectedType === "all"
                             ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
                             : "bg-black/30 text-cream/60 hover:bg-black/45"
-                        }`}
+                          }`}
                         onClick={() => {
                           setSelectedType("all");
                           setPage(1);
@@ -541,11 +552,10 @@ export default function CollectionArchivePage() {
                       {collectionsList.filter(collection => !collection.isPrivate).map((collection) => (
                         <button
                           key={collection.slug}
-                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
-                            selectedType === collection.slug
+                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${selectedType === collection.slug
                               ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
                               : "bg-black/30 text-cream/60 hover:bg-black/45"
-                          }`}
+                            }`}
                           onClick={() => {
                             setSelectedType(collection.slug === selectedType ? "all" : collection.slug);
                             setPage(1);
@@ -564,7 +574,7 @@ export default function CollectionArchivePage() {
                       {COLOR_FILTERS.map((color) => {
                         const colorLower = color.toLowerCase();
                         const getColorHex = (colorName: string) => {
-                          switch(colorName) {
+                          switch (colorName) {
                             case "black": return "#1A1A1A";
                             case "white": return "#F5E9E2";
                             case "red": return "#DC2626";
@@ -583,25 +593,24 @@ export default function CollectionArchivePage() {
                             default: return "#B8956A";
                           }
                         };
-                        
+
                         return (
                           <button
                             key={color}
-                            className={`w-8 h-8 rounded-full border-2 transition-all ${
-                              selectedColors.includes(colorLower)
+                            className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColors.includes(colorLower)
                                 ? "border-gold scale-110"
                                 : "border-cream/30 hover:border-cream/50"
-                            }`}
+                              }`}
                             style={{ backgroundColor: getColorHex(colorLower) }}
-                          onClick={() => {
-                            setSelectedColors(prev => 
-                              prev.includes(colorLower) 
-                                ? prev.filter(c => c !== colorLower)
-                                : [...prev, colorLower]
-                            );
-                            setPage(1);
-                          }}
-                        />
+                            onClick={() => {
+                              setSelectedColors(prev =>
+                                prev.includes(colorLower)
+                                  ? prev.filter(c => c !== colorLower)
+                                  : [...prev, colorLower]
+                              );
+                              setPage(1);
+                            }}
+                          />
                         );
                       })}
                     </div>
@@ -614,11 +623,10 @@ export default function CollectionArchivePage() {
                       {sizeOptions.map((size) => (
                         <button
                           key={size}
-                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
-                            selectedSize === size
+                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${selectedSize === size
                               ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
                               : "bg-black/30 text-cream/60 hover:bg-black/45"
-                          }`}
+                            }`}
                           onClick={() => {
                             setSelectedSize(size);
                             setPage(1);
@@ -637,11 +645,10 @@ export default function CollectionArchivePage() {
                       {sortOptions.map((option) => (
                         <button
                           key={option.id}
-                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${
-                            sortBy === option.id
+                          className={`rounded-xl px-3 py-2 text-[0.55rem] uppercase tracking-[0.14em] transition-all ${sortBy === option.id
                               ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)]"
                               : "bg-black/30 text-cream/60 hover:bg-black/45"
-                          }`}
+                            }`}
                           onClick={() => {
                             setSortBy(option.id);
                             setPage(1);

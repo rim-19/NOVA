@@ -34,24 +34,34 @@ export function HeroSection() {
             setVideoReady(true);
         }
 
-        const handleReady = () => setVideoReady(true);
+        const handleReady = () => {
+            console.log("🎥 Hero video ready");
+            setVideoReady(true);
+        };
+
         video.addEventListener('canplay', handleReady);
         video.addEventListener('canplaythrough', handleReady);
         video.addEventListener('playing', handleReady);
+        video.addEventListener('loadeddata', handleReady);
 
-        // Explicitly try to play for mobile browsers in low power mode
-        const playPromise = video.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(() => {
-                // Auto-play was prevented - we show the poster naturally
-                console.log("Autoplay prevented, showing poster fallback.");
-            });
-        }
+        // Explicitly try to play and handle potential blocks
+        const startVideo = async () => {
+            try {
+                await video.play();
+                setVideoReady(true);
+            } catch (err) {
+                console.log("⚠️ Autoplay prevented or failed:", err);
+                // On failure, we still want to show the video if it eventually becomes ready
+            }
+        };
+
+        startVideo();
 
         return () => {
             video.removeEventListener('canplay', handleReady);
             video.removeEventListener('canplaythrough', handleReady);
             video.removeEventListener('playing', handleReady);
+            video.removeEventListener('loadeddata', handleReady);
         };
     }, []);
 
@@ -143,7 +153,7 @@ export function HeroSection() {
                     preload="auto"
                     poster="/new_assets/hero.png"
                     style={{ filter: "brightness(0.8) contrast(1.1)" }}
-                    className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-1000 ${videoReady ? "opacity-100" : "opacity-0"}`}
+                    className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-1000 ${videoReady ? "opacity-100" : "opacity-10"}`}
                 >
                     <source src="/new_assets/hero_video1.mp4" type="video/mp4" />
                 </video>

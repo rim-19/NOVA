@@ -367,13 +367,14 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                       console.log('Size clicked:', size);
                       setSelectedSize(size);
                     }}
-                    className={`rounded-md px-3 py-1.5 text-[0.6rem] tracking-[0.2em] transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 cursor-pointer relative z-10 hover:scale-105 ${selectedSize === size
-                      ? "bg-burgundy text-cream shadow-lg"
-                      : "bg-dark-base/40 text-cream/70 hover:bg-dark-base/60"
+                    className={`rounded-md px-3 py-1.5 text-[0.6rem] tracking-[0.2em] transition-all duration-300 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 cursor-pointer relative z-10 hover:scale-105 overflow-hidden group/size ${selectedSize === size
+                      ? "bg-burgundy text-cream shadow-[0_0_15px_rgba(125,23,54,0.4)] border border-gold/20"
+                      : "bg-dark-base/40 text-cream/70 hover:bg-dark-base/60 border border-white/5"
                       }`}
                     style={{ pointerEvents: 'auto' }}
                   >
-                    {size}
+                    <span className="relative z-10">{size}</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-[150%] skew-x-12 group-hover/size:translate-x-[150%] transition-transform duration-1000 ease-in-out pointer-events-none" />
                   </button>
                 ))}
               </div>

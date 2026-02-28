@@ -8,6 +8,8 @@ type PromoBannerContent = {
     text: string;
     link: string;
     theme: "burgundy" | "gold" | "dark";
+    is_scrolling?: boolean;
+    speed?: "slow" | "medium" | "fast";
 };
 
 type SiteContent = {
@@ -32,6 +34,8 @@ const defaultContent: SiteContent = {
         text: "Free shipping on orders over 2000 MAD",
         link: "/collection",
         theme: "burgundy",
+        is_scrolling: true,
+        speed: "medium",
     },
 };
 
@@ -49,6 +53,7 @@ export default function NarrativeAdminPage() {
         const { data, error } = await supabase
             .from("site_content")
             .select("*")
+            .eq("id", 1)
             .single();
 
         if (!error && data?.content) {
@@ -94,18 +99,33 @@ export default function NarrativeAdminPage() {
                 <div className="space-y-6">
                     <div className="flex justify-between items-center border-b border-gold/10 pb-4">
                         <h2 className="text-[0.6rem] text-gold/60 uppercase tracking-[0.3em] font-bold">Promo Banner</h2>
-                        <div className="flex items-center gap-3">
-                            <span className="text-[0.55rem] text-zinc-500 uppercase tracking-widest">{content.promo_banner.is_active ? "Live" : "Hidden"}</span>
-                            <button
-                                type="button"
-                                onClick={() => setContent({
-                                    ...content,
-                                    promo_banner: { ...content.promo_banner, is_active: !content.promo_banner.is_active },
-                                })}
-                                className={`w-10 h-5 rounded-full transition-all relative ${content.promo_banner.is_active ? "bg-gold" : "bg-zinc-800 border border-zinc-700"}`}
-                            >
-                                <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${content.promo_banner.is_active ? "right-1" : "left-1"}`} />
-                            </button>
+                        <div className="flex items-center gap-6">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[0.55rem] text-zinc-500 uppercase tracking-widest">Show</span>
+                                <button
+                                    type="button"
+                                    onClick={() => setContent({
+                                        ...content,
+                                        promo_banner: { ...content.promo_banner, is_active: !content.promo_banner.is_active },
+                                    })}
+                                    className={`w-10 h-5 rounded-full transition-all relative ${content.promo_banner.is_active ? "bg-gold" : "bg-zinc-800 border border-zinc-700"}`}
+                                >
+                                    <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${content.promo_banner.is_active ? "right-1" : "left-1"}`} />
+                                </button>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[0.55rem] text-zinc-500 uppercase tracking-widest">Scroll</span>
+                                <button
+                                    type="button"
+                                    onClick={() => setContent({
+                                        ...content,
+                                        promo_banner: { ...content.promo_banner, is_scrolling: !content.promo_banner.is_scrolling },
+                                    })}
+                                    className={`w-10 h-5 rounded-full transition-all relative ${content.promo_banner.is_scrolling ? "bg-gold" : "bg-zinc-800 border border-zinc-700"}`}
+                                >
+                                    <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${content.promo_banner.is_scrolling ? "right-1" : "left-1"}`} />
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div className="space-y-4">
@@ -120,7 +140,7 @@ export default function NarrativeAdminPage() {
                                 })}
                             />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8">
                             <div className="space-y-2">
                                 <label className="text-[0.55rem] text-zinc-500 uppercase tracking-widest">Banner Link</label>
                                 <input
@@ -145,6 +165,21 @@ export default function NarrativeAdminPage() {
                                     <option value="burgundy">Royal Burgundy</option>
                                     <option value="gold">Silk Gold</option>
                                     <option value="dark">Midnight Black</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[0.55rem] text-zinc-500 uppercase tracking-widest">Scroll Speed</label>
+                                <select
+                                    className="admin-input w-full bg-zinc-900"
+                                    value={content.promo_banner.speed || "medium"}
+                                    onChange={(e) => setContent({
+                                        ...content,
+                                        promo_banner: { ...content.promo_banner, speed: e.target.value as any },
+                                    })}
+                                >
+                                    <option value="slow">Silent (Slow)</option>
+                                    <option value="medium">Flowing (Medium)</option>
+                                    <option value="fast">Dynamic (Fast)</option>
                                 </select>
                             </div>
                         </div>

@@ -44,7 +44,7 @@ export function ReviewsCarousel() {
     if (isAutoPlaying) {
       intervalRef.current = setInterval(() => {
         handleNext();
-      }, 4000);
+      }, 3000); // Reduced from 4000ms
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -61,22 +61,20 @@ export function ReviewsCarousel() {
     setDisplayIndex((prev) => prev - 1);
   };
 
-  // Infinite loop logic: when we hit the end of our "middle" set, 
-  // jump back to the equivalent index in the middle set without animation
+  // Infinite loop logic
   useEffect(() => {
     if (displayIndex >= reviews.length * 2) {
-      // Small timeout to allow the last transition to finish
       const timer = setTimeout(() => {
         setIsTransitioning(false);
         setDisplayIndex(reviews.length);
-      }, 500);
+      }, 400); // Slightly faster reset
       return () => clearTimeout(timer);
     }
     if (displayIndex < reviews.length) {
       const timer = setTimeout(() => {
         setIsTransitioning(false);
         setDisplayIndex(reviews.length * 2 - 1);
-      }, 500);
+      }, 400);
       return () => clearTimeout(timer);
     }
   }, [displayIndex]);
@@ -90,6 +88,8 @@ export function ReviewsCarousel() {
     setIsAutoPlaying(false);
     setIsTransitioning(true);
     setDisplayIndex(reviews.length + index);
+    // Resume auto-play after 10s of inactivity
+    setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
   const renderStars = () => {
@@ -108,16 +108,37 @@ export function ReviewsCarousel() {
           <h2 className="font-cormorant text-4xl italic text-cream">Client Experiences</h2>
         </div>
 
-        <div className="relative" ref={containerRef}>
+        <div className="relative cursor-grab active:cursor-grabbing" ref={containerRef}>
           <div className="flex justify-center items-center">
             <motion.div
+              drag="x"
+              dragConstraints={{ left: -1000, right: 1000 }} // Loose constraints for infinite feel
+              onDragStart={() => {
+                setIsAutoPlaying(false);
+                setIsTransitioning(false); // Disable CSS transition while dragging
+              }}
+              onDragEnd={(e, info) => {
+                const threshold = 50;
+                if (info.offset.x < -threshold) {
+                  handleNext();
+                } else if (info.offset.x > threshold) {
+                  handlePrev();
+                } else {
+                  // Snap back if didn't clear threshold
+                  setIsTransitioning(true);
+                  setDisplayIndex(displayIndex);
+                }
+
+                // Resume auto-play after 10s of inactivity
+                setTimeout(() => setIsAutoPlaying(true), 10000);
+              }}
               animate={{
                 x: `calc(50% - ${(displayIndex * 260) + 120}px)`
               }}
               transition={isTransitioning ? { type: "spring", stiffness: 300, damping: 30 } : { duration: 0 }}
               className="flex gap-5"
               onMouseEnter={() => setIsAutoPlaying(false)}
-              onMouseLeave={() => setIsAutoPlaying(true)}
+              onMouseLeave={() => !containerRef.current?.classList.contains('active:cursor-grabbing') && setIsAutoPlaying(true)}
             >
               {extendedReviews.map((review, idx) => {
                 const isActive = idx === displayIndex;
