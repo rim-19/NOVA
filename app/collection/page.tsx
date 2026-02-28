@@ -298,23 +298,23 @@ export default function CollectionArchivePage() {
             className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35 shadow-[0_6px_30px_rgba(0,0,0,0.4),0_0_25px_rgba(184,149,106,0.25)]"
           />
 
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1">
+          <div className="flex items-center justify-between gap-1 sm:gap-2">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 max-w-full">
               <button
                 onClick={() => setActivePanel("sort")}
-                className="rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
+                className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
               >
                 Sort ▼
               </button>
               <button
                 onClick={() => setActivePanel("size")}
-                className="rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
+                className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
               >
                 Size ▼
               </button>
               <button
                 onClick={() => setActivePanel("filter")}
-                className="flex items-center gap-1 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85 hover:bg-dark-base/90 transition-colors"
+                className="flex-shrink-0 flex items-center gap-1 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85 hover:bg-dark-base/90 transition-colors"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="4" y1="21" x2="4" y2="14" />
@@ -338,30 +338,30 @@ export default function CollectionArchivePage() {
                     setSearch("");
                     setPage(1);
                   }}
-                  className="rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-gold/80 hover:text-gold transition-colors font-medium shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
+                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-gold/80 hover:text-gold transition-colors font-medium shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
                 >
                   Clear
                 </button>
               )}
             </div>
 
-            <div className="flex items-center gap-1 md:hidden">
+            <div className="flex items-center gap-0.5 sm:gap-1 md:hidden flex-shrink-0 bg-dark-base/40 p-1 rounded-xl border border-white/5">
               <button
                 onClick={() => setMobileGridCols(2)}
-                className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 2 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
+                className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 2 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
                 aria-label="2 columns"
               >
-                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+                <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
                   <rect x="1" y="1" width="7" height="10" rx="1" className="fill-current" />
                   <rect x="10" y="1" width="7" height="10" rx="1" className="fill-current" />
                 </svg>
               </button>
               <button
                 onClick={() => setMobileGridCols(3)}
-                className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 3 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
+                className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 3 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
                 aria-label="3 columns"
               >
-                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+                <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
                   <rect x="1" y="1" width="4.7" height="10" rx="1" className="fill-current" />
                   <rect x="6.65" y="1" width="4.7" height="10" rx="1" className="fill-current" />
                   <rect x="12.3" y="1" width="4.7" height="10" rx="1" className="fill-current" />
@@ -369,10 +369,10 @@ export default function CollectionArchivePage() {
               </button>
               <button
                 onClick={() => setMobileGridCols(4)}
-                className={`rounded-md px-2 py-1 text-[0.55rem] uppercase tracking-[0.14em] ${mobileGridCols === 4 ? "bg-gold/25 text-gold" : "bg-dark-base/70 text-cream/65"}`}
+                className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 4 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
                 aria-label="4 columns"
               >
-                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" aria-hidden="true">
+                <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
                   <rect x="1" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
                   <rect x="5.3" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
                   <rect x="9.6" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
