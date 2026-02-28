@@ -5,8 +5,11 @@ import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
+import { usePathname } from "next/navigation";
+
 export function PromoBanner() {
     const [promo, setPromo] = useState<any>(null);
+    const pathname = usePathname();
 
     useEffect(() => {
         async function fetchPromo() {
@@ -20,7 +23,10 @@ export function PromoBanner() {
         fetchPromo();
     }, []);
 
-    if (!promo || !promo.is_active) return null;
+    // Only show on the collection page
+    const isCollectionPage = pathname === "/collection";
+
+    if (!promo || !promo.is_active || !isCollectionPage) return null;
 
     const themes: any = {
         burgundy: "bg-[#7D1736]",
@@ -29,9 +35,9 @@ export function PromoBanner() {
     };
 
     const speeds: any = {
-        slow: 35,
-        medium: 20,
-        fast: 10
+        slow: 45,
+        medium: 25,
+        fast: 15
     };
 
     const duration = speeds[promo.speed || "medium"];
@@ -43,14 +49,13 @@ export function PromoBanner() {
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 onAnimationComplete={(definition: any) => {
-                    // Set a global CSS variable for Navbar to offset itself
                     if (definition.height !== 0) {
-                        document.documentElement.style.setProperty('--banner-height', '36px');
+                        document.documentElement.style.setProperty('--banner-height', '40px');
                     } else {
                         document.documentElement.style.setProperty('--banner-height', '0px');
                     }
                 }}
-                className={`${themes[promo.theme] || themes.burgundy} text-white py-2 overflow-hidden fixed top-0 left-0 right-0 z-[1100] border-b border-white/5 shadow-lg shadow-black/20`}
+                className={`${themes[promo.theme] || themes.burgundy} text-white py-3 overflow-hidden relative z-[1100] border-b border-white/5 shadow-luxury`}
             >
                 {/* Luxury Shimmer Overlay */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -64,44 +69,44 @@ export function PromoBanner() {
                 {promo.is_scrolling ? (
                     <div className="flex whitespace-nowrap overflow-hidden">
                         <motion.div
-                            animate={{ x: [0, -1000] }}
+                            animate={{ x: ["0%", "-100%"] }}
                             transition={{
                                 repeat: Infinity,
                                 duration: duration,
                                 ease: "linear",
                             }}
-                            className="flex gap-24 items-center min-w-full italic"
+                            className="flex gap-[15rem] items-center min-w-full italic pr-[15rem]"
                         >
-                            {[...Array(6)].map((_, i) => (
-                                <Link key={i} href={promo.link || "#"} className="inline-flex items-center gap-6">
+                            {[...Array(4)].map((_, i) => (
+                                <Link key={i} href={promo.link || "#"} className="inline-flex items-center gap-10">
                                     <span
-                                        className="text-[0.62rem] md:text-[0.72rem] font-medium tracking-[0.4em] uppercase whitespace-nowrap"
+                                        className="text-[0.65rem] md:text-[0.75rem] font-medium tracking-[0.5em] uppercase whitespace-nowrap"
                                         style={{ fontFamily: "Inter, sans-serif" }}
                                     >
                                         {promo.text}
                                     </span>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                                    <span className="w-2 h-2 rounded-full bg-gold/50 shadow-[0_0_8px_rgba(184,149,106,0.6)]" />
                                 </Link>
                             ))}
                         </motion.div>
                         <motion.div
-                            animate={{ x: [0, -1000] }}
+                            animate={{ x: ["0%", "-100%"] }}
                             transition={{
                                 repeat: Infinity,
                                 duration: duration,
                                 ease: "linear",
                             }}
-                            className="flex gap-24 items-center min-w-full italic"
+                            className="flex gap-[15rem] items-center min-w-full italic pr-[15rem]"
                         >
-                            {[...Array(6)].map((_, i) => (
-                                <Link key={i + 10} href={promo.link || "#"} className="inline-flex items-center gap-6">
+                            {[...Array(4)].map((_, i) => (
+                                <Link key={i + 10} href={promo.link || "#"} className="inline-flex items-center gap-10">
                                     <span
-                                        className="text-[0.62rem] md:text-[0.72rem] font-medium tracking-[0.4em] uppercase whitespace-nowrap"
+                                        className="text-[0.65rem] md:text-[0.75rem] font-medium tracking-[0.5em] uppercase whitespace-nowrap"
                                         style={{ fontFamily: "Inter, sans-serif" }}
                                     >
                                         {promo.text}
                                     </span>
-                                    <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                                    <span className="w-2 h-2 rounded-full bg-gold/50 shadow-[0_0_8px_rgba(184,149,106,0.6)]" />
                                 </Link>
                             ))}
                         </motion.div>

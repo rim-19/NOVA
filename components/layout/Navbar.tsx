@@ -130,8 +130,8 @@ export function Navbar() {
             <nav
                 ref={navRef}
                 className={`fixed left-0 right-0 z-[1000] transition-all duration-700 border-b border-transparent ${scrolled
-                    ? "glass-dark py-4 shadow-luxury border-gold/5 top-0"
-                    : "bg-dark-base md:bg-transparent py-5 md:py-6"
+                    ? "glass-dark py-3 shadow-luxury border-gold/5 top-0"
+                    : "bg-dark-base md:bg-transparent py-3 md:py-4"
                     }`}
                 style={{
                     opacity: 1,
