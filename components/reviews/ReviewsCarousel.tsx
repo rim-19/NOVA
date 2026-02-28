@@ -37,7 +37,7 @@ export function ReviewsCarousel() {
   const [displayIndex, setDisplayIndex] = useState(reviews.length);
   const [isTransitioning, setIsTransitioning] = useState(true);
 
-  const ITEM_WIDTH = 260; // 240px width + 20px (approx gap/padding)
+  const ITEM_WIDTH = 312; // 240px width + 72px gap
 
   // Auto-play
   useEffect(() => {
@@ -109,10 +109,11 @@ export function ReviewsCarousel() {
         </div>
 
         <div className="relative cursor-grab active:cursor-grabbing" ref={containerRef}>
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center h-[460px]"> {/* Increased height for 1.2 scale */}
             <motion.div
               drag="x"
-              dragConstraints={{ left: -1000, right: 1000 }} // Loose constraints for infinite feel
+              dragConstraints={{ left: -2000, right: 2000 }}
+              dragElastic={0.15} // weighted silk feel
               onDragStart={() => {
                 setIsAutoPlaying(false);
                 setIsTransitioning(false); // Disable CSS transition while dragging
@@ -133,10 +134,10 @@ export function ReviewsCarousel() {
                 setTimeout(() => setIsAutoPlaying(true), 10000);
               }}
               animate={{
-                x: `calc(50% - ${(displayIndex * 260) + 120}px)`
+                x: `calc(50% - ${(displayIndex * ITEM_WIDTH) + 120}px)`
               }}
-              transition={isTransitioning ? { type: "spring", stiffness: 300, damping: 30 } : { duration: 0 }}
-              className="flex gap-5"
+              transition={isTransitioning ? { type: "spring", stiffness: 150, damping: 25 } : { duration: 0 }}
+              className="flex gap-[72px] items-center"
               onMouseEnter={() => setIsAutoPlaying(false)}
               onMouseLeave={() => !containerRef.current?.classList.contains('active:cursor-grabbing') && setIsAutoPlaying(true)}
             >
@@ -147,9 +148,11 @@ export function ReviewsCarousel() {
                     key={`${review.id}-${idx}`}
                     initial={false}
                     animate={{
-                      scale: isActive ? 1 : 0.85,
+                      scale: isActive ? 1.2 : 0.85,
                       opacity: isActive ? 1 : 0.4,
+                      filter: isActive ? "blur(0px)" : "blur(1.5px)",
                     }}
+                    transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                     className="flex-shrink-0 w-[240px]"
                   >
                     <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/5 bg-black/20 mb-6">

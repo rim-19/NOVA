@@ -42,8 +42,25 @@ export function PromoBanner() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className={`${themes[promo.theme] || themes.burgundy} text-white py-2 overflow-hidden relative z-[100] border-b border-white/5 shadow-lg shadow-black/20`}
+                onAnimationComplete={(definition: any) => {
+                    // Set a global CSS variable for Navbar to offset itself
+                    if (definition.height !== 0) {
+                        document.documentElement.style.setProperty('--banner-height', '36px');
+                    } else {
+                        document.documentElement.style.setProperty('--banner-height', '0px');
+                    }
+                }}
+                className={`${themes[promo.theme] || themes.burgundy} text-white py-2 overflow-hidden fixed top-0 left-0 right-0 z-[1100] border-b border-white/5 shadow-lg shadow-black/20`}
             >
+                {/* Luxury Shimmer Overlay */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <motion.div
+                        animate={{ x: ["-100%", "200%"] }}
+                        transition={{ repeat: Infinity, duration: 3, ease: "linear", repeatDelay: 2 }}
+                        className="absolute inset-0 w-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-[-20deg]"
+                    />
+                </div>
+
                 {promo.is_scrolling ? (
                     <div className="flex whitespace-nowrap overflow-hidden">
                         <motion.div
@@ -53,17 +70,17 @@ export function PromoBanner() {
                                 duration: duration,
                                 ease: "linear",
                             }}
-                            className="flex gap-12 items-center min-w-full italic"
+                            className="flex gap-24 items-center min-w-full italic"
                         >
                             {[...Array(6)].map((_, i) => (
-                                <Link key={i} href={promo.link || "#"} className="inline-flex items-center gap-4">
+                                <Link key={i} href={promo.link || "#"} className="inline-flex items-center gap-6">
                                     <span
-                                        className="text-[0.62rem] md:text-[0.72rem] font-medium tracking-[0.3em] uppercase whitespace-nowrap"
+                                        className="text-[0.62rem] md:text-[0.72rem] font-medium tracking-[0.4em] uppercase whitespace-nowrap"
                                         style={{ fontFamily: "Inter, sans-serif" }}
                                     >
                                         {promo.text}
                                     </span>
-                                    <span className="w-1 h-1 rounded-full bg-white/40" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
                                 </Link>
                             ))}
                         </motion.div>
@@ -74,17 +91,17 @@ export function PromoBanner() {
                                 duration: duration,
                                 ease: "linear",
                             }}
-                            className="flex gap-12 items-center min-w-full italic"
+                            className="flex gap-24 items-center min-w-full italic"
                         >
                             {[...Array(6)].map((_, i) => (
-                                <Link key={i + 10} href={promo.link || "#"} className="inline-flex items-center gap-4">
+                                <Link key={i + 10} href={promo.link || "#"} className="inline-flex items-center gap-6">
                                     <span
-                                        className="text-[0.62rem] md:text-[0.72rem] font-medium tracking-[0.3em] uppercase whitespace-nowrap"
+                                        className="text-[0.62rem] md:text-[0.72rem] font-medium tracking-[0.4em] uppercase whitespace-nowrap"
                                         style={{ fontFamily: "Inter, sans-serif" }}
                                     >
                                         {promo.text}
                                     </span>
-                                    <span className="w-1 h-1 rounded-full bg-white/40" />
+                                    <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
                                 </Link>
                             ))}
                         </motion.div>

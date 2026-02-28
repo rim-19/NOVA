@@ -129,11 +129,15 @@ export function Navbar() {
         <>
             <nav
                 ref={navRef}
-                className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-700 border-b border-transparent ${scrolled
-                    ? "glass-dark py-4 shadow-luxury border-gold/5"
+                className={`fixed left-0 right-0 z-[1000] transition-all duration-700 border-b border-transparent ${scrolled
+                    ? "glass-dark py-4 shadow-luxury border-gold/5 top-0"
                     : "bg-dark-base md:bg-transparent py-5 md:py-6"
                     }`}
-                style={{ opacity: 1, visibility: "visible" }}
+                style={{
+                    opacity: 1,
+                    visibility: "visible",
+                    top: scrolled ? "0" : "var(--banner-height, 0px)"
+                }}
             >
                 <div className="w-full max-w-7xl mx-auto px-5 md:px-12 flex items-center justify-between">
                     {/* Logo */}
@@ -195,124 +199,124 @@ export function Navbar() {
                     {/* Right side - Mobile compact */}
                     {!hideHeroActions && (
                         <div className="flex items-center gap-4 md:gap-6 flex-shrink-0 relative z-10">
-                        <button
-                            type="button"
-                            onClick={() => setFavoritesOpen(true)}
-                            className="relative text-label text-cream/60 hover:text-cream transition-colors duration-500 hidden md:flex items-center gap-2 btn-click-effect"
-                            aria-label="View favorites"
-                        >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                                <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
-                            </svg>
-                            {isMounted && favoriteCount > 0 && (
-                                <span
-                                    className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-light text-cream"
-                                    style={{ background: "#7D1736" }}
-                                >
-                                    {favoriteCount}
-                                </span>
-                            )}
-                        </button>
-
-                        {/* Cart button (Desktop) */}
-                        <button
-                            onClick={toggleCart}
-                            className="relative text-label text-cream/60 hover:text-cream transition-colors duration-500 hidden md:flex items-center gap-3 btn-click-effect"
-                            aria-label="Open cart"
-                        >
-                            <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
+                            <button
+                                type="button"
+                                onClick={() => setFavoritesOpen(true)}
+                                className="relative text-label text-cream/60 hover:text-cream transition-colors duration-500 hidden md:flex items-center gap-2 btn-click-effect"
+                                aria-label="View favorites"
                             >
-                                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                                <line x1="3" y1="6" x2="21" y2="6" />
-                                <path d="M16 10a4 4 0 01-8 0" />
-                            </svg>
-                            {isMounted && totalItems > 0 && (
-                                <span
-                                    className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-light text-cream"
-                                    style={{ background: "#7D1736" }}
-                                >
-                                    {totalItems}
-                                </span>
-                            )}
-                        </button>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                    <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
+                                </svg>
+                                {isMounted && favoriteCount > 0 && (
+                                    <span
+                                        className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-light text-cream"
+                                        style={{ background: "#7D1736" }}
+                                    >
+                                        {favoriteCount}
+                                    </span>
+                                )}
+                            </button>
 
-                        <button
-                            type="button"
-                            onClick={() => setFavoritesOpen(true)}
-                            className="relative flex md:hidden items-center justify-center w-10 h-10 text-cream/80 btn-click-effect flex-shrink-0"
-                            aria-label="View favorites"
-                        >
-                            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                                <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
-                            </svg>
-                            {isMounted && favoriteCount > 0 && (
-                                <span
-                                    className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] text-cream"
-                                    style={{ background: "#7D1736" }}
-                                >
-                                    {favoriteCount}
-                                </span>
-                            )}
-                        </button>
-
-                        {/* Mobile cart */}
-                        <button
-                            onClick={toggleCart}
-                            className="relative flex md:hidden items-center justify-center w-10 h-10 text-cream/80 btn-click-effect flex-shrink-0"
-                            aria-label="Open cart"
-                        >
-                            <svg
-                                width="20"
-                                height="20"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="1.5"
+                            {/* Cart button (Desktop) */}
+                            <button
+                                onClick={toggleCart}
+                                className="relative text-label text-cream/60 hover:text-cream transition-colors duration-500 hidden md:flex items-center gap-3 btn-click-effect"
+                                aria-label="Open cart"
                             >
-                                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                                <line x1="3" y1="6" x2="21" y2="6" />
-                                <path d="M16 10a4 4 0 01-8 0" />
-                            </svg>
-                            {isMounted && totalItems > 0 && (
-                                <span
-                                    className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] text-cream"
-                                    style={{ background: "#7D1736" }}
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
                                 >
-                                    {totalItems}
-                                </span>
-                            )}
-                        </button>
+                                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                                    <line x1="3" y1="6" x2="21" y2="6" />
+                                    <path d="M16 10a4 4 0 01-8 0" />
+                                </svg>
+                                {isMounted && totalItems > 0 && (
+                                    <span
+                                        className="absolute -top-2 -right-2 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-light text-cream"
+                                        style={{ background: "#7D1736" }}
+                                    >
+                                        {totalItems}
+                                    </span>
+                                )}
+                            </button>
 
-                        {/* Mobile hamburger */}
-                        <button
-                            onClick={() => setMenuOpen(!menuOpen)}
-                            className="relative flex md:hidden items-center gap-3 group flex-shrink-0"
-                            aria-label="Toggle menu"
-                        >
-                            <span className="text-[0.7rem] text-cream tracking-[0.2em] font-medium uppercase block">
-                                {menuOpen ? "Close" : "Menu"}
-                            </span>
-                            <div className="flex flex-col gap-1.5 w-6">
-                                <span
-                                    className={`block w-full h-[1.2px] bg-cream transition-all duration-500 ${menuOpen ? "rotate-45 translate-y-2" : ""
-                                        }`}
-                                />
-                                <span
-                                    className={`block w-2/3 h-[1.2px] bg-cream transition-all duration-500 ml-auto ${menuOpen ? "opacity-0 translate-x-2" : ""
-                                        }`}
-                                />
-                                <span
-                                    className={`block w-full h-[1.2px] bg-cream transition-all duration-500 ${menuOpen ? "-rotate-45 -translate-y-2" : ""
-                                        }`}
-                                />
-                            </div>
-                        </button>
+                            <button
+                                type="button"
+                                onClick={() => setFavoritesOpen(true)}
+                                className="relative flex md:hidden items-center justify-center w-10 h-10 text-cream/80 btn-click-effect flex-shrink-0"
+                                aria-label="View favorites"
+                            >
+                                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                                    <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
+                                </svg>
+                                {isMounted && favoriteCount > 0 && (
+                                    <span
+                                        className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] text-cream"
+                                        style={{ background: "#7D1736" }}
+                                    >
+                                        {favoriteCount}
+                                    </span>
+                                )}
+                            </button>
+
+                            {/* Mobile cart */}
+                            <button
+                                onClick={toggleCart}
+                                className="relative flex md:hidden items-center justify-center w-10 h-10 text-cream/80 btn-click-effect flex-shrink-0"
+                                aria-label="Open cart"
+                            >
+                                <svg
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.5"
+                                >
+                                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                                    <line x1="3" y1="6" x2="21" y2="6" />
+                                    <path d="M16 10a4 4 0 01-8 0" />
+                                </svg>
+                                {isMounted && totalItems > 0 && (
+                                    <span
+                                        className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center text-[8px] text-cream"
+                                        style={{ background: "#7D1736" }}
+                                    >
+                                        {totalItems}
+                                    </span>
+                                )}
+                            </button>
+
+                            {/* Mobile hamburger */}
+                            <button
+                                onClick={() => setMenuOpen(!menuOpen)}
+                                className="relative flex md:hidden items-center gap-3 group flex-shrink-0"
+                                aria-label="Toggle menu"
+                            >
+                                <span className="text-[0.7rem] text-cream tracking-[0.2em] font-medium uppercase block">
+                                    {menuOpen ? "Close" : "Menu"}
+                                </span>
+                                <div className="flex flex-col gap-1.5 w-6">
+                                    <span
+                                        className={`block w-full h-[1.2px] bg-cream transition-all duration-500 ${menuOpen ? "rotate-45 translate-y-2" : ""
+                                            }`}
+                                    />
+                                    <span
+                                        className={`block w-2/3 h-[1.2px] bg-cream transition-all duration-500 ml-auto ${menuOpen ? "opacity-0 translate-x-2" : ""
+                                            }`}
+                                    />
+                                    <span
+                                        className={`block w-full h-[1.2px] bg-cream transition-all duration-500 ${menuOpen ? "-rotate-45 -translate-y-2" : ""
+                                            }`}
+                                    />
+                                </div>
+                            </button>
                         </div>
                     )}
                 </div>
@@ -397,16 +401,16 @@ export function Navbar() {
                 <div className="p-8 border-t border-gold/5 opacity-40">
                     <p className="text-[0.6rem] text-cream tracking-widest uppercase mb-2">Follow us on Instagram:</p>
                     <div className="flex gap-4 items-center">
-                        <a 
-                            href="https://www.instagram.com/novalingerieby?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
-                            target="_blank" 
+                        <a
+                            href="https://www.instagram.com/novalingerieby?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 text-[0.65rem] text-cream/60 hover:text-gold transition-colors duration-300"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2"/>
-                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="none" stroke="currentColor" strokeWidth="2"/>
-                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                <rect x="2" y="2" width="20" height="20" rx="5" ry="5" fill="none" stroke="currentColor" strokeWidth="2" />
+                                <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" fill="none" stroke="currentColor" strokeWidth="2" />
+                                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                             </svg>
                             <span>@novalingerieby</span>
                         </a>
