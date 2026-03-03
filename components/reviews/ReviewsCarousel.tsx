@@ -44,7 +44,7 @@ export function ReviewsCarousel() {
     if (isAutoPlaying) {
       intervalRef.current = setInterval(() => {
         handleNext();
-      }, 3000); // Reduced from 4000ms
+      }, 2000); // 2 seconds as requested
     }
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -119,15 +119,16 @@ export function ReviewsCarousel() {
                 setIsTransitioning(false); // Disable CSS transition while dragging
               }}
               onDragEnd={(e, info) => {
-                const threshold = 40; // reduced threshold for easier swiping
+                const threshold = 30; // More sensitive for precise swiping
                 const velocity = info.velocity.x;
 
-                if (info.offset.x < -threshold || velocity < -100) {
+                // Only move one item at a time
+                if (info.offset.x < -threshold || velocity < -150) {
                   handleNext();
-                } else if (info.offset.x > threshold || velocity > 100) {
+                } else if (info.offset.x > threshold || velocity > 150) {
                   handlePrev();
                 } else {
-                  // Snap back if didn't clear threshold
+                  // Snap back
                   setIsTransitioning(true);
                   setDisplayIndex(displayIndex);
                 }

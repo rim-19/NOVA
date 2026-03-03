@@ -298,8 +298,8 @@ export default function CollectionArchivePage() {
             className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35 shadow-[0_6px_30px_rgba(0,0,0,0.4),0_0_25px_rgba(184,149,106,0.25)]"
           />
 
-          <div className="flex items-center justify-between gap-1 sm:gap-2">
-            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 max-w-full">
+          <div className="flex items-center justify-between gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5 flex-1 min-w-0">
               <button
                 onClick={() => setActivePanel("sort")}
                 className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85"
@@ -314,7 +314,7 @@ export default function CollectionArchivePage() {
               </button>
               <button
                 onClick={() => setActivePanel("filter")}
-                className="flex-shrink-0 flex items-center gap-1 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-cream/85 hover:bg-dark-base/90 transition-colors"
+                className="flex-shrink-0 flex items-center gap-1 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-[0.1em] text-cream/85 hover:bg-dark-base/90 transition-colors"
               >
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="4" y1="21" x2="4" y2="14" />
@@ -339,14 +339,14 @@ export default function CollectionArchivePage() {
                     setSearch("");
                     setPage(1);
                   }}
-                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-2 text-[0.58rem] uppercase tracking-[0.14em] text-gold/80 hover:text-gold transition-colors font-medium shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
+                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-[0.1em] text-gold/80 hover:text-gold transition-colors font-medium shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
                 >
                   Clear
                 </button>
               )}
             </div>
 
-            <div className="flex items-center gap-0.5 sm:gap-1 md:hidden flex-shrink-0 bg-dark-base/40 p-1 rounded-xl border border-white/5">
+            <div className="flex items-center gap-0.5 sm:gap-1 md:hidden flex-shrink-0 bg-dark-base/40 p-1 rounded-lg border border-white/5">
               <button
                 onClick={() => setMobileGridCols(2)}
                 className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 2 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
@@ -391,9 +391,9 @@ export default function CollectionArchivePage() {
             ))}
           </div>
         ) : (
-          <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-3" : mobileGridCols === 3 ? "grid-cols-3 gap-2" : "grid-cols-4 gap-1.5"} md:grid-cols-3 gap-5`}>
+          <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-3" : mobileGridCols === 3 ? "grid-cols-3 gap-1.5" : "grid-cols-4 gap-1"} md:grid-cols-3 gap-5`}>
             {paginated.map((product) => (
-              <div key={product.slug} className={`w-full ${mobileGridCols >= 3 ? "scale-[0.98] origin-top" : ""} md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto`}>
+              <div key={product.slug} className={`w-full ${mobileGridCols === 3 ? "scale-[0.92]" : mobileGridCols === 4 ? "scale-[0.85]" : ""} origin-center md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto`}>
                 <ShopProductCard product={product} />
               </div>
             ))}
