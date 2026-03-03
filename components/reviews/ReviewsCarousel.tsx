@@ -108,21 +108,23 @@ export function ReviewsCarousel() {
           <h2 className="font-cormorant text-4xl italic text-cream">Client Experiences</h2>
         </div>
 
-        <div className="relative cursor-grab active:cursor-grabbing" ref={containerRef}>
+        <div className="relative touch-pan-y cursor-grab active:cursor-grabbing" ref={containerRef}>
           <div className="flex justify-center items-center h-[460px]"> {/* Increased height for 1.2 scale */}
             <motion.div
               drag="x"
               dragConstraints={{ left: -2000, right: 2000 }}
-              dragElastic={0.15} // weighted silk feel
+              dragElastic={0.25} // weighted silk feel - increased for smoothness
               onDragStart={() => {
                 setIsAutoPlaying(false);
                 setIsTransitioning(false); // Disable CSS transition while dragging
               }}
               onDragEnd={(e, info) => {
-                const threshold = 50;
-                if (info.offset.x < -threshold) {
+                const threshold = 40; // reduced threshold for easier swiping
+                const velocity = info.velocity.x;
+
+                if (info.offset.x < -threshold || velocity < -100) {
                   handleNext();
-                } else if (info.offset.x > threshold) {
+                } else if (info.offset.x > threshold || velocity > 100) {
                   handlePrev();
                 } else {
                   // Snap back if didn't clear threshold
@@ -136,7 +138,7 @@ export function ReviewsCarousel() {
               animate={{
                 x: `calc(50% - ${(displayIndex * ITEM_WIDTH) + 120}px)`
               }}
-              transition={isTransitioning ? { type: "spring", stiffness: 150, damping: 25 } : { duration: 0 }}
+              transition={isTransitioning ? { type: "spring", stiffness: 200, damping: 30, mass: 0.8 } : { duration: 0 }}
               className="flex gap-[72px] items-center"
               onMouseEnter={() => setIsAutoPlaying(false)}
               onMouseLeave={() => !containerRef.current?.classList.contains('active:cursor-grabbing') && setIsAutoPlaying(true)}

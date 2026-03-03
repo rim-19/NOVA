@@ -23,10 +23,11 @@ export function PromoBanner() {
         fetchPromo();
     }, []);
 
-    // Only show on the collection page
-    const isCollectionPage = pathname === "/collection";
+    // Show on all pages except Home
+    const isVisible = pathname !== "/";
+    const isAtelier = pathname.startsWith("/atelier-admin");
 
-    if (!promo || !promo.is_active || !isCollectionPage) return null;
+    if (!promo || !promo.is_active || !isVisible || isAtelier) return null;
 
     const themes: any = {
         burgundy: "bg-[#7D1736]",

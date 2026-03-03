@@ -329,12 +329,13 @@ export default function CollectionArchivePage() {
                 </svg>
                 Filter
               </button>
-              {(selectedType !== "all" || selectedSize !== "all" || selectedColors.length > 0 || search) && (
+              {(selectedType !== "all" || selectedSize !== "all" || selectedColors.length > 0 || search || sortBy !== "featured") && (
                 <button
                   onClick={() => {
                     setSelectedType("all");
                     setSelectedSize("all");
                     setSelectedColors([]);
+                    setSortBy("featured");
                     setSearch("");
                     setPage(1);
                   }}
@@ -390,9 +391,9 @@ export default function CollectionArchivePage() {
             ))}
           </div>
         ) : (
-          <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2" : mobileGridCols === 3 ? "grid-cols-3" : "grid-cols-4"} md:grid-cols-3 gap-3 md:gap-5`}>
+          <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-3" : mobileGridCols === 3 ? "grid-cols-3 gap-2" : "grid-cols-4 gap-1.5"} md:grid-cols-3 gap-5`}>
             {paginated.map((product) => (
-              <div key={product.slug} className="w-full md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto">
+              <div key={product.slug} className={`w-full ${mobileGridCols >= 3 ? "scale-[0.98] origin-top" : ""} md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto`}>
                 <ShopProductCard product={product} />
               </div>
             ))}
@@ -470,10 +471,21 @@ export default function CollectionArchivePage() {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 24, stiffness: 260 }}
-              className="absolute bottom-0 left-0 right-0 rounded-t-3xl bg-[linear-gradient(180deg,#390a16,#1a0202)] p-5 shadow-[0_-20px_45px_rgba(0,0,0,0.55)]"
+              className="absolute bottom-0 left-0 right-0 rounded-t-3xl bg-[linear-gradient(180deg,#390a16,#1a0202)] p-5 shadow-[0_-20px_45px_rgba(0,0,0,0.55)] border-t border-gold/10"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-gold/35" />
+
+              <button
+                onClick={() => setActivePanel(null)}
+                className="absolute top-4 right-4 p-2 text-cream/30 hover:text-gold transition-colors"
+                aria-label="Close panel"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
               {activePanel === "sort" && (
                 <div className="space-y-2">
                   <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60">Sort</p>
@@ -518,19 +530,20 @@ export default function CollectionArchivePage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <p className="text-[0.6rem] uppercase tracking-[0.3em] text-gold/60">Filter</p>
-                    <button
-                      onClick={() => {
-                        setSelectedFilter("all");
-                        setSelectedColors([]);
-                        setSelectedSize("all");
-                        setSortBy("featured");
-                        setPage(1);
-                        setActivePanel(null);
-                      }}
-                      className="text-[0.55rem] uppercase tracking-[0.2em] text-gold hover:text-gold transition-colors font-medium bg-black/40 px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(184,149,106,0.2)] border border-gold/10"
-                    >
-                      Clear
-                    </button>
+                    {(selectedType !== "all" || selectedColors.length > 0 || selectedSize !== "all" || sortBy !== "featured") && (
+                      <button
+                        onClick={() => {
+                          setSelectedType("all");
+                          setSelectedColors([]);
+                          setSelectedSize("all");
+                          setSortBy("featured");
+                          setPage(1);
+                        }}
+                        className="text-[0.55rem] uppercase tracking-[0.2em] text-gold hover:text-gold transition-colors font-medium bg-black/40 px-3 py-1.5 rounded-full shadow-[0_0_12px_rgba(184,149,106,0.2)] border border-gold/10"
+                      >
+                        Clear
+                      </button>
+                    )}
                   </div>
 
                   {/* Collections */}

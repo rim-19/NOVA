@@ -280,7 +280,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
 
 
   return (
-    <div className="min-h-screen pt-20 pb-14 px-3 md:px-10" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
+    <div className="min-h-screen pt-28 md:pt-36 pb-14 px-3 md:px-10" style={{ background: "linear-gradient(180deg, #2B0303 0%, #390A16 100%)" }}>
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-10 items-start">
           <div className="space-y-4">
