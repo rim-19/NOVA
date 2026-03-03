@@ -99,7 +99,7 @@ export function PrivateAtelierGate() {
                                         y: { duration: 8 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
                                         rotate: { duration: 11 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
                                     }}
-                                    className="absolute w-40 md:w-56 aspect-square overflow-hidden shadow-2xl border border-white/5"
+                                    className="absolute w-56 md:w-80 aspect-square overflow-hidden shadow-2xl border border-white/5"
                                     style={{
                                         top: `${50 + 35 * Math.sin((i * 2 * Math.PI) / hintImages.length)}%`,
                                         left: `${50 + 35 * Math.cos((i * 2 * Math.PI) / hintImages.length)}%`,

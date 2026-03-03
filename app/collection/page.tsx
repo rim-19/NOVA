@@ -302,21 +302,21 @@ export default function CollectionArchivePage() {
             <div className="flex flex-nowrap items-center gap-1 flex-1 min-w-0">
               <button
                 onClick={() => setActivePanel("sort")}
-                className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-2 text-[0.62rem] uppercase tracking-wider text-cream/85 font-bold"
+                className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold"
               >
                 Sort ▼
               </button>
               <button
                 onClick={() => setActivePanel("size")}
-                className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-2 text-[0.62rem] uppercase tracking-wider text-cream/85 font-bold"
+                className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold"
               >
                 Size ▼
               </button>
               <button
                 onClick={() => setActivePanel("filter")}
-                className="flex-shrink-0 flex items-center gap-1.5 rounded-full bg-dark-base/70 px-3 py-2 text-[0.62rem] uppercase tracking-wider text-cream/85 font-bold"
+                className="flex-shrink-0 flex items-center gap-1 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
                 </svg>
                 Filter
@@ -331,7 +331,7 @@ export default function CollectionArchivePage() {
                     setSearch("");
                     setPage(1);
                   }}
-                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-2 text-[0.62rem] uppercase tracking-wider text-gold/80 font-bold shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gold/10"
+                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-2 py-1.5 text-[0.55rem] uppercase tracking-wider text-gold/80 font-bold shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gold/10"
                 >
                   Clear
                 </button>
