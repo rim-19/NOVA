@@ -302,21 +302,21 @@ export default function CollectionArchivePage() {
             <div className="flex flex-nowrap items-center gap-1 flex-1 min-w-0">
               <button
                 onClick={() => setActivePanel("sort")}
-                className="flex-shrink-0 rounded-full bg-dark-base/70 px-2 py-1.5 text-[0.45rem] uppercase tracking-wider text-cream/85"
+                className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.52rem] uppercase tracking-wider text-cream/85"
               >
                 Sort
               </button>
               <button
                 onClick={() => setActivePanel("size")}
-                className="flex-shrink-0 rounded-full bg-dark-base/70 px-2 py-1.5 text-[0.45rem] uppercase tracking-wider text-cream/85"
+                className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.52rem] uppercase tracking-wider text-cream/85"
               >
                 Size
               </button>
               <button
                 onClick={() => setActivePanel("filter")}
-                className="flex-shrink-0 flex items-center gap-0.5 rounded-full bg-dark-base/70 px-1.5 py-1.5 text-[0.45rem] uppercase tracking-wider text-cream/85"
+                className="flex-shrink-0 flex items-center gap-1 rounded-full bg-dark-base/70 px-2 py-1.5 text-[0.52rem] uppercase tracking-wider text-cream/85"
               >
-                <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
                 </svg>
                 Filter
@@ -331,7 +331,7 @@ export default function CollectionArchivePage() {
                     setSearch("");
                     setPage(1);
                   }}
-                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-2 py-1.5 text-[0.45rem] uppercase tracking-wider text-gold/80 font-medium"
+                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.52rem] uppercase tracking-wider text-gold/80 font-medium"
                 >
                   Clear
                 </button>
@@ -383,9 +383,9 @@ export default function CollectionArchivePage() {
             ))}
           </div>
         ) : (
-          <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-3" : mobileGridCols === 3 ? "grid-cols-3 gap-1.5" : "grid-cols-4 gap-1"} md:grid-cols-3 gap-5`}>
+          <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-4" : mobileGridCols === 3 ? "grid-cols-3 gap-2" : "grid-cols-4 gap-1"} md:grid-cols-3 gap-5`}>
             {paginated.map((product) => (
-              <div key={product.slug} className={`w-full ${mobileGridCols === 3 ? "scale-[0.92]" : mobileGridCols === 4 ? "scale-[0.85]" : ""} origin-center md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto`}>
+              <div key={product.slug} className={`w-full ${mobileGridCols === 3 ? "scale-[0.96]" : mobileGridCols === 4 ? "scale-[0.92]" : "scale-100"} origin-center md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto`}>
                 <ShopProductCard product={product} />
               </div>
             ))}

@@ -210,9 +210,14 @@ export function CartDrawer() {
                 {/* Footer — fixed at bottom, never scrolls */}
                 {items.length > 0 && (
                     <div className="flex-shrink-0 p-6 md:p-8 bg-[#1A0202] border-t" style={{ borderTopColor: "rgba(184, 149, 106, 0.15)" }}>
-                        <div className="flex justify-between items-center mb-6">
-                            <p className="text-[0.6rem] uppercase tracking-widest text-cream/40">Total Amount</p>
-                            <p className="font-cormorant italic text-xl text-gold">{total.toLocaleString()} MAD</p>
+                        <div className="flex flex-col gap-1 mb-6">
+                            <div className="flex justify-between items-center">
+                                <p className="text-[0.6rem] uppercase tracking-widest text-cream/40">Total Amount</p>
+                                <p className="font-cormorant italic text-xl text-gold">{total.toLocaleString()} MAD</p>
+                            </div>
+                            <p className="text-[0.45rem] text-cream/30 italic text-right mt-1">
+                                * Livraison: 25 DH - 45 DH (selon la ville). Détails lors de la confirmation.
+                            </p>
                         </div>
                         <button
                             onClick={handleWhatsAppCheckout}

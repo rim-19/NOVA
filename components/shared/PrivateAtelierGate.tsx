@@ -99,12 +99,12 @@ export function PrivateAtelierGate() {
                                         y: { duration: 8 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
                                         rotate: { duration: 11 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
                                     }}
-                                    className="absolute w-64 md:w-96 aspect-square overflow-hidden shadow-2xl border border-white/5"
+                                    className="absolute w-56 md:w-80 aspect-[4/5] overflow-hidden shadow-2xl border border-white/5"
                                     style={{
                                         top: img.top,
                                         left: img.left,
                                         clipPath:
-                                            "path('M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.41,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.59,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z')",
+                                            "polygon(50% 95%, 15% 75%, 2% 45%, 5% 15%, 25% 2%, 50% 20%, 75% 2%, 95% 15%, 98% 45%, 85% 75%)",
                                     }}
                                 >
                                     <Image

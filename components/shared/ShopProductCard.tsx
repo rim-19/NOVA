@@ -98,32 +98,32 @@ export function ShopProductCard({ product }: Props) {
         </svg>
       </button>
 
-      <div className="p-1 md:p-3">
+      <div className="p-2 md:p-3">
         <div className="mb-0.5 flex items-center justify-between gap-1">
-          <p className="text-[0.38rem] md:text-[0.52rem] uppercase tracking-tighter md:tracking-[0.33em] text-gold/50 truncate max-w-[70%]">{product.collection}</p>
+          <p className="text-[0.42rem] md:text-[0.52rem] uppercase tracking-tight md:tracking-[0.33em] text-gold/50 truncate max-w-[70%]">{product.collection}</p>
           <button
             aria-label="Favorite"
-            className={`rounded-full p-0.5 md:p-1.5 transition-colors border ${liked ? "text-gold border-gold/40" : "text-cream/55 hover:text-gold border-cream/20 hover:border-gold/40"}`}
+            className={`rounded-full p-1 md:p-1.5 transition-colors border ${liked ? "text-gold border-gold/40" : "text-cream/55 hover:text-gold border-cream/20 hover:border-gold/40"}`}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
               toggle(product.slug);
             }}
           >
-            <svg width="8" height="8" viewBox="0 0 24 24" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" className="md:w-[12px] md:h-[12px]">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill={liked ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2" className="md:w-[12px] md:h-[12px]">
               <path d="M12 21s-6.5-4.35-9-8.28C.63 9.03 2.4 4 7 4c2.17 0 3.4 1 5 2.8C13.6 5 14.83 4 17 4c4.6 0 6.37 5.03 4 8.72C18.5 16.65 12 21 12 21z" />
             </svg>
           </button>
         </div>
         <Link href={`/product/${product.slug}`} className="block">
-          <h3 className="mt-0.5 font-cormorant text-[0.6rem] md:text-[0.95rem] italic font-bold text-[#b8956a] leading-none text-left line-clamp-1">
+          <h3 className="mt-0.5 font-cormorant text-[0.75rem] md:text-[0.95rem] italic font-bold text-[#b8956a] leading-tight text-left line-clamp-1">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-0.5 text-[0.58rem] text-cream/50 line-clamp-1 text-left hidden lg:block">
+        <p className="mt-0.5 text-[0.55rem] md:text-[0.58rem] text-cream/50 line-clamp-1 text-left hidden sm:block">
           {product.poetic_description}
         </p>
-        <p className="mt-1 text-[0.55rem] md:text-[0.72rem] font-medium text-gold text-left">{displayPrice}</p>
+        <p className="mt-1 text-[0.62rem] md:text-[0.72rem] font-medium text-gold text-left">{displayPrice}</p>
       </div>
       <div className="mx-3 mb-3 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
