@@ -98,9 +98,9 @@ export function ShopProductCard({ product }: Props) {
         </svg>
       </button>
 
-      <div className="p-2 md:p-3">
+      <div className="p-1.5 md:p-3">
         <div className="mb-0.5 md:mb-1 flex items-center justify-between gap-1 md:gap-2">
-          <p className="text-[0.42rem] md:text-[0.52rem] uppercase tracking-[0.2em] md:tracking-[0.33em] text-gold/50">{product.collection}</p>
+          <p className="text-[0.4rem] md:text-[0.52rem] uppercase tracking-[0.18em] md:tracking-[0.33em] text-gold/50">{product.collection}</p>
           <button
             aria-label="Favorite"
             className={`rounded-full p-1 md:p-1.5 transition-colors border ${liked ? "text-gold border-gold/40" : "text-cream/55 hover:text-gold border-cream/20 hover:border-gold/40"}`}
@@ -116,12 +116,15 @@ export function ShopProductCard({ product }: Props) {
           </button>
         </div>
         <Link href={`/product/${product.slug}`} className="block">
-          <h3 className="mt-0.5 font-cormorant text-[0.75rem] md:text-[0.95rem] italic font-bold text-[#b8956a] leading-tight text-left line-clamp-1">
+          <h3 className="mt-0.5 font-cormorant text-[0.7rem] md:text-[0.95rem] italic font-bold text-[#b8956a] leading-tight text-left line-clamp-1">
             {product.name}
           </h3>
         </Link>
-        <p className="mt-0.5 text-[0.5rem] md:text-[0.58rem] text-cream/50 line-clamp-1 text-left hidden xs:block">{product.poetic_description}</p>
-        <p className="mt-0.5 text-[0.62rem] md:text-[0.72rem] font-medium text-gold text-left">{displayPrice}</p>
+        {/* Hide description in tight mobile grids to prevent tangling */}
+        <p className="mt-0.5 text-[0.5rem] md:text-[0.58rem] text-cream/50 line-clamp-1 text-left hidden sm:block">
+          {product.poetic_description}
+        </p>
+        <p className="mt-0.5 text-[0.6rem] md:text-[0.72rem] font-medium text-gold text-left">{displayPrice}</p>
       </div>
       <div className="mx-3 mb-3 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
@@ -139,8 +142,8 @@ export function ShopProductCard({ product }: Props) {
                 <button
                   key={itemSize}
                   className={`rounded-md px-2 py-1 text-[0.62rem] tracking-widest transition-all duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gold/70 ${size === itemSize
-                      ? "bg-gold/25 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)] scale-[1.03]"
-                      : "bg-black/30 text-cream/60 hover:bg-black/45"
+                    ? "bg-gold/25 text-gold shadow-[0_0_12px_rgba(184,149,106,0.35)] scale-[1.03]"
+                    : "bg-black/30 text-cream/60 hover:bg-black/45"
                     }`}
                   onClick={() => setSize(itemSize)}
                 >
