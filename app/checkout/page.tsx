@@ -245,21 +245,26 @@ export default function CheckoutPage() {
             </div>
 
             {items.length > 0 && (
-              <div className="flex justify-between items-center pt-2">
-                <p className="text-label" style={{ color: "rgba(245,233,226,0.4)", letterSpacing: "0.2em" }}>
-                  Total
+              <>
+                <div className="flex justify-between items-center pt-2">
+                  <p className="text-label" style={{ color: "rgba(245,233,226,0.4)", letterSpacing: "0.2em" }}>
+                    Total
+                  </p>
+                  <p
+                    style={{
+                      fontFamily: "Cormorant Garamond, serif",
+                      fontStyle: "italic",
+                      fontSize: "1.5rem",
+                      color: "rgba(184,149,106,0.9)",
+                    }}
+                  >
+                    {total.toLocaleString("fr-MA")} MAD
+                  </p>
+                </div>
+                <p className="text-right text-[0.6rem] text-cream/30 italic mt-2">
+                  * Delivery: 25 DH - 45 DH (depending on the city). Details upon confirmation.
                 </p>
-                <p
-                  style={{
-                    fontFamily: "Cormorant Garamond, serif",
-                    fontStyle: "italic",
-                    fontSize: "1.5rem",
-                    color: "rgba(184,149,106,0.9)",
-                  }}
-                >
-                  {total.toLocaleString("fr-MA")} MAD
-                </p>
-              </div>
+              </>
             )}
 
             {items.length === 0 && (
@@ -270,6 +275,6 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

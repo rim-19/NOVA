@@ -216,7 +216,7 @@ export function CartDrawer() {
                                 <p className="font-cormorant italic text-xl text-gold">{total.toLocaleString()} MAD</p>
                             </div>
                             <p className="text-[0.45rem] text-cream/30 italic text-right mt-1">
-                                * Livraison: 25 DH - 45 DH (selon la ville). Détails lors de la confirmation.
+                                * Delivery: 25 DH - 45 DH (depending on the city). Details upon confirmation.
                             </p>
                         </div>
                         <button
