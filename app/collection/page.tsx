@@ -298,23 +298,23 @@ export default function CollectionArchivePage() {
             className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35 shadow-[0_6px_30px_rgba(0,0,0,0.4),0_0_25px_rgba(184,149,106,0.25)]"
           />
 
-          <div className="flex items-center justify-between gap-1">
-            <div className="flex flex-nowrap items-center gap-1 flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-1.5 md:gap-4">
+            <div className="flex flex-nowrap items-center gap-1.5 flex-1 min-w-0 overflow-x-auto no-scrollbar py-0.5">
               <button
                 onClick={() => setActivePanel("sort")}
-                className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold"
+                className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
               >
                 Sort ▼
               </button>
               <button
                 onClick={() => setActivePanel("size")}
-                className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold"
+                className="flex-shrink-0 rounded-full bg-dark-base/70 px-3 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
               >
                 Size ▼
               </button>
               <button
                 onClick={() => setActivePanel("filter")}
-                className="flex-shrink-0 flex items-center gap-1 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold"
+                className="flex-shrink-0 flex items-center gap-1.5 rounded-full bg-dark-base/70 px-3 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
               >
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
@@ -331,7 +331,7 @@ export default function CollectionArchivePage() {
                     setSearch("");
                     setPage(1);
                   }}
-                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-2 py-1.5 text-[0.55rem] uppercase tracking-wider text-gold/80 font-bold shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gold/10"
+                  className="flex-shrink-0 rounded-full bg-dark-base/80 px-3 py-1.5 text-[0.55rem] uppercase tracking-wider text-gold font-bold shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gold/20"
                 >
                   Clear
                 </button>

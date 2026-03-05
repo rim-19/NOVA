@@ -261,7 +261,7 @@ export default function CheckoutPage() {
                     {total.toLocaleString("fr-MA")} MAD
                   </p>
                 </div>
-                <p className="text-right text-[0.6rem] text-cream/30 italic mt-2">
+                <p className="text-right text-[0.7rem] md:text-[0.75rem] text-cream/45 italic mt-3 tracking-wide">
                   * Delivery: 25 DH - 45 DH (depending on the city). Details upon confirmation.
                 </p>
               </>

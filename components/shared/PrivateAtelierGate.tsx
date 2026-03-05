@@ -99,13 +99,13 @@ export function PrivateAtelierGate() {
                                         y: { duration: 8 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
                                         rotate: { duration: 11 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
                                     }}
-                                    className="absolute w-56 md:w-80 aspect-square overflow-hidden shadow-2xl border border-white/5"
+                                    className="absolute w-72 md:w-[28rem] aspect-square overflow-hidden shadow-2xl border border-white/5"
                                     style={{
-                                        top: `${50 + 35 * Math.sin((i * 2 * Math.PI) / hintImages.length)}%`,
-                                        left: `${50 + 35 * Math.cos((i * 2 * Math.PI) / hintImages.length)}%`,
+                                        top: `${48 - 2.6 * (13 * Math.cos((i * 2 * Math.PI) / hintImages.length) - 5 * Math.cos(2 * (i * 2 * Math.PI) / hintImages.length) - 2 * Math.cos(3 * (i * 2 * Math.PI) / hintImages.length) - Math.cos(4 * (i * 2 * Math.PI) / hintImages.length))}%`,
+                                        left: `${50 + 2.6 * (16 * Math.pow(Math.sin((i * 2 * Math.PI) / hintImages.length), 3))}%`,
                                         transform: 'translate(-50%, -50%)',
                                         clipPath:
-                                            "path('M12,21.35C12,21.35 12,21.35 12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.41,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.59,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z')",
+                                            "path('M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.41,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.59,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z')",
                                     }}
                                 >
                                     <Image
