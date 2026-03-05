@@ -298,30 +298,71 @@ export default function CollectionArchivePage() {
             className="w-full rounded-full bg-dark-base/65 px-4 py-2.5 text-xs text-cream/80 outline-none placeholder:text-cream/35 shadow-[0_6px_30px_rgba(0,0,0,0.4),0_0_25px_rgba(184,149,106,0.25)]"
           />
 
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
-            <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0 py-0.5">
-              <button
-                onClick={() => setActivePanel("sort")}
-                className="rounded-full bg-dark-base/70 px-3 py-1.5 text-[0.6rem] md:text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
-              >
-                Sort ▼
-              </button>
-              <button
-                onClick={() => setActivePanel("size")}
-                className="rounded-full bg-dark-base/70 px-3 py-1.5 text-[0.6rem] md:text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
-              >
-                Size ▼
-              </button>
-              <button
-                onClick={() => setActivePanel("filter")}
-                className="flex items-center gap-1.5 rounded-full bg-dark-base/70 px-3 py-1.5 text-[0.6rem] md:text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
-              >
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
-                </svg>
-                Filter
-              </button>
-              {(selectedType !== "all" || selectedSize !== "all" || selectedColors.length > 0 || search || sortBy !== "featured") && (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-1.5 md:gap-4 overflow-x-auto no-scrollbar py-0.5">
+              <div className="flex flex-nowrap items-center gap-1.5 flex-1 min-w-0">
+                <button
+                  onClick={() => setActivePanel("sort")}
+                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
+                >
+                  Sort ▼
+                </button>
+                <button
+                  onClick={() => setActivePanel("size")}
+                  className="flex-shrink-0 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
+                >
+                  Size ▼
+                </button>
+                <button
+                  onClick={() => setActivePanel("filter")}
+                  className="flex-shrink-0 flex items-center gap-1 rounded-full bg-dark-base/70 px-2.5 py-1.5 text-[0.55rem] uppercase tracking-wider text-cream/85 font-bold border border-white/5"
+                >
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
+                  </svg>
+                  Filter
+                </button>
+              </div>
+
+              <div className="flex items-center gap-0.5 md:hidden flex-shrink-0 bg-dark-base/40 p-0.5 rounded-lg border border-white/5">
+                <button
+                  onClick={() => setMobileGridCols(2)}
+                  className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 2 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
+                  aria-label="2 columns"
+                >
+                  <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
+                    <rect x="1" y="1" width="7" height="10" rx="1" className="fill-current" />
+                    <rect x="10" y="1" width="7" height="10" rx="1" className="fill-current" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setMobileGridCols(3)}
+                  className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 3 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
+                  aria-label="3 columns"
+                >
+                  <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
+                    <rect x="1" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                    <rect x="6.65" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                    <rect x="12.3" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setMobileGridCols(4)}
+                  className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 4 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
+                  aria-label="4 columns"
+                >
+                  <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
+                    <rect x="1" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                    <rect x="5.3" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                    <rect x="9.6" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                    <rect x="13.9" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {(selectedType !== "all" || selectedSize !== "all" || selectedColors.length > 0 || search || sortBy !== "featured") && (
+              <div className="flex justify-center -mt-1 pb-1">
                 <button
                   onClick={() => {
                     setSelectedType("all");
@@ -331,66 +372,32 @@ export default function CollectionArchivePage() {
                     setSearch("");
                     setPage(1);
                   }}
-                  className="rounded-full bg-dark-base/80 px-3 py-1.5 text-[0.6rem] md:text-[0.55rem] uppercase tracking-wider text-gold font-bold shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gold/20"
+                  className="rounded-full bg-dark-base/80 px-6 py-1.5 text-[0.6rem] uppercase tracking-widest text-gold font-bold shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gold/20 transition-all hover:scale-105 active:scale-95"
                 >
-                  Clear
+                  Clear Selection
                 </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 md:hidden self-end bg-dark-base/40 p-1 rounded-lg border border-white/5">
-              <button
-                onClick={() => setMobileGridCols(2)}
-                className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 2 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
-                aria-label="2 columns"
-              >
-                <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
-                  <rect x="1" y="1" width="7" height="10" rx="1" className="fill-current" />
-                  <rect x="10" y="1" width="7" height="10" rx="1" className="fill-current" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setMobileGridCols(3)}
-                className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 3 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
-                aria-label="3 columns"
-              >
-                <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
-                  <rect x="1" y="1" width="4.7" height="10" rx="1" className="fill-current" />
-                  <rect x="6.65" y="1" width="4.7" height="10" rx="1" className="fill-current" />
-                  <rect x="12.3" y="1" width="4.7" height="10" rx="1" className="fill-current" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setMobileGridCols(4)}
-                className={`rounded-lg px-2 py-1.5 transition-all ${mobileGridCols === 4 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
-                aria-label="4 columns"
-              >
-                <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
-                  <rect x="1" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
-                  <rect x="5.3" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
-                  <rect x="9.6" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
-                  <rect x="13.9" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
-                </svg>
-              </button>
-            </div>
+              </div>
+            )}
           </div>
         </section>
 
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="aspect-[3/4] rounded-2xl bg-white/5 animate-pulse" />
-            ))}
-          </div>
-        ) : (
-          <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-4" : mobileGridCols === 3 ? "grid-cols-3 gap-2" : "grid-cols-4 gap-1"} md:grid-cols-3 gap-5`}>
-            {paginated.map((product) => (
-              <div key={product.slug} className={`w-full ${mobileGridCols === 3 ? "scale-[0.96]" : mobileGridCols === 4 ? "scale-[0.92]" : "scale-100"} origin-center md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto`}>
-                <ShopProductCard product={product} />
-              </div>
-            ))}
-          </section>
-        )}
+        {
+          loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="aspect-[3/4] rounded-2xl bg-white/5 animate-pulse" />
+              ))}
+            </div>
+          ) : (
+            <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-4" : mobileGridCols === 3 ? "grid-cols-3 gap-2" : "grid-cols-4 gap-1"} md:grid-cols-3 gap-5`}>
+              {paginated.map((product) => (
+                <div key={product.slug} className={`w-full ${mobileGridCols === 3 ? "scale-[0.96]" : mobileGridCols === 4 ? "scale-[0.92]" : "scale-100"} origin-center md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto`}>
+                  <ShopProductCard product={product} />
+                </div>
+              ))}
+            </section>
+          )
+        }
 
         <div className="mt-8 flex items-center justify-center gap-2">
           <button
@@ -447,7 +454,7 @@ export default function CollectionArchivePage() {
             </motion.div>
           </div>
         </section>
-      </div>
+      </div >
 
       <AnimatePresence>
         {activePanel && (
@@ -680,6 +687,6 @@ export default function CollectionArchivePage() {
       </AnimatePresence>
 
       <Footer />
-    </div>
+    </div >
   );
 }

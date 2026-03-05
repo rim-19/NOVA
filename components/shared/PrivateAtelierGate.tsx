@@ -55,6 +55,47 @@ export function PrivateAtelierGate() {
                         className="absolute inset-0 bg-dark-base/80 backdrop-blur-2xl cursor-crosshair"
                     />
 
+                    {/* Random floating miniatures - Moved outside modal for full-screen impact */}
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden p-4">
+                        {hintImages.map((img, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, scale: 0.84, y: 10 }}
+                                animate={{
+                                    opacity: 0.62,
+                                    scale: 1,
+                                    x: [0, i % 2 === 0 ? 12 : -12, 0],
+                                    y: [0, i % 3 === 0 ? -15 : 15, 0],
+                                    rotate: [0, i % 2 === 0 ? 5 : -5, 0]
+                                }}
+                                transition={{
+                                    opacity: { delay: 0.45 + img.delay, duration: 1.2 },
+                                    scale: { delay: 0.5 + img.delay, type: "spring" },
+                                    x: { duration: 12 + i * 0.5, repeat: Infinity, ease: "easeInOut" },
+                                    y: { duration: 10 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
+                                    rotate: { duration: 13 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
+                                }}
+                                className="absolute w-[36vw] md:w-[22vw] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
+                                style={{
+                                    top: `${50 + 44 * Math.sin((i * 2 * Math.PI) / hintImages.length)}%`,
+                                    left: `${50 + 44 * Math.cos((i * 2 * Math.PI) / hintImages.length)}%`,
+                                    transform: 'translate(-50%, -50%)',
+                                    clipPath:
+                                        "circle(50% at 50% 50%)",
+                                }}
+                            >
+                                <Image
+                                    src={img.src}
+                                    alt=""
+                                    fill
+                                    className="object-cover"
+                                    style={{ filter: "blur(0.8px) brightness(0.85) contrast(1.1)" }}
+                                />
+                                <div className="absolute inset-0 bg-burgundy/15 mix-blend-overlay" />
+                            </motion.div>
+                        ))}
+                    </div>
+
                     {/* Seductive Floating Window - Minimized & No Border */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8, rotate: -2 }}
@@ -77,47 +118,6 @@ export function PrivateAtelierGate() {
                                 transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
                                 className="absolute top-0 right-0 w-full h-full bg-burgundy/10 rounded-full blur-[100px]"
                             />
-                        </div>
-
-                        {/* Random floating miniatures */}
-                        <div className="absolute inset-0 pointer-events-none overflow-hidden p-2 md:p-4">
-                            {hintImages.map((img, i) => (
-                                <motion.div
-                                    key={i}
-                                    initial={{ opacity: 0, scale: 0.84, y: 10 }}
-                                    animate={{
-                                        opacity: 0.62,
-                                        scale: 1,
-                                        x: [0, i % 2 === 0 ? 8 : -8, 0],
-                                        y: [0, i % 3 === 0 ? -10 : 10, 0],
-                                        rotate: [0, i % 2 === 0 ? 4 : -4, 0]
-                                    }}
-                                    transition={{
-                                        opacity: { delay: 0.45 + img.delay, duration: 0.9 },
-                                        scale: { delay: 0.5 + img.delay, type: "spring" },
-                                        x: { duration: 10 + i * 0.5, repeat: Infinity, ease: "easeInOut" },
-                                        y: { duration: 8 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
-                                        rotate: { duration: 11 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
-                                    }}
-                                    className="absolute w-[24rem] md:w-[42rem] aspect-square overflow-hidden shadow-2xl border border-white/5"
-                                    style={{
-                                        top: `${48 - 6.5 * (13 * Math.cos((i * 2 * Math.PI) / hintImages.length) - 5 * Math.cos(2 * (i * 2 * Math.PI) / hintImages.length) - 2 * Math.cos(3 * (i * 2 * Math.PI) / hintImages.length) - Math.cos(4 * (i * 2 * Math.PI) / hintImages.length))}%`,
-                                        left: `${50 + 6.5 * (16 * Math.pow(Math.sin((i * 2 * Math.PI) / hintImages.length), 3))}%`,
-                                        transform: 'translate(-50%, -50%)',
-                                        clipPath:
-                                            "path('M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.41,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.59,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z')",
-                                    }}
-                                >
-                                    <Image
-                                        src={img.src}
-                                        alt=""
-                                        fill
-                                        className="object-cover"
-                                        style={{ filter: "blur(1.1px) brightness(0.74) contrast(1.04)" }}
-                                    />
-                                    <div className="absolute inset-0 bg-burgundy/10 mix-blend-overlay" />
-                                </motion.div>
-                            ))}
                         </div>
 
                         {/* Content Container - Scrollable on mobile if needed */}
