@@ -75,13 +75,12 @@ export function PrivateAtelierGate() {
                                     y: { duration: 10 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
                                     rotate: { duration: 13 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
                                 }}
-                                className="absolute w-[36vw] md:w-[22vw] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
+                                className="absolute w-[35vw] md:w-[22vw] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
                                 style={{
                                     top: `${50 + 44 * Math.sin((i * 2 * Math.PI) / hintImages.length)}%`,
                                     left: `${50 + 44 * Math.cos((i * 2 * Math.PI) / hintImages.length)}%`,
                                     transform: 'translate(-50%, -50%)',
-                                    clipPath:
-                                        "circle(50% at 50% 50%)",
+                                    clipPath: 'url(#heart-clip)'
                                 }}
                             >
                                 <Image
@@ -194,6 +193,14 @@ export function PrivateAtelierGate() {
                     </button>
                 </div>
             )}
+            {/* Global SVG ClipPath definition to ensure hearts scale perfectly */}
+            <svg width="0" height="0" className="absolute">
+                <defs>
+                    <clipPath id="heart-clip" clipPathUnits="objectBoundingBox">
+                        <path d="M0.5,0.9 L0.44,0.83 C0.22,0.64 0.08,0.51 0.08,0.35 C0.08,0.22 0.18,0.12 0.31,0.12 C0.38,0.12 0.45,0.16 0.5,0.21 C0.55,0.16 0.62,0.12 0.69,0.12 C0.82,0.12 0.92,0.22 0.92,0.35 C0.92,0.51 0.78,0.64 0.56,0.83 L0.5,0.9 Z" />
+                    </clipPath>
+                </defs>
+            </svg>
         </AnimatePresence>
     );
 }
