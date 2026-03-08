@@ -65,8 +65,8 @@ export function Footer() {
               <p className="text-label text-gold/60">Get Help</p>
               <Link
                 href="/contact"
-                className="block text-sm uppercase tracking-[0.2em] text-cream/75 hover:text-gold transition-all duration-300"
-                style={{ textShadow: "0 0 14px rgba(184,149,106,0.35), 0 6px 22px rgba(0,0,0,0.45)" }}
+                className="inline-flex items-center justify-center rounded-full border border-gold/30 bg-dark-base/40 px-6 py-2 text-sm uppercase tracking-[0.2em] text-cream/80 hover:text-gold hover:border-gold/55 transition-all duration-300"
+                style={{ boxShadow: "0 10px 28px rgba(0,0,0,0.48), 0 0 16px rgba(184,149,106,0.26)" }}
               >
                 Contact Us
               </Link>
@@ -75,8 +75,8 @@ export function Footer() {
               <p className="text-label text-gold/60">Company</p>
               <Link
                 href="/about"
-                className="block text-sm uppercase tracking-[0.2em] text-cream/75 hover:text-gold transition-all duration-300"
-                style={{ textShadow: "0 0 14px rgba(184,149,106,0.35), 0 6px 22px rgba(0,0,0,0.45)" }}
+                className="inline-flex items-center justify-center rounded-full border border-gold/30 bg-dark-base/40 px-6 py-2 text-sm uppercase tracking-[0.2em] text-cream/80 hover:text-gold hover:border-gold/55 transition-all duration-300"
+                style={{ boxShadow: "0 10px 28px rgba(0,0,0,0.48), 0 0 16px rgba(184,149,106,0.26)" }}
               >
                 About Me
               </Link>

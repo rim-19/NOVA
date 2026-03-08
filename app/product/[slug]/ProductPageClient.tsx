@@ -299,23 +299,23 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                 <motion.div
                   ref={imageTrackRef}
                   animate={{ x: -activeImageIndex * imageWidth }}
-                  transition={{ type: "spring", stiffness: 300, damping: 34, mass: 0.45 }}
+                  transition={{ type: "spring", stiffness: 420, damping: 28, mass: 0.36 }}
                   drag={product.images.length > 1 ? "x" : false}
                   dragConstraints={{
                     left: -(product.images.length - 1) * imageWidth,
                     right: 0
                   }}
                   dragMomentum
-                  dragTransition={{ power: 0.2, timeConstant: 140 }}
+                  dragTransition={{ power: 0.45, timeConstant: 90 }}
                   onDragEnd={(e, info) => {
-                    const threshold = Math.max(48, imageWidth * 0.18);
+                    const threshold = Math.max(28, imageWidth * 0.12);
                     if (info.offset.x < -threshold && activeImageIndex < product.images.length - 1) {
                       setActiveImageIndex(prev => prev + 1);
                     } else if (info.offset.x > threshold && activeImageIndex > 0) {
                       setActiveImageIndex(prev => prev - 1);
                     }
                   }}
-                  dragElastic={0.14}
+                  dragElastic={0.2}
                   style={{ touchAction: "pan-y" }}
                   className="flex w-max cursor-grab active:cursor-grabbing"
                 >
