@@ -56,7 +56,7 @@ export function PrivateAtelierGate() {
                     />
 
                     {/* Random floating miniatures - Moved outside modal for full-screen impact */}
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden p-4">
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
                         {hintImages.map((img, i) => (
                             <motion.div
                                 key={i}
@@ -77,8 +77,8 @@ export function PrivateAtelierGate() {
                                 }}
                                 className="absolute w-[35vw] md:w-[22vw] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
                                 style={{
-                                    top: `${50 + 34 * Math.sin((i * 2 * Math.PI) / hintImages.length)}%`,
-                                    left: `${50 + 34 * Math.cos((i * 2 * Math.PI) / hintImages.length)}%`,
+                                    top: `${50 + 30 * Math.sin((i * 2 * Math.PI) / hintImages.length)}%`,
+                                    left: `${50 + 30 * Math.cos((i * 2 * Math.PI) / hintImages.length)}%`,
                                     transform: 'translate(-50%, -50%)',
                                     clipPath: 'url(#heart-clip)'
                                 }}
