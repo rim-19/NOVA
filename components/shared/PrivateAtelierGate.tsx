@@ -56,7 +56,7 @@ export function PrivateAtelierGate() {
 
                     {/* Random floating miniatures - Moved outside modal for full-screen impact */}
                     <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
-                        <div className="relative w-[88vw] max-w-[680px] h-[72vh] max-h-[680px]">
+                        <div className="relative w-[78vw] max-w-[620px] h-[66vh] max-h-[620px]">
                         {hintImages.map((img, i) => (
                             <motion.div
                                 key={i}
@@ -75,10 +75,10 @@ export function PrivateAtelierGate() {
                                     y: { duration: 10 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
                                     rotate: { duration: 13 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
                                 }}
-                                className="absolute w-[27vw] md:w-[17vw] max-w-[132px] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
+                                className="absolute w-[22vw] md:w-[14vw] max-w-[112px] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
                                 style={{
-                                    top: `${50 + 24 * Math.sin(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
-                                    left: `${50 + 24 * Math.cos(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
+                                    top: `${50 + 28 * Math.sin(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
+                                    left: `${50 + 28 * Math.cos(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
                                     transform: 'translate(-50%, -50%)',
                                     clipPath: 'url(#heart-clip)'
                                 }}

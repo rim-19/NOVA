@@ -5,6 +5,17 @@ import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
+function toLocalDateKey(date: Date): string {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+}
+
+function addMonths(date: Date, delta: number): Date {
+    return new Date(date.getFullYear(), date.getMonth() + delta, 1);
+}
+
 type DashboardStats = {
     totalRevenue: number;
     totalOrders: number;
@@ -20,8 +31,11 @@ type DashboardStats = {
 export default function AdminDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
-    const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [selectedDay, setSelectedDay] = useState<string | null>(new Date().toISOString().split('T')[0]);
+    const [currentMonth, setCurrentMonth] = useState(() => {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), 1);
+    });
+    const [selectedDay, setSelectedDay] = useState<string | null>(toLocalDateKey(new Date()));
 
     useEffect(() => {
         async function fetchDashboardData() {
@@ -43,7 +57,7 @@ export default function AdminDashboard() {
                 for (let i = 29; i >= 0; i--) {
                     const d = new Date(now);
                     d.setDate(d.getDate() - i);
-                    days[d.toISOString().split('T')[0]] = { revenue: 0, orders: 0 };
+                    days[toLocalDateKey(d)] = { revenue: 0, orders: 0 };
                 }
 
                 const dailyActivity: Record<string, { count: number, revenue: number, orders: any[] }> = {};
@@ -295,10 +309,10 @@ export default function AdminDashboard() {
                                 <p className="text-[0.55rem] text-gold/40 uppercase tracking-widest">Chronological Records</p>
                             </div>
                             <div className="flex gap-2">
-                                <button onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() - 1)))} className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-gold hover:bg-white/5 transition-all">
+                                <button onClick={() => setCurrentMonth((prev) => addMonths(prev, -1))} className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-gold hover:bg-white/5 transition-all">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
                                 </button>
-                                <button onClick={() => setCurrentMonth(new Date(currentMonth.setMonth(currentMonth.getMonth() + 1)))} className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-gold hover:bg-white/5 transition-all">
+                                <button onClick={() => setCurrentMonth((prev) => addMonths(prev, 1))} className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-gold hover:bg-white/5 transition-all">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
                                 </button>
                             </div>
@@ -314,10 +328,10 @@ export default function AdminDashboard() {
                             ))}
                             {calendarData.map((date, idx) => {
                                 if (!date) return <div key={idx} />;
-                                const dayStr = date.toISOString().split('T')[0];
+                                const dayStr = toLocalDateKey(date);
                                 const dayData = stats.dailyActivity[dayStr];
                                 const ordersCount = dayData?.count || 0;
-                                const isToday = dayStr === new Date().toISOString().split('T')[0];
+                                const isToday = dayStr === toLocalDateKey(new Date());
                                 const isSelected = selectedDay === dayStr;
 
                                 return (
