@@ -68,7 +68,12 @@ export default function CheckoutPage() {
         },
       ]);
 
-      if (dbError) console.error("Supabase order error:", dbError);
+      if (dbError) {
+        console.error("Supabase order error:", dbError);
+        setError("Could not submit your order. Please try again.");
+        setLoading(false);
+        return;
+      }
 
       const message = formatWhatsAppMessage(form.name, form.phone, form.city, form.address, form.message, items);
       clearCart();

@@ -8,8 +8,8 @@ export function WhatsAppIcon() {
     const pathname = usePathname();
     const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}`;
     
-    // Hide WhatsApp icon on homepage only
-    if (pathname === "/") {
+    // Hide on homepage hero and backoffice routes
+    if (pathname === "/" || pathname?.startsWith("/atelier-admin")) {
         return null;
     }
     

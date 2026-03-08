@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { isAdminEmail } from "@/lib/admin";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { HeartLoader } from "@/components/shared/HeartLoader";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
@@ -62,7 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     if (loading) return (
         <div className="min-h-screen flex items-center justify-center bg-dark-base">
-            <div className="w-12 h-12 border-2 border-gold/10 border-t-gold rounded-full animate-spin" />
+            <HeartLoader className="drop-shadow-[0_0_14px_rgba(184,149,106,0.45)]" heartClassName="text-gold" />
         </div>
     );
 

@@ -5,6 +5,7 @@ import { supabase, Product, Collection } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { catalogProducts } from "@/lib/catalog";
+import { HeartLoader } from "@/components/shared/HeartLoader";
 
 const STORAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "product-images";
 const DEFAULT_COLLECTION_OPTIONS = [
@@ -519,7 +520,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                         disabled={uploading}
                                         className="aspect-[3/4] rounded-2xl border-2 border-dashed border-zinc-800 flex flex-col items-center justify-center gap-3 hover:bg-zinc-800 transition-all hover:border-zinc-600"
                                     >
-                                        {uploading ? <div className="w-6 h-6 border-2 border-zinc-600 border-t-gold rounded-full animate-spin" /> :
+                                        {uploading ? <HeartLoader heartClassName="text-gold" /> :
                                             <div className="text-center px-4">
                                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" className="mx-auto mb-2 text-zinc-600"><path d="M12 5v14M5 12h14" /></svg>
                                                 <span className="text-[0.5rem] tracking-widest text-zinc-600 uppercase font-bold">Add Shadow</span>

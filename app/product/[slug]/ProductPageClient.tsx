@@ -14,6 +14,7 @@ import {
   type StorefrontProduct,
 } from "@/lib/storefront";
 import { ShopProductCard } from "@/components/shared/ShopProductCard";
+import { HeartLoader } from "@/components/shared/HeartLoader";
 
 interface ProductPageClientProps {
   slug: string;
@@ -22,18 +23,8 @@ interface ProductPageClientProps {
 export default function ProductPageClient({ slug }: ProductPageClientProps) {
   console.log('🔍 ProductPageClient received slug:', slug);
 
-  // Early return if slug is invalid
-  if (!slug) {
-    console.log('❌ Slug is undefined or null');
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-base px-6">
-        <div className="text-center">
-          <p className="font-cormorant text-2xl italic text-cream/60">Invalid product URL.</p>
-          <Link href="/collection" className="text-label text-gold mt-3 inline-block">Back to Collection</Link>
-        </div>
-      </div>
-    );
-  }
+  const hasValidSlug = Boolean(slug?.trim());
+
 
   const [product, setProduct] = useState<StorefrontProduct | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +44,14 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
   const [recWidth, setRecWidth] = useState(0);
 
   useEffect(() => {
+    if (!hasValidSlug) {
+      console.log('❌ Slug is undefined or null');
+      setProduct(null);
+      setLiveProducts([]);
+      setLoading(false);
+      return;
+    }
+
     async function fetchProduct() {
       setLoading(true);
       console.log('🔍 Fetching product for slug:', slug);
@@ -105,7 +104,7 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
       }
     }
     fetchProduct();
-  }, [slug]);
+  }, [slug, hasValidSlug]);
 
   const recommendations = useMemo(() => {
     if (!product) return [];
@@ -247,10 +246,21 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
 
   const liked = isFavorite(product?.slug || "");
 
+  if (!hasValidSlug) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dark-base px-6">
+        <div className="text-center">
+          <p className="font-cormorant text-2xl italic text-cream/60">Invalid product URL.</p>
+          <Link href="/collection" className="text-label text-gold mt-3 inline-block">Back to Collection</Link>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-dark-base">
-        <div className="w-10 h-10 border-t-2 border-gold rounded-full animate-spin" />
+        <HeartLoader className="drop-shadow-[0_0_14px_rgba(184,149,106,0.45)]" heartClassName="text-gold" />
       </div>
     );
   }
@@ -289,20 +299,24 @@ export default function ProductPageClient({ slug }: ProductPageClientProps) {
                 <motion.div
                   ref={imageTrackRef}
                   animate={{ x: -activeImageIndex * imageWidth }}
+                  transition={{ type: "spring", stiffness: 300, damping: 34, mass: 0.45 }}
                   drag={product.images.length > 1 ? "x" : false}
                   dragConstraints={{
                     left: -(product.images.length - 1) * imageWidth,
                     right: 0
                   }}
+                  dragMomentum
+                  dragTransition={{ power: 0.2, timeConstant: 140 }}
                   onDragEnd={(e, info) => {
-                    const threshold = imageWidth / 4;
+                    const threshold = Math.max(48, imageWidth * 0.18);
                     if (info.offset.x < -threshold && activeImageIndex < product.images.length - 1) {
                       setActiveImageIndex(prev => prev + 1);
                     } else if (info.offset.x > threshold && activeImageIndex > 0) {
                       setActiveImageIndex(prev => prev - 1);
                     }
                   }}
-                  dragElastic={0.08}
+                  dragElastic={0.14}
+                  style={{ touchAction: "pan-y" }}
                   className="flex w-max cursor-grab active:cursor-grabbing"
                 >
                   {product.images.map((img, idx) => {

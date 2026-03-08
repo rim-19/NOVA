@@ -63,13 +63,21 @@ export function Footer() {
           <div className="grid w-full max-w-xl grid-cols-1 gap-6 text-center md:grid-cols-2">
             <div className="space-y-3 p-6 rounded-2xl bg-white/[0.02] shadow-[0_8px_32px_rgba(0,0,0,0.2)] border border-white/[0.05]">
               <p className="text-label text-gold/60">Get Help</p>
-              <Link href="/contact" className="block text-sm uppercase tracking-[0.2em] text-cream/70 hover:text-gold">
+              <Link
+                href="/contact"
+                className="block text-sm uppercase tracking-[0.2em] text-cream/75 hover:text-gold transition-all duration-300"
+                style={{ textShadow: "0 0 14px rgba(184,149,106,0.35), 0 6px 22px rgba(0,0,0,0.45)" }}
+              >
                 Contact Us
               </Link>
             </div>
             <div className="space-y-3 p-6 rounded-2xl bg-white/[0.02] shadow-[0_8px_32px_rgba(0,0,0,0.2)] border border-white/[0.05]">
               <p className="text-label text-gold/60">Company</p>
-              <Link href="/about" className="block text-sm uppercase tracking-[0.2em] text-cream/70 hover:text-gold">
+              <Link
+                href="/about"
+                className="block text-sm uppercase tracking-[0.2em] text-cream/75 hover:text-gold transition-all duration-300"
+                style={{ textShadow: "0 0 14px rgba(184,149,106,0.35), 0 6px 22px rgba(0,0,0,0.45)" }}
+              >
                 About Me
               </Link>
             </div>
@@ -83,4 +91,3 @@ export function Footer() {
     </footer>
   );
 }
-

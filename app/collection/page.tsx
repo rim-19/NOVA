@@ -18,6 +18,7 @@ const ITEMS_PER_PAGE = 16;
 type SortKey = "featured" | "best-sellers" | "price-low" | "price-high" | "newest";
 type PanelKey = "sort" | "size" | "filter" | null;
 type MobileGridColumns = 2 | 3 | 4;
+type DesktopGridColumns = 3 | 4;
 
 const sortOptions: { id: SortKey; label: string }[] = [
   { id: "featured", label: "Featured" },
@@ -78,6 +79,7 @@ export default function CollectionArchivePage() {
   const [page, setPage] = useState(1);
   const [activePanel, setActivePanel] = useState<PanelKey>(null);
   const [mobileGridCols, setMobileGridCols] = useState<MobileGridColumns>(2);
+  const [desktopGridCols, setDesktopGridCols] = useState<DesktopGridColumns>(3);
   const [favoritesOnly] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     return new URLSearchParams(window.location.search).get("favorites") === "1";
@@ -359,10 +361,36 @@ export default function CollectionArchivePage() {
                   </svg>
                 </button>
               </div>
+
+              <div className="hidden md:flex items-center gap-1 flex-shrink-0 bg-dark-base/40 p-0.5 rounded-lg border border-white/5">
+                <button
+                  onClick={() => setDesktopGridCols(3)}
+                  className={`rounded-lg px-2.5 py-1.5 transition-all ${desktopGridCols === 3 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
+                  aria-label="3 columns"
+                >
+                  <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
+                    <rect x="1" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                    <rect x="6.65" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                    <rect x="12.3" y="1" width="4.7" height="10" rx="1" className="fill-current" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setDesktopGridCols(4)}
+                  className={`rounded-lg px-2.5 py-1.5 transition-all ${desktopGridCols === 4 ? "bg-gold/20 text-gold shadow-[0_0_12px_rgba(184,149,106,0.3)]" : "text-cream/40"}`}
+                  aria-label="4 columns"
+                >
+                  <svg width="16" height="10" viewBox="0 0 18 12" fill="none" aria-hidden="true" className="scale-90">
+                    <rect x="1" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                    <rect x="5.3" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                    <rect x="9.6" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                    <rect x="13.9" y="1" width="3.1" height="10" rx="0.8" className="fill-current" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {(selectedType !== "all" || selectedSize !== "all" || selectedColors.length > 0 || search || sortBy !== "featured") && (
-              <div className="flex justify-center -mt-1 pb-1">
+              <div className="flex justify-center mt-2 pb-2">
                 <button
                   onClick={() => {
                     setSelectedType("all");
@@ -372,7 +400,7 @@ export default function CollectionArchivePage() {
                     setSearch("");
                     setPage(1);
                   }}
-                  className="rounded-full bg-dark-base/80 px-6 py-1.5 text-[0.6rem] uppercase tracking-widest text-gold font-bold shadow-[0_8px_30px_rgba(0,0,0,0.6)] border border-gold/20 transition-all hover:scale-105 active:scale-95"
+                  className="translate-y-1 rounded-full bg-dark-base/85 px-6 py-1.5 text-[0.6rem] uppercase tracking-widest text-gold font-bold shadow-[0_12px_36px_rgba(0,0,0,0.7),0_0_16px_rgba(184,149,106,0.28)] border border-gold/25 transition-all hover:scale-105 active:scale-95"
                 >
                   Clear Selection
                 </button>
@@ -389,7 +417,7 @@ export default function CollectionArchivePage() {
               ))}
             </div>
           ) : (
-            <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-4" : mobileGridCols === 3 ? "grid-cols-3 gap-2" : "grid-cols-4 gap-1"} md:grid-cols-3 gap-5`}>
+            <section className={`grid ${mobileGridCols === 2 ? "grid-cols-2 gap-4" : mobileGridCols === 3 ? "grid-cols-3 gap-2" : "grid-cols-4 gap-1"} ${desktopGridCols === 3 ? "md:grid-cols-3" : "md:grid-cols-4"} md:gap-5`}>
               {paginated.map((product) => (
                 <div key={product.slug} className={`w-full ${mobileGridCols === 3 ? "scale-[0.96]" : mobileGridCols === 4 ? "scale-[0.92]" : "scale-100"} origin-center md:max-w-[260px] lg:max-w-[300px] xl:max-w-[320px] md:mx-auto`}>
                   <ShopProductCard product={product} />

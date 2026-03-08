@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { supabase, Collection } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { HeartLoader } from "@/components/shared/HeartLoader";
 
 const STORAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "product-images";
 const REAL_COLLECTIONS = [
@@ -280,7 +281,11 @@ function CollectionForm({ onClose, onSuccess, initialData }: {
                             ) : (
                                 <span className="text-[0.6rem] text-gold/30 tracking-widest uppercase">Select Cover</span>
                             )}
-                            {uploading && <div className="absolute inset-0 bg-dark-base/50 flex items-center justify-center animate-spin" />}
+                            {uploading && (
+                                <div className="absolute inset-0 bg-dark-base/50 flex items-center justify-center">
+                                    <HeartLoader className="drop-shadow-[0_0_12px_rgba(184,149,106,0.45)]" heartClassName="text-gold" />
+                                </div>
+                            )}
                         </div>
                         <input type="file" ref={fileInputRef} onChange={handleUpload} className="hidden" accept="image/*" />
                         <div className="flex gap-2">

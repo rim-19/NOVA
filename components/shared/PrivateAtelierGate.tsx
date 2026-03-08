@@ -31,15 +31,14 @@ export function PrivateAtelierGate() {
     }, [isOpen]);
 
     const hintImages = [
-        { src: "/assets/blurred/private_1.jpeg", top: "12%", left: "46%", delay: 0.1 },
-        { src: "/assets/blurred/private_2.jpeg", top: "18%", left: "66%", delay: 0.2 },
-        { src: "/assets/blurred/private_3.jpeg", top: "34%", left: "79%", delay: 0.3 },
-        { src: "/assets/blurred/private_4.jpeg", top: "56%", left: "75%", delay: 0.4 },
-        { src: "/assets/blurred/private_5.jpeg", top: "72%", left: "60%", delay: 0.5 },
-        { src: "/assets/blurred/private_6.jpeg", top: "76%", left: "40%", delay: 0.6 },
-        { src: "/assets/blurred/private_png_1.png", top: "66%", left: "22%", delay: 0.7 },
-        { src: "/assets/blurred/private_png_2.png", top: "44%", left: "14%", delay: 0.8 },
-        { src: "/assets/blurred/private_png_3.png", top: "24%", left: "23%", delay: 0.9 },
+        { src: "/assets/blurred/private_1.jpeg", delay: 0.1 },
+        { src: "/assets/blurred/private_2.jpeg", delay: 0.2 },
+        { src: "/assets/blurred/private_4.jpeg", delay: 0.3 },
+        { src: "/assets/blurred/private_5.jpeg", delay: 0.4 },
+        { src: "/assets/blurred/private_6.jpeg", delay: 0.5 },
+        { src: "/assets/blurred/private_png_1.png", delay: 0.6 },
+        { src: "/assets/blurred/private_png_2.png", delay: 0.7 },
+        { src: "/assets/blurred/private_png_3.png", delay: 0.8 },
     ];
 
     return (
@@ -56,7 +55,8 @@ export function PrivateAtelierGate() {
                     />
 
                     {/* Random floating miniatures - Moved outside modal for full-screen impact */}
-                    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+                        <div className="relative w-[92vw] max-w-[760px] h-[80vh] max-h-[760px]">
                         {hintImages.map((img, i) => (
                             <motion.div
                                 key={i}
@@ -75,10 +75,10 @@ export function PrivateAtelierGate() {
                                     y: { duration: 10 + i * 0.6, repeat: Infinity, ease: "easeInOut" },
                                     rotate: { duration: 13 + i * 0.7, repeat: Infinity, ease: "easeInOut" }
                                 }}
-                                className="absolute w-[35vw] md:w-[22vw] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
+                                className="absolute w-[30vw] md:w-[20vw] max-w-[160px] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
                                 style={{
-                                    top: `${50 + 30 * Math.sin((i * 2 * Math.PI) / hintImages.length)}%`,
-                                    left: `${50 + 30 * Math.cos((i * 2 * Math.PI) / hintImages.length)}%`,
+                                    top: `${50 + 26 * Math.sin((i * 2 * Math.PI) / hintImages.length)}%`,
+                                    left: `${50 + 26 * Math.cos((i * 2 * Math.PI) / hintImages.length)}%`,
                                     transform: 'translate(-50%, -50%)',
                                     clipPath: 'url(#heart-clip)'
                                 }}
@@ -93,6 +93,7 @@ export function PrivateAtelierGate() {
                                 <div className="absolute inset-0 bg-burgundy/15 mix-blend-overlay" />
                             </motion.div>
                         ))}
+                        </div>
                     </div>
 
                     {/* Seductive Floating Window - Minimized & No Border */}
@@ -149,7 +150,7 @@ export function PrivateAtelierGate() {
                                     transition={{ delay: 1.2 }}
                                     className="font-inter text-xs md:text-sm text-cream/60 leading-relaxed font-light italic tracking-wide"
                                 >
-                                    "Desire is a delicate game. Some pieces are too intimate for the public eye... they await those who know how to ask."
+                                    &quot;Desire is a delicate game. Some pieces are too intimate for the public eye... they await those who know how to ask.&quot;
                                 </motion.p>
 
                                 <motion.div

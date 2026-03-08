@@ -221,14 +221,13 @@ export function CartDrawer() {
                         </div>
                         <button
                             onClick={handleWhatsAppCheckout}
-                            className="w-full py-4 bg-burgundy hover:bg-burgundy-deep text-cream text-[0.7rem] uppercase tracking-[0.4em] rounded-full transition-all duration-700 shadow-2xl relative overflow-hidden group btn-click-effect border border-burgundy-light/20"
+                            className="btn-burgundy animate-pulse-glow mt-4 w-full"
                         >
-                            <span className="relative z-10">Proceed to Order</span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-[150%] skew-x-12 group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out" />
+                            Proceed to Order
                         </button>
                         <button
                             onClick={closeCart}
-                            className="w-full mt-4 text-[0.6rem] uppercase tracking-[0.4em] text-gold/20 hover:text-gold/50 transition-colors"
+                            className="w-full mt-4 border border-white/45 rounded-full py-3 text-[0.6rem] uppercase tracking-[0.4em] text-cream/70 hover:text-white hover:border-white/75 transition-colors"
                         >
                             Continue Browsing
                         </button>
