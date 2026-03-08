@@ -77,8 +77,8 @@ export function PrivateAtelierGate() {
                                 }}
                                 className="absolute w-[27vw] md:w-[17vw] max-w-[132px] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
                                 style={{
-                                    top: `${50 + 32 * Math.sin(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
-                                    left: `${45 + 32 * Math.cos(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
+                                    top: `${47 + 32 * Math.sin(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
+                                    left: `${40 + 32 * Math.cos(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
                                     transform: 'translate(-50%, -50%)',
                                     clipPath: 'url(#heart-clip)'
                                 }}
