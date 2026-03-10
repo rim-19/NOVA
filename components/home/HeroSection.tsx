@@ -6,11 +6,8 @@ import Link from "next/link";
 
 import { supabase } from "@/lib/supabase";
 
-const HERO_VIDEO_SOURCES = ["/new_assets/hero_video1.mp4", "/new_assets/hero_video.mp4"];
-
 export function HeroSection() {
     const videoRef = useRef<HTMLVideoElement>(null);
-    const [videoSourceIndex, setVideoSourceIndex] = useState(0);
     const [videoReady, setVideoReady] = useState(false);
     const [videoFailed, setVideoFailed] = useState(false);
     const [content, setContent] = useState({
@@ -32,7 +29,7 @@ export function HeroSection() {
         const video = videoRef.current;
         if (!video) return;
 
-        const tryPlay = async () => {
+        const tryPlaySilently = async () => {
             try {
                 await video.play();
                 setVideoReady(true);
@@ -44,10 +41,6 @@ export function HeroSection() {
         const handleReady = () => setVideoReady(true);
         const handleLoadStart = () => setVideoReady(false);
         const handleError = () => {
-            if (videoSourceIndex < HERO_VIDEO_SOURCES.length - 1) {
-                setVideoSourceIndex((prev) => prev + 1);
-                return;
-            }
             setVideoReady(false);
             setVideoFailed(true);
         };
@@ -59,16 +52,13 @@ export function HeroSection() {
         video.addEventListener("loadedmetadata", handleReady);
         video.addEventListener("loadstart", handleLoadStart);
         video.addEventListener("error", handleError);
-        video.load();
-        void tryPlay();
+        void tryPlaySilently();
 
-        const resumeOnUserAction = () => {
-            if (video.paused) void tryPlay();
+        const resumeOnInteraction = () => {
+            if (video.paused && !videoFailed) void tryPlaySilently();
         };
-
-        document.addEventListener("touchstart", resumeOnUserAction, { passive: true });
-        document.addEventListener("click", resumeOnUserAction);
-        document.addEventListener("visibilitychange", resumeOnUserAction);
+        window.addEventListener("touchstart", resumeOnInteraction, { passive: true });
+        window.addEventListener("click", resumeOnInteraction);
 
         return () => {
             video.removeEventListener("canplay", handleReady);
@@ -78,11 +68,10 @@ export function HeroSection() {
             video.removeEventListener("loadedmetadata", handleReady);
             video.removeEventListener("loadstart", handleLoadStart);
             video.removeEventListener("error", handleError);
-            document.removeEventListener("touchstart", resumeOnUserAction);
-            document.removeEventListener("click", resumeOnUserAction);
-            document.removeEventListener("visibilitychange", resumeOnUserAction);
+            window.removeEventListener("touchstart", resumeOnInteraction);
+            window.removeEventListener("click", resumeOnInteraction);
         };
-    }, [videoSourceIndex]);
+    }, [videoFailed]);
 
     const sectionRef = useRef<HTMLElement>(null);
     const bgRef = useRef<HTMLDivElement>(null);
@@ -134,18 +123,16 @@ export function HeroSection() {
                     className={`absolute inset-0 bg-[#2B0303] transition-opacity duration-700 ${videoReady ? "opacity-0" : "opacity-100"}`}
                 />
                 <video
-                    key={HERO_VIDEO_SOURCES[videoSourceIndex]}
                     ref={videoRef}
                     autoPlay
                     loop
                     muted
                     playsInline
                     preload="auto"
-                    poster="/new_assets/unspoken.jpeg"
                     style={{ filter: "brightness(0.8) contrast(1.1)" }}
                     className={`w-full h-full object-cover object-top md:object-center md:scale-95 img-luxury transition-opacity duration-700 ${videoReady && !videoFailed ? "opacity-100" : "opacity-0"}`}
                 >
-                    <source src={HERO_VIDEO_SOURCES[videoSourceIndex]} type="video/mp4" />
+                    <source src="/new_assets/hero_video1.mp4" type="video/mp4" />
                 </video>
 
                 <div
