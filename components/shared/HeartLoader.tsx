@@ -17,8 +17,8 @@ export function HeartLoader({ className = "", heartClassName = "" }: HeartLoader
         {Array.from({ length: HEART_COUNT }).map((_, i) => {
           const angle = (i / HEART_COUNT) * Math.PI * 2 - Math.PI / 2;
           const x = 50 + 44 * Math.cos(angle);
-          const y = 50 + 44 * Math.sin(angle);
-          const size = i % 3 === 0 ? 11 : 10;
+          const y = 48 + 44 * Math.sin(angle);
+          const size = i % 3 === 0 ? 13 : 14;
 
           return (
             <HeartMark
