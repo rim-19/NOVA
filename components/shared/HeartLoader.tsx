@@ -16,9 +16,9 @@ export function HeartLoader({ className = "", heartClassName = "" }: HeartLoader
       <div className="absolute inset-0 animate-spin" style={{ animationDuration: "2.2s" }}>
         {Array.from({ length: HEART_COUNT }).map((_, i) => {
           const angle = (i / HEART_COUNT) * Math.PI * 2 - Math.PI / 2;
-          const x = 50 + 46 * Math.cos(angle);
-          const y = 50 + 46 * Math.sin(angle);
-          const size = i % 3 === 0 ? 7 : 6;
+          const x = 50 + 44 * Math.cos(angle);
+          const y = 50 + 44 * Math.sin(angle);
+          const size = i % 3 === 0 ? 11 : 10;
 
           return (
             <HeartMark
