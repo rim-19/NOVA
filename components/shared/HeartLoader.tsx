@@ -12,7 +12,7 @@ export function HeartLoader({ className = "", heartClassName = "" }: HeartLoader
 
   return (
     <div className={`relative h-12 w-12 ${className}`}>
-      <div className="absolute inset-0 rounded-full border border-gold/45 shadow-[0_0_16px_rgba(184,149,106,0.25)]" />
+      <div className="absolute inset-0 rounded-full border border-[#390A16]/95 shadow-none" />
       <div className="absolute inset-0 animate-spin" style={{ animationDuration: "2.2s" }}>
         {Array.from({ length: HEART_COUNT }).map((_, i) => {
           const angle = (i / HEART_COUNT) * Math.PI * 2 - Math.PI / 2;
