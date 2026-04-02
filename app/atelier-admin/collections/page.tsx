@@ -202,7 +202,7 @@ export default function CollectionsAdminPage() {
                                     <p className="text-[0.6rem] text-gold/40 tracking-widest uppercase mb-1">{col.count}</p>
                                     <h3 className="font-cormorant italic text-2xl text-cream">{col.name}</h3>
 
-                                    <div className="mt-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-500">
+                                    <div className="mt-4 flex flex-wrap gap-2">
                                         <button
                                             onClick={() => setSelectedCollection(col)}
                                             className="px-3 py-1.5 text-[0.55rem] tracking-widest uppercase bg-gold/10 hover:bg-gold/20 rounded-full transition-colors"
