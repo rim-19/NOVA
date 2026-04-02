@@ -7,7 +7,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { supabase, Collection } from "@/lib/supabase";
-import { catalogCollections } from "@/lib/catalog";
+import { catalogCollections, catalogProducts } from "@/lib/catalog";
+import { countProductsByCollectionSlug, formatPieceCount } from "@/lib/collectionCounts";
 
 if (typeof window !== "undefined") {
     gsap.registerPlugin(ScrollTrigger);
@@ -23,22 +24,36 @@ export function CollectionSection() {
 
     useEffect(() => {
         const fetchCollections = async () => {
-            const demoCollections = catalogCollections;
+            const demoCounts = countProductsByCollectionSlug(catalogProducts);
+            const demoCollections = catalogCollections.map((collection) => ({
+                ...collection,
+                count: formatPieceCount(demoCounts[collection.slug] || 0),
+            }));
 
-            const { data, error } = await supabase
-                .from("collections")
-                .select("*")
-                .order("created_at", { ascending: true });
+            const [collectionsRes, productsRes] = await Promise.all([
+                supabase
+                    .from("collections")
+                    .select("*")
+                    .order("created_at", { ascending: true }),
+                supabase
+                    .from("products")
+                    .select("collection_slug")
+                    .eq("is_visible", true),
+            ]);
 
-            if (!error && data && data.length > 0) {
-                setCollectionsList(data as any);
+            if (!collectionsRes.error && collectionsRes.data && collectionsRes.data.length > 0) {
+                const liveCounts = countProductsByCollectionSlug(productsRes.data || []);
+                setCollectionsList(collectionsRes.data.map((collection) => ({
+                    ...collection,
+                    count: formatPieceCount(liveCounts[collection.slug] || 0),
+                })));
             } else {
-                setCollectionsList(demoCollections as any);
+                setCollectionsList(demoCollections);
             }
             setLoading(false);
         };
 
-        fetchCollections();
+        void fetchCollections();
     }, []);
 
     useEffect(() => {

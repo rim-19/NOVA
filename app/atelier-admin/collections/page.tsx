@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { supabase, Collection } from "@/lib/supabase";
+import { supabase, Collection, Product } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { HeartLoader } from "@/components/shared/HeartLoader";
+import { countProductsByCollectionSlug, formatPieceCount } from "@/lib/collectionCounts";
 
 const STORAGE_BUCKET = process.env.NEXT_PUBLIC_SUPABASE_STORAGE_BUCKET || "product-images";
 const REAL_COLLECTIONS = [
@@ -44,29 +45,113 @@ const REAL_COLLECTIONS = [
 
 export default function CollectionsAdminPage() {
     const [collections, setCollections] = useState<Collection[]>([]);
+    const [productsByCollection, setProductsByCollection] = useState<Record<string, Product[]>>({});
     const [loading, setLoading] = useState(true);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
+    const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
 
     useEffect(() => {
-        fetchCollections();
+        void fetchCollections();
     }, []);
 
     async function fetchCollections() {
         setLoading(true);
-        const { data, error } = await supabase
-            .from("collections")
-            .select("*")
-            .order("created_at", { ascending: false });
+        const [collectionsRes, productsRes] = await Promise.all([
+            supabase
+                .from("collections")
+                .select("*")
+                .order("created_at", { ascending: false }),
+            supabase
+                .from("products")
+                .select("*")
+                .order("created_at", { ascending: false }),
+        ]);
 
-        if (!error && data) setCollections(data);
+        if (!collectionsRes.error && collectionsRes.data) {
+            const products = productsRes.data || [];
+            const pieceCounts = countProductsByCollectionSlug(products);
+            const groupedProducts = products.reduce<Record<string, Product[]>>((acc, product) => {
+                const slug = product.collection_slug?.trim();
+                if (!slug) return acc;
+                if (!acc[slug]) acc[slug] = [];
+                acc[slug].push(product);
+                return acc;
+            }, {});
+            const hydratedCollections = collectionsRes.data.map((collection) => ({
+                ...collection,
+                count: formatPieceCount(pieceCounts[collection.slug] || 0),
+            }));
+            setCollections(hydratedCollections);
+            setProductsByCollection(groupedProducts);
+        }
         setLoading(false);
     }
 
-    async function deleteCollection(id: string) {
-        if (!confirm("Remove this story from the atelier? This will not delete the products within it.")) return;
+    async function deleteCollection(id: string, slug: string, name: string) {
+        if (!confirm(`Delete "${name}" and all products linked to it? This cannot be undone.`)) return;
+
+        const { data: linkedProducts, error: linkedProductsError } = await supabase
+            .from("products")
+            .select("id")
+            .eq("collection_slug", slug);
+
+        if (linkedProductsError) {
+            alert(`Unable to verify linked pieces: ${linkedProductsError.message}`);
+            return;
+        }
+
+        const productIds = (linkedProducts || []).map((product) => product.id);
+        if (productIds.length > 0) {
+            const { error: deleteProductsError } = await supabase
+                .from("products")
+                .delete()
+                .in("id", productIds);
+
+            if (deleteProductsError) {
+                alert(`Unable to delete linked pieces: ${deleteProductsError.message}`);
+                return;
+            }
+        }
+
         const { error } = await supabase.from("collections").delete().eq("id", id);
-        if (!error) fetchCollections();
+        if (!error) {
+            if (selectedCollection?.id === id) {
+                setSelectedCollection(null);
+            }
+            void fetchCollections();
+        }
+    }
+
+    async function syncManifestHeritage() {
+        if (!confirm("Sync the storefront collections (Set, Bodysuit, Bodysocks, Accessories) without deleting your custom collections?")) return;
+
+        const { data: existingCollections, error: existingError } = await supabase
+            .from("collections")
+            .select("id, slug");
+
+        if (existingError) {
+            alert(`Ritual failed: ${existingError.message}`);
+            return;
+        }
+
+        const existingBySlug = new Map((existingCollections || []).map((collection) => [collection.slug, collection.id]));
+
+        for (const collection of REAL_COLLECTIONS) {
+            const existingId = existingBySlug.get(collection.slug);
+            const payload = { ...collection };
+            const { error } = existingId
+                ? await supabase.from("collections").update(payload).eq("id", existingId)
+                : await supabase.from("collections").insert([payload]);
+
+            if (error) {
+                alert(`Ritual failed: ${error.message}`);
+                return;
+            }
+        }
+
+        alert("Collections synced successfully. Your custom collections were preserved.");
+        void fetchCollections();
     }
 
     return (
@@ -78,24 +163,7 @@ export default function CollectionsAdminPage() {
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                     <button
-                        onClick={async () => {
-                            if (!confirm("Replace all current collections with the real storefront collections (Set, Bodysuit, Bodysocks, Accessories)?")) return;
-                            const { error: deleteError } = await supabase
-                                .from("collections")
-                                .delete()
-                                .neq("id", "00000000-0000-0000-0000-000000000000");
-                            if (deleteError) {
-                                alert(`Ritual failed: ${deleteError.message}`);
-                                return;
-                            }
-                            const { error } = await supabase.from("collections").insert(REAL_COLLECTIONS);
-                            if (!error) {
-                                alert("Collections replaced successfully.");
-                                fetchCollections();
-                            } else {
-                                alert(`Ritual failed: ${error.message}`);
-                            }
-                        }}
+                        onClick={() => void syncManifestHeritage()}
                         className="bg-zinc-900 text-gold px-4 md:px-6 py-3 rounded-lg text-[0.6rem] font-bold tracking-[0.2em] uppercase hover:bg-zinc-800 transition-all border border-gold/10 w-full sm:w-auto"
                     >
                         Manifest Heritage
@@ -136,6 +204,12 @@ export default function CollectionsAdminPage() {
 
                                     <div className="mt-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-y-2 group-hover:translate-y-0 duration-500">
                                         <button
+                                            onClick={() => setSelectedCollection(col)}
+                                            className="px-3 py-1.5 text-[0.55rem] tracking-widest uppercase bg-gold/10 hover:bg-gold/20 rounded-full transition-colors"
+                                        >
+                                            View Pieces
+                                        </button>
+                                        <button
                                             onClick={() => {
                                                 setEditingCollection(col);
                                                 setIsFormOpen(true);
@@ -145,7 +219,7 @@ export default function CollectionsAdminPage() {
                                             Edit
                                         </button>
                                         <button
-                                            onClick={() => deleteCollection(col.id)}
+                                            onClick={() => void deleteCollection(col.id, col.slug, col.name)}
                                             className="px-3 py-1.5 text-[0.55rem] tracking-widest uppercase bg-burgundy/20 hover:bg-burgundy/40 rounded-full transition-colors"
                                         >
                                             Delete
@@ -168,6 +242,16 @@ export default function CollectionsAdminPage() {
                             fetchCollections();
                         }}
                         initialData={editingCollection}
+                    />
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {selectedCollection && (
+                    <CollectionProductsModal
+                        collection={selectedCollection}
+                        products={productsByCollection[selectedCollection.slug] || []}
+                        onClose={() => setSelectedCollection(null)}
                     />
                 )}
             </AnimatePresence>
@@ -316,6 +400,73 @@ function CollectionForm({ onClose, onSuccess, initialData }: {
                         <button type="submit" disabled={uploading} className="flex-[2] btn-burgundy py-3">Save Chapter</button>
                     </div>
                 </form>
+            </motion.div>
+        </div>
+    );
+}
+
+function CollectionProductsModal({
+    collection,
+    products,
+    onClose,
+}: {
+    collection: Collection;
+    products: Product[];
+    onClose: () => void;
+}) {
+    return (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-3 md:p-6 bg-dark-base/80 backdrop-blur-md">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 16 }}
+                className="glass-card w-full max-w-3xl rounded-2xl md:rounded-3xl border-gold-glow p-4 md:p-8 max-h-[92vh] overflow-y-auto"
+            >
+                <div className="mb-6 flex items-start justify-between gap-4">
+                    <div>
+                        <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.4em] uppercase">Collection Pieces</p>
+                        <h2 className="font-cormorant italic text-2xl md:text-3xl text-cream">{collection.name}</h2>
+                        <p className="mt-2 text-[0.7rem] text-cream/55">{formatPieceCount(products.length)}</p>
+                    </div>
+                    <button onClick={onClose} className="p-3 text-zinc-600 hover:text-white transition-colors bg-zinc-800/50 rounded-full hover:bg-zinc-800">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {products.length === 0 ? (
+                    <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-10 text-center">
+                        <p className="font-cormorant italic text-xl text-cream/70">No pieces in this collection yet.</p>
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        {products.map((product) => (
+                            <div
+                                key={product.id}
+                                className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-3"
+                            >
+                                <div className="relative h-20 w-16 overflow-hidden rounded-xl bg-black/20">
+                                    <Image
+                                        src={product.images?.[0] || collection.image}
+                                        alt={product.name}
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <p className="truncate font-cormorant italic text-xl text-cream">{product.name}</p>
+                                    <p className="mt-1 text-[0.6rem] uppercase tracking-[0.2em] text-gold/55">
+                                        {product.slug}
+                                    </p>
+                                    <p className="mt-2 text-[0.75rem] text-cream/60">
+                                        {product.price.toLocaleString("fr-MA")} MAD
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </motion.div>
         </div>
     );
