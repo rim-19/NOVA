@@ -4,20 +4,20 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 
 const paragraphs = [
-  "It is not about what you show.",
-  "It is about what you bring into a room.",
+  "It’s not about what you show.",
+  "It’s about what you bring into a room.",
   "An energy. A presence. A quiet confidence.",
-  "We do not simply create lingerie.",
-  "We curate pieces designed to reveal your femininity, to highlight your natural lines, and to awaken the kind of confidence that changes everything.",
+  "At NOVA, we don’t simply create lingerie.",
+  "We curate pieces designed to reveal your femininity, highlight your natural lines, and awaken a confidence that transforms everything.",
   "Each piece is chosen with intention.",
   "Fabrics are selected for their softness and elegance.",
-  "Cuts are designed to embrace the body without restricting it.",
+  "Cuts are designed to embrace the body without ever restricting it.",
   "Nothing is left to chance.",
-  "NovaLingerie is for women who understand that sensuality does not need to be loud.",
-  "It is felt in a glance.",
+  "NOVA is made for women who understand that sensuality doesn’t need to be loud.",
+  "It’s felt in a glance.",
   "In the way you walk.",
   "In the way you carry yourself.",
-  "We believe lingerie should not transform a woman.",
+  "We don’t believe lingerie should transform a woman.",
   "It should reveal who she already is.",
   "A woman who owns herself.",
   "A woman who chooses.",
@@ -94,12 +94,12 @@ export default function AboutPage() {
                 key={text}
                 className="reveal-text"
                 style={{
-                  fontFamily: "Inter, sans-serif",
-                  fontWeight: 300,
-                  fontSize: "clamp(0.95rem, 2.6vw, 1.02rem)",
-                  lineHeight: 1.9,
-                  color: "rgba(245,233,226,0.72)",
-                  letterSpacing: "0.02em",
+                  fontFamily: "Cormorant Garamond, serif",
+                  fontWeight: 400,
+                  fontSize: "clamp(1.1rem, 2.9vw, 1.32rem)",
+                  lineHeight: 1.7,
+                  color: "rgba(245,233,226,0.78)",
+                  letterSpacing: "0.015em",
                 }}
               >
                 {text}
@@ -108,18 +108,7 @@ export default function AboutPage() {
 
             <div className="pt-4 md:pt-6 reveal-text">
               <p
-                style={{
-                  fontFamily: "Cormorant Garamond, serif",
-                  fontStyle: "italic",
-                  fontSize: "clamp(1.15rem, 4vw, 1.7rem)",
-                  color: "rgba(245,233,226,0.95)",
-                  lineHeight: 1.5,
-                }}
-              >
-                NovaLingerie - For your femininity. For you.
-              </p>
-              <p
-                className="mt-8"
+                className="mt-2"
                 style={{
                   fontFamily: "MonteCarlo, cursive",
                   fontSize: "clamp(2rem, 5vw, 2.7rem)",
