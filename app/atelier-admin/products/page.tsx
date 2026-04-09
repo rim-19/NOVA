@@ -233,7 +233,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
         poetic_description: initialData?.poetic_description || "",
         description: initialData?.description || "",
         colors: (initialData?.colors || []).join(", "),
-        sizes: initialData?.sizes || ["S", "M", "L", "XL", "XXL"],
+        sizes: initialData?.sizes || ["S", "M", "L"],
         images: initialData?.images || [],
         is_featured: initialData?.is_featured || false,
         is_bestseller: initialData?.is_bestseller || false,

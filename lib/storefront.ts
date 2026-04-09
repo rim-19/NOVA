@@ -67,9 +67,9 @@ function inferColors(name: string): string[] {
 }
 
 function ensureSizes(type: StoreCollectionType, sizes?: string[]): string[] {
-  const base = sizes && sizes.length ? sizes : ["S", "M", "L"];
+  if (sizes && sizes.length) return sizes;
   if (type === "accessories") return ["S", "M", "L", "XL"];
-  return base.includes("XL") ? base : [...base, "XL"];
+  return ["S", "M", "L"];
 }
 
 function estimatePrice(slug: string): number {
