@@ -4,16 +4,33 @@ import { useState, useRef, useEffect } from "react";
 import { motion, useAnimation, useMotionValue, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
-// Get all review images from the folder
 const reviewImages = [
-  "/new_assets/reviews/review1.jpeg",
-  "/new_assets/reviews/review2.jpeg",
-  "/new_assets/reviews/review3.jpeg",
-  "/new_assets/reviews/review4.jpeg",
-  "/new_assets/reviews/review5.jpeg",
-  "/new_assets/reviews/review6.jpeg",
-  "/new_assets/reviews/review7.jpeg",
-  "/new_assets/reviews/review8.jpeg",
+  "/new_assets/reviews/PREMIER.png",
+  "/new_assets/reviews/DEUXIEME.png",
+  "/new_assets/reviews/1.png",
+  "/new_assets/reviews/2.png",
+  "/new_assets/reviews/3.png",
+  "/new_assets/reviews/4.png",
+  "/new_assets/reviews/5.png",
+  "/new_assets/reviews/6.png",
+  "/new_assets/reviews/7.png",
+  "/new_assets/reviews/8.png",
+  "/new_assets/reviews/9.png",
+  "/new_assets/reviews/10.png",
+  "/new_assets/reviews/11.png",
+  "/new_assets/reviews/12.png",
+  "/new_assets/reviews/13.png",
+  "/new_assets/reviews/14.png",
+  "/new_assets/reviews/15.png",
+  "/new_assets/reviews/16.png",
+  "/new_assets/reviews/17.png",
+  "/new_assets/reviews/18.png",
+  "/new_assets/reviews/19.png",
+  "/new_assets/reviews/20.png",
+  "/new_assets/reviews/21.png",
+  "/new_assets/reviews/22.png",
+  "/new_assets/reviews/23.png",
+  "/new_assets/reviews/24.png",
 ];
 
 // All 5 stars
