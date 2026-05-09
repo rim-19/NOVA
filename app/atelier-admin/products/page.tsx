@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { supabase, Product, Collection } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -15,6 +15,40 @@ const DEFAULT_COLLECTION_OPTIONS = [
     { slug: "accessories", name: "Accessories" },
 ] as const;
 
+const COLOR_ALIASES: Record<string, string> = {
+    crimson: "red",
+    ruby: "red",
+    rouge: "red",
+    scarlet: "red",
+    wine: "burgundy",
+    fuchsia: "pink",
+    blush: "pink",
+    violet: "purple",
+    plum: "purple",
+    ivory: "white",
+    cream: "white",
+    nude: "beige",
+    champagne: "gold",
+    grey: "silver",
+    gray: "silver",
+};
+
+function normalizeAdminColors(colors: unknown): string[] {
+    const rawColors = Array.isArray(colors)
+        ? colors
+        : typeof colors === "string"
+            ? colors.split(/[,{}/;|]+/)
+            : [];
+
+    return Array.from(new Set(
+        rawColors
+            .flatMap((color) => String(color).split(/[,/;|]+/))
+            .map((color) => color.replace(/[{}"]/g, "").trim().toLowerCase())
+            .filter(Boolean)
+            .map((color) => COLOR_ALIASES[color] || color)
+    ));
+}
+
 export default function ProductsAdminPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [collections, setCollections] = useState<Collection[]>([]);
@@ -22,11 +56,7 @@ export default function ProductsAdminPage() {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-    useEffect(() => {
-        fetchInitialData();
-    }, []);
-
-    async function fetchInitialData() {
+    const fetchInitialData = useCallback(async () => {
         setLoading(true);
         const [pRes, cRes] = await Promise.all([
             supabase.from("products").select("*").order("created_at", { ascending: false }),
@@ -35,7 +65,12 @@ export default function ProductsAdminPage() {
         if (pRes.data) setProducts(pRes.data);
         if (cRes.data) setCollections(cRes.data);
         setLoading(false);
-    }
+    }, []);
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void fetchInitialData();
+    }, [fetchInitialData]);
 
     async function toggleVisibility(id: string, current: boolean) {
         const { error } = await supabase
@@ -232,7 +267,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
         price: initialData?.price || 0,
         poetic_description: initialData?.poetic_description || "",
         description: initialData?.description || "",
-        colors: (initialData?.colors || []).join(", "),
+        colors: normalizeAdminColors(initialData?.colors).join(", "),
         sizes: initialData?.sizes || ["S", "M", "L"],
         images: initialData?.images || [],
         is_featured: initialData?.is_featured || false,
@@ -242,17 +277,16 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
     const [uploading, setUploading] = useState(false);
     const [imageUrlDraft, setImageUrlDraft] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const collectionOptions = (collections || [])
-        .filter((collection) => Boolean(collection.slug))
-        .map((collection) => ({ slug: collection.slug, name: collection.name || collection.slug }));
-    const effectiveCollectionOptions = collectionOptions.length > 0 ? collectionOptions : [...DEFAULT_COLLECTION_OPTIONS];
+    const effectiveCollectionOptions = useMemo(() => {
+        const collectionOptions = (collections || [])
+            .filter((collection) => Boolean(collection.slug))
+            .map((collection) => ({ slug: collection.slug, name: collection.name || collection.slug }));
 
-    useEffect(() => {
-        const exists = effectiveCollectionOptions.some((collection) => collection.slug === form.collection_slug);
-        if (!exists) {
-            setForm((prev) => ({ ...prev, collection_slug: effectiveCollectionOptions[0].slug }));
-        }
-    }, [effectiveCollectionOptions, form.collection_slug]);
+        return collectionOptions.length > 0 ? collectionOptions : [...DEFAULT_COLLECTION_OPTIONS];
+    }, [collections]);
+    const selectedCollectionSlug = effectiveCollectionOptions.some((collection) => collection.slug === form.collection_slug)
+        ? form.collection_slug
+        : effectiveCollectionOptions[0].slug;
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
@@ -291,9 +325,10 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                     }));
                     successCount++;
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error("Critical storage error:", err);
-                alert(`System error uploading ${file.name}: ${err.message}`);
+                const message = err instanceof Error ? err.message : "Unknown upload error";
+                alert(`System error uploading ${file.name}: ${message}`);
             }
         }
 
@@ -308,6 +343,17 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
         if (e.target) e.target.value = '';
     };
 
+    const moveImage = (fromIndex: number, toIndex: number) => {
+        setForm((prev) => {
+            if (toIndex < 0 || toIndex >= prev.images.length || fromIndex === toIndex) return prev;
+
+            const images = [...prev.images];
+            const [movedImage] = images.splice(fromIndex, 1);
+            images.splice(toIndex, 0, movedImage);
+            return { ...prev, images };
+        });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -317,17 +363,17 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
 
         setUploading(true);
         const slug = form.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-        const selectedCollection = effectiveCollectionOptions.find((c) => c.slug === form.collection_slug);
-        const productData: any = {
+        const selectedCollection = effectiveCollectionOptions.find((c) => c.slug === selectedCollectionSlug);
+        const productData = {
             name: form.name,
             slug,
-            collection_slug: form.collection_slug,
-            collection: selectedCollection?.name || form.collection_slug,
+            collection_slug: selectedCollectionSlug,
+            collection: selectedCollection?.name || selectedCollectionSlug,
             price: form.price,
             images: form.images,
             poetic_description: form.poetic_description || null,
             description: form.description || null,
-            colors: form.colors.split(",").map((item) => item.trim().toLowerCase()).filter(Boolean),
+            colors: normalizeAdminColors(form.colors),
             sizes: form.sizes.length ? form.sizes : ["S", "M", "L"],
             is_visible: true,
             is_featured: form.is_featured,
@@ -342,9 +388,9 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
         // Backward-compatible retry if optional columns are not yet migrated in DB.
         if (error && /is_bestseller|is_new_arrival|colors/i.test(error.message)) {
             const fallbackData = { ...productData };
-            delete fallbackData.colors;
-            delete fallbackData.is_bestseller;
-            delete fallbackData.is_new_arrival;
+            delete (fallbackData as Partial<typeof productData>).colors;
+            delete (fallbackData as Partial<typeof productData>).is_bestseller;
+            delete (fallbackData as Partial<typeof productData>).is_new_arrival;
             ({ error } = initialData
                 ? await supabase.from("products").update(fallbackData).eq("id", initialData.id)
                 : await supabase.from("products").insert([fallbackData]));
@@ -405,7 +451,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                 <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Collection</label>
                                 <select
                                     className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all"
-                                    value={form.collection_slug}
+                                    value={selectedCollectionSlug}
                                     onChange={e => setForm({ ...form, collection_slug: e.target.value })}
                                     required
                                 >
@@ -500,13 +546,50 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                             <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold block">Visual Proof ({form.images.length}/10)</label>
                             <div className="grid grid-cols-2 gap-4">
                                 {form.images.map((img, i) => (
-                                    <div key={i} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 container-zoom group">
+                                    <div key={`${img}-${i}`} className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 container-zoom group">
                                         <Image src={img} alt="preview" fill className="object-cover" />
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <div className="absolute left-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[0.55rem] font-bold text-white/80">
+                                            {i + 1}
+                                        </div>
+                                        <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <div className="grid grid-cols-3 gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => moveImage(i, 0)}
+                                                    disabled={i === 0}
+                                                    aria-label="Move image to first"
+                                                    title="Move to first"
+                                                    className="bg-zinc-950/85 p-2 rounded-full text-white hover:scale-110 transition-transform disabled:opacity-30 disabled:hover:scale-100"
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M11 19l-7-7 7-7M20 19l-7-7 7-7" /></svg>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => moveImage(i, i - 1)}
+                                                    disabled={i === 0}
+                                                    aria-label="Move image earlier"
+                                                    title="Move earlier"
+                                                    className="bg-zinc-950/85 p-2 rounded-full text-white hover:scale-110 transition-transform disabled:opacity-30 disabled:hover:scale-100"
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => moveImage(i, i + 1)}
+                                                    disabled={i === form.images.length - 1}
+                                                    aria-label="Move image later"
+                                                    title="Move later"
+                                                    className="bg-zinc-950/85 p-2 rounded-full text-white hover:scale-110 transition-transform disabled:opacity-30 disabled:hover:scale-100"
+                                                >
+                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M9 18l6-6-6-6" /></svg>
+                                                </button>
+                                            </div>
                                             <button
                                                 type="button"
                                                 onClick={() => setForm(prev => ({ ...prev, images: prev.images.filter((_, idx) => idx !== i) }))}
-                                                className="bg-red-500/80 p-2 rounded-full text-white hover:scale-110 transition-transform"
+                                                aria-label="Remove image"
+                                                title="Remove image"
+                                                className="absolute bottom-3 right-3 bg-red-500/85 p-2 rounded-full text-white hover:scale-110 transition-transform"
                                             >
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12" /></svg>
                                             </button>

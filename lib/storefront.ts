@@ -66,6 +66,40 @@ function inferColors(name: string): string[] {
   return ["black"];
 }
 
+const COLOR_ALIASES: Record<string, string> = {
+  crimson: "red",
+  ruby: "red",
+  rouge: "red",
+  scarlet: "red",
+  wine: "burgundy",
+  fuchsia: "pink",
+  blush: "pink",
+  violet: "purple",
+  plum: "purple",
+  ivory: "white",
+  cream: "white",
+  nude: "beige",
+  champagne: "gold",
+  grey: "silver",
+  gray: "silver",
+};
+
+export function normalizeProductColors(colors?: unknown): string[] {
+  const rawColors = Array.isArray(colors)
+    ? colors
+    : typeof colors === "string"
+      ? colors.split(/[,{}/;|]+/)
+      : [];
+
+  return Array.from(new Set(
+    rawColors
+      .flatMap((color) => String(color).split(/[,/;|]+/))
+      .map((color) => color.replace(/[{}"]/g, "").trim().toLowerCase())
+      .filter(Boolean)
+      .map((color) => COLOR_ALIASES[color] || color)
+  ));
+}
+
 function ensureSizes(type: StoreCollectionType, sizes?: string[]): string[] {
   if (sizes && sizes.length) return sizes;
   if (type === "accessories") return ["S", "M", "L", "XL"];
@@ -81,12 +115,13 @@ function estimatePrice(slug: string): number {
 
 function catalogToStorefront(product: Product, index: number): StorefrontProduct {
   const type = inferType(product.name);
+  const colors = normalizeProductColors(product.colors);
   return {
     ...product,
     collection_slug: type,
     collection: TYPE_LABEL[type],
     product_type: type,
-    colors: inferColors(product.name),
+    colors: colors.length ? colors : inferColors(product.name),
     price: product.price > 0 ? product.price : estimatePrice(product.slug),
     sizes: ensureSizes(type, product.sizes),
     images: product.images.map(toAssetUrl),
@@ -121,7 +156,7 @@ export const pickedForYouProducts: StorefrontProduct[] = featuredCatalogProducts
 
 export function toStorefrontProduct(product: Product, fallbackIndex = 0): StorefrontProduct {
   const type = product.product_type || inferType(product.name);
-  const colors = product.colors && product.colors.length ? product.colors : inferColors(product.name);
+  const colors = normalizeProductColors(product.colors);
   return {
     ...product,
     collection_slug: product.collection_slug || type,
@@ -129,7 +164,7 @@ export function toStorefrontProduct(product: Product, fallbackIndex = 0): Storef
     product_type: type,
     price: product.price > 0 ? product.price : estimatePrice(product.slug),
     images: (product.images || []).map(toAssetUrl),
-    colors,
+    colors: colors.length ? colors : inferColors(product.name),
     sizes: ensureSizes(type, product.sizes),
     is_bestseller: product.is_bestseller ?? false,
     is_new_arrival: product.is_new_arrival ?? true,
