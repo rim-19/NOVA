@@ -11,7 +11,8 @@ alter table if exists products
   add column if not exists popularity integer default 0,
   add column if not exists discount_price numeric,
   add column if not exists is_featured boolean default false,
-  add column if not exists is_visible boolean default true;
+  add column if not exists is_visible boolean default true,
+  add column if not exists product_order integer default 0;
 
 -- Orders: support checkout payload and admin export details
 alter table if exists orders
@@ -49,6 +50,7 @@ create index if not exists idx_products_visible on products(is_visible);
 create index if not exists idx_products_featured on products(is_featured);
 create index if not exists idx_products_bestseller on products(is_bestseller);
 create index if not exists idx_products_collection_slug on products(collection_slug);
+create index if not exists idx_products_order on products(product_order asc);
 create index if not exists idx_products_created_at on products(created_at desc);
 create index if not exists idx_orders_created_at on orders(created_at desc);
 

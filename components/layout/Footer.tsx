@@ -15,27 +15,6 @@ const socialLinks = [
       </svg>
     ),
   },
-  {
-    id: "facebook",
-    href: "https://www.facebook.com",
-    label: "Facebook",
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M15 8h3V4h-3c-2.2 0-4 1.8-4 4v3H8v4h3v5h4v-5h3l1-4h-4V8a1 1 0 011-1z" />
-      </svg>
-    ),
-  },
-  {
-    id: "tiktok",
-    href: "https://www.tiktok.com",
-    label: "TikTok",
-    icon: (
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M14 3v10a3 3 0 11-3-3" />
-        <path d="M14 3c1 2 2.5 3 5 3" />
-      </svg>
-    ),
-  },
 ];
 
 export function Footer() {

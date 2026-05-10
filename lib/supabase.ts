@@ -28,6 +28,7 @@ export type Product = {
     care_instructions?: string;
     is_featured?: boolean;
     is_visible?: boolean;
+    product_order?: number;
     created_at?: string;
 };
 
