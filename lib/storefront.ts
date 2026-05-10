@@ -103,7 +103,7 @@ export function normalizeProductColors(colors?: unknown): string[] {
 function ensureSizes(type: StoreCollectionType, sizes?: string[]): string[] {
   if (sizes && sizes.length) return sizes;
   if (type === "accessories") return ["S", "M", "L", "XL"];
-  return ["S", "M", "L"];
+  return ["Standard", "S", "M", "L"];
 }
 
 function estimatePrice(slug: string): number {

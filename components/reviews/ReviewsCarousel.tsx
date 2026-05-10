@@ -189,7 +189,7 @@ export function ReviewsCarousel() {
                       <div className="flex justify-center gap-1 mb-2">
                         {renderStars()}
                       </div>
-                      <p className="text-cream/80 text-[0.6rem] uppercase tracking-widest font-light">Verified Ritual</p>
+                      
                     </div>
                   </motion.div>
                 );

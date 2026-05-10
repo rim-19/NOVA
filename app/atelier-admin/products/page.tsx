@@ -503,7 +503,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                         <div className="space-y-2">
                             <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Ritual of Sizing</label>
                             <div className="flex flex-wrap gap-2 pt-2">
-                                {["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
+                                {["Standard", "XS", "S", "M", "L", "XL", "XXL"].map((size) => (
                                     <button
                                         key={size}
                                         type="button"

@@ -28,7 +28,7 @@ const sortOptions: { id: SortKey; label: string }[] = [
   { id: "newest", label: "Newest Arrivals" },
 ];
 
-const sizeOptions = ["all", "S", "M", "L", "XL"] as const;
+const sizeOptions = ["all", "Standard", "S", "M", "L", "XL"] as const;
 const COLOR_FILTERS = [
   "Black",
   "White",

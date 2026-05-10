@@ -558,7 +558,7 @@ function normalizeProduct(product: Product, index: number): Product {
         collection_slug: collection.slug,
         collection: collection.name,
         price: product.price && product.price > 0 ? product.price : estimatePrice(product.slug || product.name),
-        sizes: product.sizes?.length ? product.sizes : ["S", "M", "L"],
+        sizes: product.sizes?.length ? product.sizes : ["Standard", "S", "M", "L"],
     };
 }
 
