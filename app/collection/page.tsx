@@ -51,16 +51,8 @@ export default function CollectionArchivePage() {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "212781563070";
   const whatsappHref = `https://wa.me/${whatsappNumber}`;
 
-  const [allProducts, setAllProducts] = useState<StorefrontProduct[]>(storefrontProducts);
-  const [collectionsList, setCollectionsList] = useState<Array<{ slug: string; name: string; image: string; isPrivate?: boolean }>>([
-    ...storefrontCollections,
-    {
-      slug: "private-wing",
-      name: "Private Wing",
-      image: "/new_assets/unspoken.jpeg",
-      isPrivate: true
-    }
-  ]);
+  const [allProducts, setAllProducts] = useState<StorefrontProduct[]>([]);
+  const [collectionsList, setCollectionsList] = useState<Array<{ slug: string; name: string; image: string; isPrivate?: boolean }>>([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedType, setSelectedType] = useState<string | "all">(() => {
@@ -270,29 +262,38 @@ export default function CollectionArchivePage() {
             dragElastic={0.06}
             className="flex w-max gap-3 md:gap-4 cursor-grab active:cursor-grabbing px-0.5 py-2"
           >
-            {collectionsList.map((collection) => {
-              const isActive = selectedType === collection.slug;
-              return (
-                <button
-                  key={collection.slug}
-                  onClick={() => {
-                    if (collection.isPrivate) {
-                      // Open private wing gate
-                      setTimeout(() => window.dispatchEvent(new CustomEvent("open-atelier-gate")), 100);
-                    } else {
-                      setSelectedType(collection.slug === selectedType ? "all" : collection.slug);
-                      setPage(1);
-                    }
-                  }}
-                  className="w-[98px] md:w-[132px] shrink-0"
-                >
-                  <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-[1.5px]" : ""}`}>
-                    <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
-                  </div>
-                  <p className={`mt-1 md:mt-2 text-[0.5rem] md:text-[0.56rem] uppercase tracking-[0.14em] md:tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
-                </button>
-              );
-            })}
+            {loading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="w-[98px] md:w-[132px] shrink-0">
+                  <div className="aspect-[2/3] rounded-md bg-white/5 animate-pulse" />
+                  <div className="mt-2 h-2 w-12 mx-auto bg-white/5 rounded animate-pulse" />
+                </div>
+              ))
+            ) : (
+              collectionsList.map((collection) => {
+                const isActive = selectedType === collection.slug;
+                return (
+                  <button
+                    key={collection.slug}
+                    onClick={() => {
+                      if (collection.isPrivate) {
+                        // Open private wing gate
+                        setTimeout(() => window.dispatchEvent(new CustomEvent("open-atelier-gate")), 100);
+                      } else {
+                        setSelectedType(collection.slug === selectedType ? "all" : collection.slug);
+                        setPage(1);
+                      }
+                    }}
+                    className="w-[98px] md:w-[132px] shrink-0"
+                  >
+                    <div className={`relative aspect-[2/3] overflow-hidden rounded-md shadow-[0_10px_24px_rgba(0,0,0,0.35),0_0_14px_rgba(184,149,106,0.14)] ${isActive ? "ring-1 ring-gold/70" : ""} ${collection.isPrivate ? "filter blur-[1.5px]" : ""}`}>
+                      <img src={collection.image} alt={collection.name} className="h-full w-full object-cover" />
+                    </div>
+                    <p className={`mt-1 md:mt-2 text-[0.5rem] md:text-[0.56rem] uppercase tracking-[0.14em] md:tracking-[0.2em] text-center ${isActive ? "text-gold" : "text-cream/78"}`}>{collection.name}</p>
+                  </button>
+                );
+              })
+            )}
           </motion.div>
         </section>
 
