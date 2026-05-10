@@ -111,7 +111,9 @@ export default function AdminDashboard() {
         channel
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState();
-                setOnlineCount(Object.keys(state).length);
+                // Count every individual connection across all presence keys
+                const totalConnections = Object.values(state).reduce((acc, current) => acc + (Array.isArray(current) ? current.length : 0), 0);
+                setOnlineCount(totalConnections > 0 ? totalConnections : 1);
             })
             .subscribe();
 

@@ -5,8 +5,8 @@ import { supabase } from "@/lib/supabase";
 
 export function VisitorTracker() {
   useEffect(() => {
-    // Generate a simple unique session ID for this visitor
-    const sessionId = Math.random().toString(36).substring(7);
+    // Generate a robust unique session ID for this visitor
+    const sessionId = `visitor_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
     
     const channel = supabase.channel('online-visitors', {
       config: {
