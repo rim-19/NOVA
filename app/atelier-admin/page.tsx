@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -36,75 +36,89 @@ export default function AdminDashboard() {
         return new Date(now.getFullYear(), now.getMonth(), 1);
     });
     const [selectedDay, setSelectedDay] = useState<string | null>(toLocalDateKey(new Date()));
+    const [onlineCount, setOnlineCount] = useState(1);
 
-    useEffect(() => {
-        async function fetchDashboardData() {
-            setLoading(true);
-            try {
-                const [productsRes, ordersRes] = await Promise.all([
-                    supabase.from("products").select("id", { count: "exact" }).eq("is_visible", true),
-                    supabase.from("orders").select("*").order("created_at", { ascending: true })
-                ]);
+    const fetchDashboardData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [productsRes, ordersRes] = await Promise.all([
+                supabase.from("products").select("id", { count: "exact" }).neq("is_visible", false),
+                supabase.from("orders").select("*").order("created_at", { ascending: true })
+            ]);
 
-                const orders = ordersRes.data || [];
-                const totalRevenue = orders.reduce((sum, o) => sum + (o.total_price || 0), 0);
-                const totalOrders = orders.length;
-                const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+            const orders = ordersRes.data || [];
+            const totalRevenue = orders.reduce((sum, o) => sum + (o.total_price || 0), 0);
+            const totalOrders = orders.length;
+            const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-                // Process data for sparklines & main graph (last 30 days)
-                const now = new Date();
-                const days: Record<string, { revenue: number, orders: number }> = {};
-                for (let i = 29; i >= 0; i--) {
-                    const d = new Date(now);
-                    d.setDate(d.getDate() - i);
-                    days[toLocalDateKey(d)] = { revenue: 0, orders: 0 };
+            const now = new Date();
+            const days: Record<string, { revenue: number, orders: number }> = {};
+            for (let i = 29; i >= 0; i--) {
+                const d = new Date(now);
+                d.setDate(d.getDate() - i);
+                days[toLocalDateKey(d)] = { revenue: 0, orders: 0 };
+            }
+
+            const dailyActivity: Record<string, { count: number, revenue: number, orders: any[] }> = {};
+
+            orders.forEach(order => {
+                const day = order.created_at.split('T')[0];
+                if (days[day]) {
+                    days[day].revenue += (order.total_price || 0);
+                    days[day].orders += 1;
                 }
 
-                const dailyActivity: Record<string, { count: number, revenue: number, orders: any[] }> = {};
+                if (!dailyActivity[day]) {
+                    dailyActivity[day] = { count: 0, revenue: 0, orders: [] };
+                }
+                dailyActivity[day].count += 1;
+                dailyActivity[day].revenue += (order.total_price || 0);
+                dailyActivity[day].orders.push(order);
+            });
 
-                orders.forEach(order => {
-                    const day = order.created_at.split('T')[0];
-                    if (days[day]) {
-                        days[day].revenue += (order.total_price || 0);
-                        days[day].orders += 1;
-                    }
+            const salesData = Object.entries(days).map(([day, d]) => ({
+                day: day.split('-').slice(1).join('/'),
+                amount: d.revenue
+            }));
 
-                    if (!dailyActivity[day]) {
-                        dailyActivity[day] = { count: 0, revenue: 0, orders: [] };
-                    }
-                    dailyActivity[day].count += 1;
-                    dailyActivity[day].revenue += (order.total_price || 0);
-                    dailyActivity[day].orders.push(order);
-                });
+            const revenueTrend = Object.values(days).map(d => d.revenue);
+            const ordersTrend = Object.values(days).map(d => d.orders);
+            const avgTrend = Object.values(days).map(d => d.orders > 0 ? d.revenue / d.orders : 0);
 
-                const salesData = Object.entries(days).map(([day, d]) => ({
-                    day: day.split('-').slice(1).join('/'),
-                    amount: d.revenue
-                }));
-
-                const revenueTrend = Object.values(days).map(d => d.revenue);
-                const ordersTrend = Object.values(days).map(d => d.orders);
-                const avgTrend = Object.values(days).map(d => d.orders > 0 ? d.revenue / d.orders : 0);
-
-                setStats({
-                    totalRevenue,
-                    totalOrders,
-                    avgOrderValue,
-                    activeProducts: productsRes.count || 0,
-                    salesData,
-                    revenueTrend,
-                    ordersTrend,
-                    avgTrend,
-                    dailyActivity
-                });
-            } catch (err) {
-                console.error("Error fetching dashboard data:", err);
-            } finally {
-                setLoading(false);
-            }
+            setStats({
+                totalRevenue,
+                totalOrders,
+                avgOrderValue,
+                activeProducts: productsRes.count || 0,
+                salesData,
+                revenueTrend,
+                ordersTrend,
+                avgTrend,
+                dailyActivity
+            });
+        } catch (err) {
+            console.error("Error fetching dashboard data:", err);
+        } finally {
+            setLoading(false);
         }
-        fetchDashboardData();
     }, []);
+
+    useEffect(() => {
+        fetchDashboardData();
+
+        // Subscribe to online visitors
+        const channel = supabase.channel('online-visitors');
+        channel
+            .on('presence', { event: 'sync' }, () => {
+                const state = channel.presenceState();
+                setOnlineCount(Object.keys(state).length);
+            })
+            .subscribe();
+
+        return () => {
+            void channel.unsubscribe();
+        };
+    }, [fetchDashboardData]);
 
     const calendarData = useMemo(() => {
         const year = currentMonth.getFullYear();
@@ -139,9 +153,11 @@ export default function AdminDashboard() {
                 <p className="text-label text-[0.6rem] text-gold/40 tracking-[0.5em] mb-4 uppercase">Royal Directives</p>
                 <h1 className="font-cormorant italic text-4xl md:text-6xl text-cream tracking-tight">Atelier Control</h1>
                 <div className="absolute top-0 right-0 hidden md:block">
-                    <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/5">
+                    <div className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/5 shadow-[0_0_20px_rgba(34,197,94,0.1)]">
                         <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22c55e]" />
-                        <span className="text-[0.6rem] text-cream/40 uppercase tracking-[0.2em]">Real-time Systems Active</span>
+                        <span className="text-[0.6rem] text-cream/40 uppercase tracking-[0.2em] font-medium">
+                            {onlineCount} {onlineCount === 1 ? 'Client' : 'Clients'} Online
+                        </span>
                     </div>
                 </div>
             </header>
@@ -172,18 +188,19 @@ export default function AdminDashboard() {
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="glass-card p-6 rounded-3xl border border-white/5 bg-gradient-to-br from-[#7D1736]/10 to-transparent flex flex-col justify-between"
+                    className="glass-card p-6 rounded-3xl border border-white/5 bg-gradient-to-br from-green-500/10 to-transparent flex flex-col justify-between group hover:border-green-500/30 transition-all duration-500"
                 >
                     <div>
-                        <p className="text-[0.55rem] text-gold/40 tracking-[0.4em] uppercase mb-4">Active Pieces</p>
-                        <h4 className="text-3xl font-inter font-light text-cream mb-2">{stats.activeProducts}</h4>
+                        <div className="flex justify-between items-center mb-4">
+                            <p className="text-[0.55rem] text-green-500/60 tracking-[0.4em] uppercase">Live Now</p>
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping" />
+                        </div>
+                        <h4 className="text-3xl font-inter font-light text-cream mb-2">{onlineCount}</h4>
+                        <p className="text-[0.5rem] text-cream/20 uppercase tracking-widest">Active Visitors</p>
                     </div>
-                    <Link href="/atelier-admin/products" className="text-[0.55rem] text-gold hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2 mt-4 self-start group">
-                        Manage Catalog
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:translate-x-1 transition-transform">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                    </Link>
+                    <div className="text-[0.55rem] text-green-500/40 uppercase tracking-widest mt-4">
+                        Real-time Presence
+                    </div>
                 </motion.div>
             </div>
 
@@ -359,6 +376,19 @@ export default function AdminDashboard() {
 
                     <div className="w-full md:w-64 pt-6 md:pt-20">
                         <div className="space-y-6">
+                            <div className="glass-card p-6 rounded-3xl border border-white/5 bg-gradient-to-br from-[#B8956A]/05 to-transparent flex flex-col justify-between"
+                            >
+                                <div>
+                                    <p className="text-[0.55rem] text-gold/40 tracking-[0.4em] uppercase mb-4">Active Pieces</p>
+                                    <h4 className="text-3xl font-inter font-light text-cream mb-2">{stats.activeProducts}</h4>
+                                </div>
+                                <Link href="/atelier-admin/products" className="text-[0.55rem] text-gold hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2 mt-4 self-start group">
+                                    Manage Catalog
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="group-hover:translate-x-1 transition-transform">
+                                        <path d="M5 12h14M12 5l7 7-7 7" />
+                                    </svg>
+                                </Link>
+                            </div>
                             <div className="glass-card p-6 rounded-3xl border border-white/5 bg-gradient-to-br from-[#B8956A]/05 to-transparent">
                                 <h4 className="text-[0.6rem] text-gold/40 uppercase tracking-widest mb-4">Legend</h4>
                                 <div className="space-y-3">
