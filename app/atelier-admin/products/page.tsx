@@ -59,7 +59,7 @@ export default function ProductsAdminPage() {
     const fetchInitialData = useCallback(async () => {
         setLoading(true);
         const [pRes, cRes] = await Promise.all([
-supabase.from("products").select("*").order("product_order", { ascending: true }) .order("created_at", { ascending: false }),
+supabase.from("products").select("*").order("created_at", { ascending: false }),
             supabase.from("collections").select("*")
         ]);
         if (pRes.data) setProducts(pRes.data);
