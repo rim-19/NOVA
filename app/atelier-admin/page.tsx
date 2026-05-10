@@ -107,15 +107,25 @@ export default function AdminDashboard() {
         fetchDashboardData();
 
         // Subscribe to online visitors
-        const channel = supabase.channel('online-visitors');
+        const channel = supabase.channel('online_presence', {
+            config: {
+                presence: {
+                    key: 'admin',
+                },
+            },
+        });
+
         channel
             .on('presence', { event: 'sync' }, () => {
                 const state = channel.presenceState();
-                // Count every individual connection across all presence keys
                 const totalConnections = Object.values(state).reduce((acc, current) => acc + (Array.isArray(current) ? current.length : 0), 0);
                 setOnlineCount(totalConnections > 0 ? totalConnections : 1);
             })
-            .subscribe();
+            .subscribe(async (status) => {
+                if (status === 'SUBSCRIBED') {
+                    await channel.track({ role: 'admin' });
+                }
+            });
 
         return () => {
             void channel.unsubscribe();

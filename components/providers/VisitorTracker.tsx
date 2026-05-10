@@ -5,30 +5,37 @@ import { supabase } from "@/lib/supabase";
 
 export function VisitorTracker() {
   useEffect(() => {
-    // Generate a robust unique session ID for this visitor
-    const sessionId = `visitor_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    console.log("VisitorTracker: Starting tracking...");
     
-    const channel = supabase.channel('online-visitors', {
+    // Create a channel for tracking presence
+    const channel = supabase.channel('online_presence', {
       config: {
         presence: {
-          key: sessionId,
+          key: 'visitor',
         },
       },
     });
 
     channel
+      .on('presence', { event: 'sync' }, () => {
+        console.log('VisitorTracker: Presence synced', channel.presenceState());
+      })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
-          await channel.track({
+          console.log("VisitorTracker: Subscribed successfully");
+          const trackStatus = await channel.track({
             online_at: new Date().toISOString(),
+            id: Math.random().toString(36).substring(7)
           });
+          console.log("VisitorTracker: Track status:", trackStatus);
         }
       });
 
     return () => {
+      console.log("VisitorTracker: Cleaning up...");
       void channel.unsubscribe();
     };
   }, []);
 
-  return null; // This component doesn't render anything
+  return null;
 }
