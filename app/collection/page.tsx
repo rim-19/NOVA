@@ -214,8 +214,10 @@ export default function CollectionArchivePage() {
           return byDate(a, b);
         case "featured":
         default:
-          // Primary sort by product_order, then by featured status, then by date
-          return (a.product_order || 0) - (b.product_order || 0) || Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || byDate(a, b);
+          // Treat 0 or null as 1000 (last) so that 1, 2, 3... jump to the top
+          const aOrder = a.product_order || 1000;
+          const bOrder = b.product_order || 1000;
+          return aOrder - bOrder || Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || byDate(a, b);
       }
     });
 
@@ -227,7 +229,11 @@ export default function CollectionArchivePage() {
   const pickedForYou = useMemo(
     () =>
       [...allProducts]
-        .sort((a, b) => Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || (a.product_order || 0) - (b.product_order || 0) || (b.popularity || 0) - (a.popularity || 0))
+        .sort((a, b) => {
+          const aOrder = a.product_order || 1000;
+          const bOrder = b.product_order || 1000;
+          return Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || aOrder - bOrder || (b.popularity || 0) - (a.popularity || 0);
+        })
         .slice(0, 6),
     [allProducts]
   );

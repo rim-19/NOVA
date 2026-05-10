@@ -277,7 +277,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
         is_featured: initialData?.is_featured || false,
         is_bestseller: initialData?.is_bestseller || false,
         is_new_arrival: initialData?.is_new_arrival || false,
-        product_order: initialData?.product_order || 0,
+        product_order: initialData?.product_order ?? 1000,
     });
     const [uploading, setUploading] = useState(false);
     const [imageUrlDraft, setImageUrlDraft] = useState("");
