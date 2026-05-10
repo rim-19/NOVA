@@ -97,7 +97,7 @@ export default function CollectionArchivePage() {
     const fetchLive = async () => {
       try {
         const [productsRes, collectionsRes] = await Promise.all([
-          supabase.from("products").select("*").eq("is_visible", true).order("product_order", { ascending: true }).order("created_at", { ascending: false }),
+          supabase.from("products").select("*").neq("is_visible", false).order("product_order", { ascending: true }).order("created_at", { ascending: false }),
           supabase.from("collections").select("slug,name,image").order("created_at", { ascending: true }),
         ]);
 
@@ -214,7 +214,8 @@ export default function CollectionArchivePage() {
           return byDate(a, b);
         case "featured":
         default:
-          return Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || (a.product_order || 0) - (b.product_order || 0) || byDate(a, b);
+          // Primary sort by product_order, then by featured status, then by date
+          return (a.product_order || 0) - (b.product_order || 0) || Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || byDate(a, b);
       }
     });
 
@@ -226,7 +227,7 @@ export default function CollectionArchivePage() {
   const pickedForYou = useMemo(
     () =>
       [...allProducts]
-        .sort((a, b) => Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || (b.popularity || 0) - (a.popularity || 0))
+        .sort((a, b) => Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || (a.product_order || 0) - (b.product_order || 0) || (b.popularity || 0) - (a.popularity || 0))
         .slice(0, 6),
     [allProducts]
   );

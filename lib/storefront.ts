@@ -141,7 +141,7 @@ function randomRank(slug: string): number {
 const CATALOG_STOREFRONT = catalogProducts.map(catalogToStorefront);
 
 export const storefrontProducts: StorefrontProduct[] = [...CATALOG_STOREFRONT].sort(
-  (a, b) => randomRank(a.slug) - randomRank(b.slug)
+  (a, b) => new Date(b.created_at || "").getTime() - new Date(a.created_at || "").getTime()
 );
 
 export const storefrontCollections = COLLECTIONS.map((col) => ({
@@ -176,7 +176,7 @@ export function toStorefrontProduct(product: Product, fallbackIndex = 0): Storef
 export function mergeStorefrontWithLive(liveProducts: Product[]): StorefrontProduct[] {
   const bySlug = new Map(storefrontProducts.map((p) => [p.slug, p]));
   liveProducts.forEach((p, i) => bySlug.set(p.slug, toStorefrontProduct(p, i)));
-  return Array.from(bySlug.values()).sort((a, b) => randomRank(a.slug) - randomRank(b.slug));
+  return Array.from(bySlug.values()).sort((a, b) => (a.product_order || 0) - (b.product_order || 0));
 }
 
 export function findStorefrontProductBySlug(slug: string): StorefrontProduct | undefined {
