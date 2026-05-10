@@ -97,7 +97,7 @@ export default function CollectionArchivePage() {
     const fetchLive = async () => {
       try {
         const [productsRes, collectionsRes] = await Promise.all([
-supabase.from("products").select("*").eq("is_visible", true).order("created_at", { ascending: false }),
+          supabase.from("products").select("*").eq("is_visible", true).order("product_order", { ascending: true }).order("created_at", { ascending: false }),
           supabase.from("collections").select("slug,name,image").order("created_at", { ascending: true }),
         ]);
 
@@ -214,7 +214,7 @@ supabase.from("products").select("*").eq("is_visible", true).order("created_at",
           return byDate(a, b);
         case "featured":
         default:
-          return Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || byDate(a, b);
+          return Number(Boolean(b.is_featured)) - Number(Boolean(a.is_featured)) || (a.product_order || 0) - (b.product_order || 0) || byDate(a, b);
       }
     });
 

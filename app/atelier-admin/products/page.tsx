@@ -156,6 +156,7 @@ supabase.from("products").select("*").eq("is_visible", true).order("product_orde
                             <tr className="border-b border-zinc-800 text-[0.6rem] text-zinc-500 uppercase tracking-widest bg-zinc-900/80">
                                 <th className="px-8 py-6 font-medium">Product Details</th>
                                 <th className="px-8 py-6 font-medium">Collection</th>
+                                <th className="px-8 py-6 font-medium text-center">Order</th>
                                 <th className="px-8 py-6 font-medium text-right">Price</th>
                                 <th className="px-8 py-6 font-medium text-center">Visibility</th>
                                 <th className="px-8 py-6 font-medium text-right">Actions</th>
@@ -182,6 +183,9 @@ supabase.from("products").select("*").eq("is_visible", true).order("product_orde
                                     </td>
                                     <td className="px-8 py-6">
                                         <span className="text-xs text-zinc-500 font-light">{product.collection}</span>
+                                    </td>
+                                    <td className="px-8 py-6 text-center">
+                                        <span className="text-xs font-mono text-gold/60">{product.product_order ?? 0}</span>
                                     </td>
                                     <td className="px-8 py-6 text-right font-mono text-gold text-xs">
                                         {product.price.toLocaleString()} MAD
@@ -273,6 +277,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
         is_featured: initialData?.is_featured || false,
         is_bestseller: initialData?.is_bestseller || false,
         is_new_arrival: initialData?.is_new_arrival || false,
+        product_order: initialData?.product_order || 0,
     });
     const [uploading, setUploading] = useState(false);
     const [imageUrlDraft, setImageUrlDraft] = useState("");
@@ -379,6 +384,7 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
             is_featured: form.is_featured,
             is_bestseller: form.is_bestseller,
             is_new_arrival: form.is_new_arrival,
+            product_order: form.product_order,
         };
 
         let { error } = initialData
@@ -445,6 +451,16 @@ function ProductForm({ onClose, onSuccess, initialData, collections }: {
                                     value={form.price}
                                     onChange={e => setForm({ ...form, price: parseInt(e.target.value) || 0 })}
                                     required
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[0.55rem] text-zinc-500 uppercase tracking-[0.3em] font-bold">Sort Order</label>
+                                <input
+                                    type="number"
+                                    className="w-full bg-zinc-800 border-b border-zinc-700 focus:border-gold py-4 text-white outline-none transition-all font-mono"
+                                    value={form.product_order}
+                                    onChange={e => setForm({ ...form, product_order: parseInt(e.target.value) || 0 })}
+                                    placeholder="0"
                                 />
                             </div>
                             <div className="space-y-2">
