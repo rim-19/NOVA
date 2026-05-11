@@ -34,11 +34,10 @@ export function PrivateAtelierGate() {
         { src: "/assets/blurred/private_1.jpeg", delay: 0.1 },
         { src: "/assets/blurred/private_2.jpeg", delay: 0.2 },
         { src: "/assets/blurred/private_4.jpeg", delay: 0.3 },
-        { src: "/assets/blurred/private_5.jpeg", delay: 0.4 },
-        { src: "/assets/blurred/private_6.jpeg", delay: 0.5 },
-        { src: "/assets/blurred/private_png_1.png", delay: 0.6 },
-        { src: "/assets/blurred/private_png_2.png", delay: 0.7 },
-        { src: "/assets/blurred/private_png_3.png", delay: 0.8 },
+        { src: "/assets/blurred/private_6.jpeg", delay: 0.4 },
+        { src: "/assets/blurred/private_png_1.png", delay: 0.5 },
+        { src: "/assets/blurred/private_png_2.png", delay: 0.6 },
+        { src: "/assets/blurred/private_png_3.png", delay: 0.7 },
     ];
 
     return (
@@ -77,8 +76,8 @@ export function PrivateAtelierGate() {
                                 }}
                                 className="absolute w-[27vw] md:w-[17vw] max-w-[132px] aspect-square overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_40px_rgba(125,23,54,0.1)] border border-white/10"
                                 style={{
-                                    top: `${44 + 32 * Math.sin(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
-                                    left: `${36 + 32 * Math.cos(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
+                                    top: `${50 + 36 * Math.sin(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
+                                    left: `${50 + 36 * Math.cos(((i * 2 * Math.PI) / hintImages.length) - Math.PI / 2)}%`,
                                     transform: 'translate(-50%, -50%)',
                                     clipPath: 'url(#heart-clip)'
                                 }}
