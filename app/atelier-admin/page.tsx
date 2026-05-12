@@ -200,6 +200,7 @@ export default function AdminDashboard() {
         const results = {
             revenue: 0,
             count: 0,
+            visitors: 0,
             orders: [] as any[]
         };
 
