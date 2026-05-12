@@ -25,7 +25,18 @@ type DashboardStats = {
     revenueTrend: number[];
     ordersTrend: number[];
     avgTrend: number[];
-    dailyActivity: Record<string, { count: number, revenue: number, orders: any[] }>;
+    visitorTrend: number[];
+    dailyActivity: Record<string, { 
+        count: number, 
+        revenue: number, 
+        orders: any[],
+        visitors: number 
+    }>;
+    visitorStats: {
+        today: number;
+        yesterday: number;
+        morning: number;
+    };
 };
 
 export default function AdminDashboard() {
@@ -37,29 +48,34 @@ export default function AdminDashboard() {
     });
     const [selectedDay, setSelectedDay] = useState<string | null>(toLocalDateKey(new Date()));
     const [onlineCount, setOnlineCount] = useState(1);
+    const [isRangeMode, setIsRangeMode] = useState(false);
+    const [rangeStart, setRangeStart] = useState<string | null>(null);
+    const [rangeEnd, setRangeEnd] = useState<string | null>(null);
 
     const fetchDashboardData = useCallback(async () => {
         setLoading(true);
+        const now = new Date();
         try {
-            const [productsRes, ordersRes] = await Promise.all([
+            const [productsRes, ordersRes, visitorsRes] = await Promise.all([
                 supabase.from("products").select("id", { count: "exact" }).neq("is_visible", false),
-                supabase.from("orders").select("*").order("created_at", { ascending: true })
+                supabase.from("orders").select("*").order("created_at", { ascending: true }),
+                supabase.from("visitor_logs").select("*").gte("created_at", new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString())
             ]);
 
             const orders = ordersRes.data || [];
+            const visitors = visitorsRes.data || [];
             const totalRevenue = orders.reduce((sum, o) => sum + (o.total_price || 0), 0);
             const totalOrders = orders.length;
             const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
 
-            const now = new Date();
-            const days: Record<string, { revenue: number, orders: number }> = {};
+            const days: Record<string, { revenue: number, orders: number, visitors: number }> = {};
             for (let i = 29; i >= 0; i--) {
                 const d = new Date(now);
                 d.setDate(d.getDate() - i);
-                days[toLocalDateKey(d)] = { revenue: 0, orders: 0 };
+                days[toLocalDateKey(d)] = { revenue: 0, orders: 0, visitors: 0 };
             }
 
-            const dailyActivity: Record<string, { count: number, revenue: number, orders: any[] }> = {};
+            const dailyActivity: Record<string, { count: number, revenue: number, orders: any[], visitors: number }> = {};
 
             orders.forEach(order => {
                 const day = order.created_at.split('T')[0];
@@ -69,11 +85,27 @@ export default function AdminDashboard() {
                 }
 
                 if (!dailyActivity[day]) {
-                    dailyActivity[day] = { count: 0, revenue: 0, orders: [] };
+                    dailyActivity[day] = { count: 0, revenue: 0, orders: [], visitors: 0 };
                 }
                 dailyActivity[day].count += 1;
                 dailyActivity[day].revenue += (order.total_price || 0);
                 dailyActivity[day].orders.push(order);
+            });
+
+            // Map visitors to days (unique sessions per day)
+            const visitorSessionsByDay: Record<string, Set<string>> = {};
+            visitors.forEach(v => {
+                const day = v.created_at.split('T')[0];
+                if (!visitorSessionsByDay[day]) visitorSessionsByDay[day] = new Set();
+                visitorSessionsByDay[day].add(v.session_id);
+            });
+
+            Object.entries(visitorSessionsByDay).forEach(([day, sessions]) => {
+                if (days[day]) days[day].visitors = sessions.size;
+                if (!dailyActivity[day]) {
+                    dailyActivity[day] = { count: 0, revenue: 0, orders: [], visitors: 0 };
+                }
+                dailyActivity[day].visitors = sessions.size;
             });
 
             const salesData = Object.entries(days).map(([day, d]) => ({
@@ -84,6 +116,16 @@ export default function AdminDashboard() {
             const revenueTrend = Object.values(days).map(d => d.revenue);
             const ordersTrend = Object.values(days).map(d => d.orders);
             const avgTrend = Object.values(days).map(d => d.orders > 0 ? d.revenue / d.orders : 0);
+            const visitorTrend = Object.values(days).map(d => d.visitors);
+
+            // Specific visitor stats
+            const todayStr = toLocalDateKey(now);
+            const yesterdayDate = new Date(now);
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = toLocalDateKey(yesterdayDate);
+
+            const todayMorningStart = new Date(now.setHours(0, 0, 0, 0)).toISOString();
+            const todayNoon = new Date(now.setHours(12, 0, 0, 0)).toISOString();
 
             setStats({
                 totalRevenue,
@@ -94,7 +136,13 @@ export default function AdminDashboard() {
                 revenueTrend,
                 ordersTrend,
                 avgTrend,
-                dailyActivity
+                visitorTrend,
+                dailyActivity,
+                visitorStats: {
+                    today: dailyActivity[todayStr]?.visitors || 0,
+                    yesterday: dailyActivity[yesterdayStr]?.visitors || 0,
+                    morning: visitors.filter(v => v.created_at >= todayMorningStart && v.created_at <= todayNoon).length
+                }
             });
         } catch (err) {
             console.error("Error fetching dashboard data:", err);
@@ -145,7 +193,37 @@ export default function AdminDashboard() {
         return daysGroup;
     }, [currentMonth]);
 
+    const rangeData = useMemo(() => {
+        if (!rangeStart || !rangeEnd || !stats) return null;
+        const start = new Date(rangeStart);
+        const end = new Date(rangeEnd);
+        const results = {
+            revenue: 0,
+            count: 0,
+            orders: [] as any[]
+        };
+
+        Object.entries(stats.dailyActivity).forEach(([day, data]) => {
+            const current = new Date(day);
+            if (current >= start && current <= end) {
+                results.revenue += data.revenue;
+                results.count += data.count;
+                results.visitors += (data.visitors || 0);
+                results.orders.push(...data.orders);
+            }
+        });
+
+        results.orders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        return results;
+    }, [rangeStart, rangeEnd, stats]);
+
     const selectedDayData = selectedDay && stats?.dailyActivity[selectedDay] ? stats.dailyActivity[selectedDay] : null;
+    const activeDisplayData = isRangeMode ? rangeData : selectedDayData;
+    const activeLabel = isRangeMode 
+        ? (rangeStart && rangeEnd 
+            ? `${new Date(rangeStart).toLocaleDateString('default', { day: 'numeric', month: 'short' })} - ${new Date(rangeEnd).toLocaleDateString('default', { day: 'numeric', month: 'short' })}`
+            : "Select End Date")
+        : (selectedDay ? new Date(selectedDay).toLocaleDateString('default', { day: 'numeric', month: 'long' }) : "Select a date");
 
     if (loading) return (
         <div className="space-y-12 animate-pulse pr-4 md:pr-0">
@@ -205,12 +283,29 @@ export default function AdminDashboard() {
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <p className="text-[0.55rem] text-green-500/60 tracking-[0.4em] uppercase">Live Now</p>
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_#22c55e]" />
                         </div>
-                        <h4 className="text-3xl font-inter font-light text-cream mb-2">{onlineCount}</h4>
-                        <p className="text-[0.5rem] text-cream/20 uppercase tracking-widest">Active Visitors</p>
+                        <div className="flex items-baseline gap-2">
+                            <h4 className="text-3xl font-inter font-light text-cream">{onlineCount}</h4>
+                            <span className="text-[0.6rem] text-cream/40 uppercase tracking-widest">Online</span>
+                        </div>
+                        <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[0.5rem] text-cream/30 uppercase tracking-widest">Today</span>
+                                <span className="text-[0.65rem] text-cream/80 font-medium">{stats.visitorStats.today}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-[0.5rem] text-cream/30 uppercase tracking-widest">Yesterday</span>
+                                <span className="text-[0.65rem] text-cream/80 font-medium">{stats.visitorStats.yesterday}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                                <span className="text-[0.5rem] text-cream/30 uppercase tracking-widest">This Morning</span>
+                                <span className="text-[0.65rem] text-green-500/60 font-medium">{stats.visitorStats.morning}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div className="text-[0.55rem] text-green-500/40 uppercase tracking-widest mt-4">
+                    <div className="text-[0.55rem] text-green-500/40 uppercase tracking-widest mt-4 flex items-center gap-2">
+                        <div className="w-1 h-1 rounded-full bg-green-500 animate-ping" />
                         Real-time Presence
                     </div>
                 </motion.div>
@@ -274,44 +369,54 @@ export default function AdminDashboard() {
 
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={selectedDay}
+                            key={isRangeMode ? `range-${rangeStart}-${rangeEnd}` : selectedDay}
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             className="flex flex-col h-full"
                         >
                             <h3 className="font-cormorant italic text-3xl text-cream mb-1">
-                                {selectedDay ? new Date(selectedDay).toLocaleDateString('default', { day: 'numeric', month: 'long' }) : "Select a date"}
+                                {activeLabel}
                             </h3>
-                            <p className="text-[0.6rem] text-gold/50 uppercase tracking-[0.2em] mb-8 font-medium">Daily Achievement</p>
+                            <p className="text-[0.6rem] text-gold/50 uppercase tracking-[0.2em] mb-8 font-medium">
+                                {isRangeMode ? "Range Performance" : "Daily Achievement"}
+                            </p>
 
-                            {selectedDayData ? (
+                            {activeDisplayData ? (
                                 <div className="space-y-6">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
                                             <p className="text-[0.5rem] text-cream/30 uppercase tracking-widest mb-1">Revenue</p>
-                                            <p className="text-xl font-light text-gold">{selectedDayData.revenue.toLocaleString()} <span className="text-[0.6rem]">MAD</span></p>
+                                            <p className="text-xl font-light text-gold">{activeDisplayData.revenue.toLocaleString()} <span className="text-[0.6rem]">MAD</span></p>
                                         </div>
                                         <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
                                             <p className="text-[0.5rem] text-cream/30 uppercase tracking-widest mb-1">Inquiries</p>
-                                            <p className="text-xl font-light text-cream">{selectedDayData.count}</p>
+                                            <p className="text-xl font-light text-cream">{activeDisplayData.count}</p>
+                                        </div>
+                                        <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                                            <p className="text-[0.5rem] text-cream/30 uppercase tracking-widest mb-1">Visitors</p>
+                                            <p className="text-xl font-light text-cream">{activeDisplayData.visitors || 0}</p>
                                         </div>
                                     </div>
 
                                     <div className="pt-4 border-t border-white/5">
-                                        <p className="text-[0.55rem] text-gold/40 uppercase tracking-[0.2em] mb-4">Latest Leads</p>
+                                        <p className="text-[0.55rem] text-gold/40 uppercase tracking-[0.2em] mb-4">
+                                            {isRangeMode ? "Range Highlights" : "Latest Leads"}
+                                        </p>
                                         <div className="space-y-3 max-h-48 overflow-y-auto pr-2 no-scrollbar">
-                                            {selectedDayData.orders.slice(0, 3).map((order: any, i: number) => (
+                                            {activeDisplayData.orders.slice(0, 5).map((order: any, i: number) => (
                                                 <div key={i} className="flex justify-between items-center bg-black/20 p-3 rounded-xl border border-white/[0.02]">
                                                     <div className="flex flex-col">
                                                         <span className="text-[0.65rem] text-cream/80">{order.customer_name || "Private Client"}</span>
-                                                        <span className="text-[0.5rem] text-cream/20 uppercase">#{order.id.slice(0, 8)}</span>
+                                                        <span className="text-[0.5rem] text-cream/20 uppercase">
+                                                            {isRangeMode ? new Date(order.created_at).toLocaleDateString() : `#${order.id.slice(0, 8)}`}
+                                                        </span>
                                                     </div>
                                                     <span className="text-[0.6rem] text-gold/60">{order.total_price} MAD</span>
                                                 </div>
                                             ))}
                                         </div>
-                                        <Link href={`/atelier-admin/orders?date=${selectedDay}`} className="mt-6 block text-center py-3 rounded-full border border-gold/20 text-[0.6rem] text-gold uppercase tracking-[0.3em] hover:bg-gold/5 transition-colors">
+                                        <Link href={isRangeMode && rangeStart && rangeEnd ? `/atelier-admin/orders?start=${rangeStart}&end=${rangeEnd}` : `/atelier-admin/orders?date=${selectedDay}`} className="mt-6 block text-center py-3 rounded-full border border-gold/20 text-[0.6rem] text-gold uppercase tracking-[0.3em] hover:bg-gold/5 transition-colors">
                                             View Full Ledger
                                         </Link>
                                     </div>
@@ -319,8 +424,10 @@ export default function AdminDashboard() {
                             ) : (
                                 <div className="flex flex-col items-center justify-center p-12 text-center opacity-30 mt-10">
                                     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" className="mb-4"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z" /></svg>
-                                    <p className="text-[0.6rem] uppercase tracking-widest">Quiet Period</p>
-                                    <p className="text-[0.5rem] leading-loose mt-2 italic px-4">No records found for this specific sunset.</p>
+                                    <p className="text-[0.6rem] uppercase tracking-widest">{isRangeMode ? "Select Range" : "Quiet Period"}</p>
+                                    <p className="text-[0.5rem] leading-loose mt-2 italic px-4">
+                                        {isRangeMode ? "Click two dates to define your chronological window." : "No records found for this specific sunset."}
+                                    </p>
                                 </div>
                             )}
                         </motion.div>
@@ -337,7 +444,18 @@ export default function AdminDashboard() {
                                 <h3 className="font-cormorant italic text-3xl text-cream leading-tight">Activity Log</h3>
                                 <p className="text-[0.55rem] text-gold/40 uppercase tracking-widest">Chronological Records</p>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 items-center">
+                                <button 
+                                    onClick={() => {
+                                        setIsRangeMode(!isRangeMode);
+                                        setRangeStart(null);
+                                        setRangeEnd(null);
+                                    }}
+                                    className={`px-4 py-2 rounded-full border text-[0.6rem] uppercase tracking-widest transition-all ${isRangeMode ? 'bg-gold text-black border-gold shadow-[0_0_15px_rgba(184,149,106,0.4)]' : 'bg-white/5 text-gold/60 border-white/10 hover:bg-white/10'}`}
+                                >
+                                    {isRangeMode ? "Range Mode On" : "Range Mode"}
+                                </button>
+                                <div className="w-[1px] h-4 bg-white/10 mx-2" />
                                 <button onClick={() => setCurrentMonth((prev) => addMonths(prev, -1))} className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center text-gold hover:bg-white/5 transition-all">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6" /></svg>
                                 </button>
@@ -361,24 +479,52 @@ export default function AdminDashboard() {
                                 const dayData = stats.dailyActivity[dayStr];
                                 const ordersCount = dayData?.count || 0;
                                 const isToday = dayStr === toLocalDateKey(new Date());
-                                const isSelected = selectedDay === dayStr;
+                                
+                                const isSelected = !isRangeMode && selectedDay === dayStr;
+                                const isRangeStart = isRangeMode && rangeStart === dayStr;
+                                const isRangeEnd = isRangeMode && rangeEnd === dayStr;
+                                const isInRange = isRangeMode && rangeStart && rangeEnd && (
+                                    new Date(dayStr) >= new Date(rangeStart) && 
+                                    new Date(dayStr) <= new Date(rangeEnd)
+                                );
 
                                 return (
                                     <button
                                         key={idx}
-                                        onClick={() => setSelectedDay(dayStr)}
-                                        className={`relative aspect-square flex flex-col items-center justify-center rounded-2xl transition-all duration-500 border group/day ${isSelected
+                                        onClick={() => {
+                                            if (!isRangeMode) {
+                                                setSelectedDay(dayStr);
+                                            } else {
+                                                if (!rangeStart || (rangeStart && rangeEnd)) {
+                                                    setRangeStart(dayStr);
+                                                    setRangeEnd(null);
+                                                } else {
+                                                    const d1 = new Date(rangeStart);
+                                                    const d2 = new Date(dayStr);
+                                                    if (d2 < d1) {
+                                                        setRangeStart(dayStr);
+                                                        setRangeEnd(rangeStart);
+                                                    } else {
+                                                        setRangeEnd(dayStr);
+                                                    }
+                                                }
+                                            }
+                                        }}
+                                        className={`relative aspect-square flex flex-col items-center justify-center rounded-2xl transition-all duration-500 border group/day ${
+                                            isSelected || isRangeStart || isRangeEnd
                                                 ? 'bg-gold/15 border-gold shadow-[0_0_30px_rgba(184,149,106,0.25)]'
-                                                : isToday
-                                                    ? 'bg-white/5 border-white/20'
-                                                    : 'bg-black/20 border-white/[0.03] hover:border-gold/30 hover:bg-white/5'
+                                                : isInRange
+                                                    ? 'bg-gold/5 border-gold/20'
+                                                    : isToday
+                                                        ? 'bg-white/5 border-white/20'
+                                                        : 'bg-black/20 border-white/[0.03] hover:border-gold/30 hover:bg-white/5'
                                             }`}
                                     >
-                                        <span className={`text-base font-inter ${isSelected ? 'text-gold font-bold scale-110' : ordersCount > 0 ? 'text-cream/80 font-medium' : 'text-cream/20'}`}>
+                                        <span className={`text-base font-inter ${isSelected || isRangeStart || isRangeEnd ? 'text-gold font-bold scale-110' : ordersCount > 0 ? 'text-cream/80 font-medium' : 'text-cream/20'}`}>
                                             {date.getDate()}
                                         </span>
                                         {ordersCount > 0 && (
-                                            <div className={`w-1 h-1 rounded-full mt-1.5 shadow-[0_0_8px_#B8956A] transition-all duration-500 ${isSelected ? 'bg-gold animate-bounce scale-150' : 'bg-gold/40'}`} />
+                                            <div className={`w-1 h-1 rounded-full mt-1.5 shadow-[0_0_8px_#B8956A] transition-all duration-500 ${isSelected || isRangeStart || isRangeEnd ? 'bg-gold animate-bounce scale-150' : 'bg-gold/40'}`} />
                                         )}
                                     </button>
                                 );
