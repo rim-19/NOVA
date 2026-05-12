@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { supabase, Order } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSearchParams } from "next/navigation";
 
 function toCsvValue(value: string | number | null | undefined): string {
   const v = value === null || value === undefined ? "" : String(value);
@@ -26,16 +27,41 @@ export default function OrdersAdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  const searchParams = useSearchParams();
+  const startDate = searchParams.get("start");
+  const endDate = searchParams.get("end");
+  const singleDate = searchParams.get("date");
 
-  async function fetchOrders() {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
+    let query = supabase.from("orders").select("*").order("created_at", { ascending: false });
+
+    if (startDate && endDate) {
+      // Range Mode
+      const start = new Date(startDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(endDate);
+      end.setHours(23, 59, 59, 999);
+      
+      query = query.gte("created_at", start.toISOString()).lte("created_at", end.toISOString());
+    } else if (singleDate) {
+      // Single Day Mode
+      const start = new Date(singleDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(singleDate);
+      end.setHours(23, 59, 59, 999);
+      
+      query = query.gte("created_at", start.toISOString()).lte("created_at", end.toISOString());
+    }
+
+    const { data } = await query;
     if (data) setOrders(data as Order[]);
     setLoading(false);
-  }
+  }, [startDate, endDate, singleDate]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   async function updateStatus(id: string, newStatus: string) {
     const { error } = await supabase.from("orders").update({ status: newStatus }).eq("id", id);

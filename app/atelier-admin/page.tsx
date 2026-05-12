@@ -226,6 +226,29 @@ export default function AdminDashboard() {
             : "Select End Date")
         : (selectedDay ? new Date(selectedDay).toLocaleDateString('default', { day: 'numeric', month: 'long' }) : "Select a date");
 
+    const activeRevenueTrend = useMemo(() => {
+        if (!stats) return [];
+        if (!isRangeMode || !rangeStart || !rangeEnd) {
+            return stats.revenueTrend;
+        }
+
+        const start = new Date(rangeStart);
+        const end = new Date(rangeEnd);
+        
+        return Object.entries(stats.dailyActivity)
+            .filter(([day]) => {
+                const current = new Date(day);
+                return current >= start && current <= end;
+            })
+            .sort(([a], [b]) => a.localeCompare(b))
+            .map(([, data]) => data.revenue);
+    }, [isRangeMode, rangeStart, rangeEnd, stats]);
+
+    const peakRevenue = useMemo(() => {
+        if (activeRevenueTrend.length === 0) return 0;
+        return Math.max(...activeRevenueTrend);
+    }, [activeRevenueTrend]);
+
     if (loading) return (
         <div className="space-y-12 animate-pulse pr-4 md:pr-0">
             <div className="h-16 w-1/3 bg-white/5 rounded-2xl" />
@@ -322,7 +345,7 @@ export default function AdminDashboard() {
                             <p className="text-[0.55rem] text-gold/40 uppercase tracking-widest">30-Day Trajectory</p>
                         </div>
                         <div className="bg-white/5 px-3 py-1 rounded-full border border-white/10">
-                            <p className="text-[0.6rem] text-cream/40 font-inter uppercase tracking-tighter">Peak: {Math.max(...stats.revenueTrend).toLocaleString()} MAD</p>
+                            <p className="text-[0.6rem] text-cream/40 font-inter uppercase tracking-tighter">Peak: {peakRevenue.toLocaleString()} MAD</p>
                         </div>
                     </div>
 
@@ -335,7 +358,8 @@ export default function AdminDashboard() {
                                 </linearGradient>
                             </defs>
                             <motion.path
-                                d={createSmoothPath(stats.revenueTrend)}
+                                key={activeRevenueTrend.join(',')}
+                                d={createSmoothPath(activeRevenueTrend)}
                                 fill="none"
                                 stroke="#B8956A"
                                 strokeWidth="2"
@@ -343,21 +367,22 @@ export default function AdminDashboard() {
                                 strokeLinejoin="round"
                                 initial={{ pathLength: 0 }}
                                 animate={{ pathLength: 1 }}
-                                transition={{ duration: 2.5, ease: "easeInOut" }}
+                                transition={{ duration: 1.5, ease: "easeInOut" }}
                             />
                             <motion.path
-                                d={`${createSmoothPath(stats.revenueTrend)} L 100 100 L 0 100 Z`}
+                                key={`fill-${activeRevenueTrend.join(',')}`}
+                                d={`${createSmoothPath(activeRevenueTrend)} L 100 100 L 0 100 Z`}
                                 fill="url(#mainGraphGradient)"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                transition={{ delay: 1.5, duration: 1 }}
+                                transition={{ delay: 0.5, duration: 1 }}
                             />
                         </svg>
 
                         <div className="absolute bottom-1 left-0 right-0 flex justify-between px-6 text-[0.5rem] text-cream/15 uppercase tracking-[0.2em] font-medium">
-                            <span>Beginning</span>
-                            <span>Midway</span>
-                            <span>Today</span>
+                            <span>{isRangeMode && rangeStart ? new Date(rangeStart).toLocaleDateString('default', { day: 'numeric', month: 'short' }) : "Beginning"}</span>
+                            <span>{isRangeMode ? "Range Scale" : "Midway"}</span>
+                            <span>{isRangeMode && rangeEnd ? new Date(rangeEnd).toLocaleDateString('default', { day: 'numeric', month: 'short' }) : "Today"}</span>
                         </div>
                     </div>
                 </div>
