@@ -477,7 +477,7 @@ export default function AdminDashboard() {
                                         setRangeStart(null);
                                         setRangeEnd(null);
                                     }}
-                                    className={`px-4 py-2 rounded-full border text-[0.6rem] uppercase tracking-widest transition-all ${isRangeMode ? 'bg-gold text-black border-gold shadow-[0_0_15px_rgba(184,149,106,0.4)]' : 'bg-white/5 text-gold/60 border-white/10 hover:bg-white/10'}`}
+                                    className={`px-4 py-2 rounded-full border text-[0.6rem] uppercase tracking-widest transition-all ${isRangeMode ? 'bg-gold text-white border-gold shadow-[0_0_15px_rgba(184,149,106,0.4)]' : 'bg-white/5 text-gold/60 border-white/10 hover:bg-white/10'}`}
                                 >
                                     {isRangeMode ? "Range Mode On" : "Range Mode"}
                                 </button>
